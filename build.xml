@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="zip" name="minxing-java-sdk" basedir=".">
+	<property name="lib.home" value="lib" />
+	<property name="src.home" value="src" />
+	<property name="classes.home" value="bin" />
+	<property name="dist.home" value="dist" />
+	<property name="zip.file.name" value="minxing-java-sdk" />
+
+	<!--
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  base.classpath 设置编译的java的类
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  -->
+	<path id="base.classpath">
+		<fileset dir="${lib.home}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<path id="build.classpath">
+		<fileset dir="${classes.home}">
+			<include name="**/*.class" />
+		</fileset>
+	</path>
+
+
+	<!-- 初始化的具体的目录信息 -->
+	<target name="init" description="初始化代码">
+		<mkdir dir="${classes.home}" />
+		<mkdir dir="${dist.home}" />
+	</target>
+
+	<target name="clean" description="清除目录">
+		<delete dir="${classes.home}" failonerror="false" />
+	</target>
+
+
+
+	<target name="all" description="整体的操作" depends="clean,init,javac,jar">
+	</target>
+
+
+	<target name="javac" description="javac 编译java程序">
+
+		<javac srcdir="${src.home}" destdir="${classes.home}" deprecation="on" debug="true" encoding="UTF-8" includeantruntime="false" source="1.6" target="1.6">
+			<classpath refid="base.classpath" />
+		</javac>
+	</target>
+
+	<target name="jar" description="创建jar的文件" depends="clean,init,javac">
+		<jar basedir="${classes.home}" jarfile="${ant.project.name}.jar">
+			<manifest>
+				<attribute name="Built-By" value="minxing" />
+				<attribute name="Manifest-Version" value="1.2" />
+				<attribute name="Created-By" value="minxing" />
+				<attribute name="Build-Version" value="${buildVersion}" />
+			</manifest>
+		</jar>
+	</target>
+
+	
+
+	<target name="version">
+		<tstamp>
+         	<format property="current.time" pattern="yyyy-MM-dd HH:mm:ss" />
+   		</tstamp>
+        <echo file="version.txt" append="false">Version : ${buildVersion}
+Date : ${current.time}
+</echo>    
+    </target>
+
+	<target name="zip" description="Zip all file" depends="clean,init,javac,jar,version">
+		<delete file="${zip.file.name}.zip" failonerror="false" />
+
+		<zip destfile="${zip.file.name}_${buildVersion}.zip">
+			<zipfileset dir="lib" prefix="${zip.file.name}/lib" />
+			<zipfileset dir="test" prefix="${zip.file.name}/test" />
+			<zipfileset dir="" includes="${ant.project.name}.jar" fullpath="${zip.file.name}/${ant.project.name}-${buildVersion}.jar" />
+			<zipfileset dir="" includes="version.txt" fullpath="${zip.file.name}/version.txt" />
+		</zip>
+
+		
+	</target>
+
+
+</project>
+
