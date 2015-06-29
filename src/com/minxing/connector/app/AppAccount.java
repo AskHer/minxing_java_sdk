@@ -6,11 +6,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.minxing.connector.http.HttpClient;
+import com.minxing.connector.http.Response;
 import com.minxing.connector.json.JSONArray;
 import com.minxing.connector.json.JSONException;
 import com.minxing.connector.json.JSONObject;
 import com.minxing.connector.model.Account;
-import com.minxing.connector.model.Error;
+import com.minxing.connector.model.ApiErrorException;
 import com.minxing.connector.model.MxException;
 import com.minxing.connector.model.MxVerifyException;
 import com.minxing.connector.model.PostParameter;
@@ -23,15 +25,14 @@ import com.minxing.connector.organization.User;
 
 public class AppAccount extends Account {
 
-//	protected String appId = AppConfig.getValue("AppID");
-//	protected String appSecret = AppConfig.getValue("AppSecret");
-//	protected String redirectUri = AppConfig.getValue("redirect_uri");
-//	protected String authorizeUrl = AppConfig.getValue("authorize_url");
-//
-//	protected String apiPrefix = AppConfig.getValue("api_prefix");
-//	protected String accessToken = AppConfig.getValue("access_token");
-	
-	
+	// protected String appId = AppConfig.getValue("AppID");
+	// protected String appSecret = AppConfig.getValue("AppSecret");
+	// protected String redirectUri = AppConfig.getValue("redirect_uri");
+	// protected String authorizeUrl = AppConfig.getValue("authorize_url");
+	//
+	// protected String apiPrefix = AppConfig.getValue("api_prefix");
+	// protected String accessToken = AppConfig.getValue("access_token");
+
 	private String _token = null;
 	private String _loginName;
 	private String _serverURL;
@@ -44,7 +45,37 @@ public class AppAccount extends Account {
 		client.setTokenType("Bearer");
 	}
 
+	private AppAccount(String serverURL, String loginName, String password,
+			String clientId) {
+		this._serverURL = serverURL;
+		PostParameter grant_type = new PostParameter("grant_type", "password");
+		PostParameter login_name = new PostParameter("login_name", loginName);
+		PostParameter passwd = new PostParameter("password", password);
+		PostParameter app_id = new PostParameter("app_id", clientId);
+		PostParameter[] params = new PostParameter[] { grant_type, login_name,
+				passwd, app_id };
 
+		HttpClient _client = new HttpClient();
+		Response return_rsp = _client.post(serverURL + "/oauth2/token", params,
+				new PostParameter[] {}, false);
+
+		if (return_rsp.getStatusCode() == 200) {
+
+			JSONObject o = return_rsp.asJSONObject();
+			try {
+				_token = o.getString("access_token");
+				client.setToken(this._token);
+				client.setTokenType("Bearer");
+
+			} catch (JSONException e) {
+				throw new MxException("解析返回值出错", e);
+			}
+		} else {
+			throw new MxException("HTTP " + return_rsp.getStatusCode() + ": "
+					+ return_rsp.getResponseAsString());
+		}
+
+	}
 
 	public void setFromUserLoginName(String loginName) {
 		this._loginName = loginName;
@@ -57,6 +88,12 @@ public class AppAccount extends Account {
 
 	public static AppAccount loginByToken(String serverURL, String bearerToken) {
 		return new AppAccount(serverURL, bearerToken);
+	}
+
+	public static AppAccount loginByPassword(String serverURL,
+			String loginName, String password, String clientId) {
+
+		return new AppAccount(serverURL, loginName, password, clientId);
 	}
 
 	public JSONObject get(String url, Map<String, String> params)
@@ -172,12 +209,12 @@ public class AppAccount extends Account {
 
 	public User findUserByLoginname(String loginname) {
 
-		try {
-			JSONObject o = this.get("/api/v1/users/" + loginname
-					+ "/by_login_name");
+		JSONObject o = this
+				.get("/api/v1/users/" + loginname + "/by_login_name");
 
+		try {
 			User user = new User();
-			user.setId(o.getString("id"));
+			user.setId(o.getLong("id"));
 			user.setLogin_name(o.getString("login_name"));
 			user.setPassword(o.getString("password"));
 			user.setEmail(o.getString("email"));
@@ -193,10 +230,10 @@ public class AppAccount extends Account {
 			user.setSuspended(o.getString("suspended"));
 
 			return user;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
 		}
+
 	}
 
 	// ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -277,12 +314,7 @@ public class AppAccount extends Account {
 		params.put("body", message);
 		Map<String, String> headers = new HashMap<String, String>();
 
-		try {
-			this.post("/api/v1/conversations/to_user" + toUserId, params,
-					headers);
-		} catch (MxException e) {
-			e.printStackTrace();
-		}
+		this.post("/api/v1/conversations/to_user" + toUserId, params, headers);
 
 	}
 
@@ -309,11 +341,7 @@ public class AppAccount extends Account {
 		params.put("direct_to_user_ids", direct_to_user_ids);
 		Map<String, String> headers = new HashMap<String, String>();
 
-		try {
-			this.post("/api/v1/conversations/ocu_messages", params, headers);
-		} catch (MxException e) {
-			e.printStackTrace();
-		}
+		this.post("/api/v1/conversations/ocu_messages", params, headers);
 
 	}
 
@@ -346,50 +374,62 @@ public class AppAccount extends Account {
 	//
 	// Department Api
 	//
-	public Error addNewDepartment(Department departement) {
+	public Department addNewDepartment(Department departement)
+			throws ApiErrorException {
 
 		try {
 
 			HashMap<String, String> params = departement.toHash();
 			Map<String, String> headers = new HashMap<String, String>();
 
-			JSONObject error = post("/api/v1/departments", params, headers);
-			int code = error.getInt("code");
-			String msg = error.getString("message");
-			if (code != 200 && code != 201) {
-				return new Error(code, msg);
+			JSONObject json_result = post("/api/v1/departments", params,
+					headers);
+			int code = json_result.getInt("code");
+
+			if (code > 0 && code != 200 && code != 201) {
+
+				String msg = json_result.getString("message");
+				throw new ApiErrorException(code, msg);
+
 			}
-			return new Error(0, "操作成功");
-		} catch (MxException e) {
-			return new Error(e.getStatusCode(), e.getMessage());
+
+			departement.setId(json_result.getLong("id"));
+			departement.setNetworkId(json_result.getLong("network_id"));
+			
+			return departement;
+
 		} catch (JSONException e) {
-			return new Error(500, "服务器错误");
+			throw new ApiErrorException("返回JSON错误", 500, e);
 		}
 
 	}
 
-	public Error updateDepartment(Department departement) {
+	public void updateDepartment(Department departement)
+			throws ApiErrorException {
 
 		try {
 
 			HashMap<String, String> params = departement.toHash();
 
-			JSONObject error = put("/api/v1/departments", params);
-			int code = error.getInt("code");
-			String msg = error.getString("message");
+			JSONObject json_result = put("/api/v1/departments", params);
+
+			int code = json_result.getInt("code");
+
 			if (code != 200 && code != 201) {
-				return new Error(code, msg);
+
+				String msg = json_result.getString("message");
+				throw new ApiErrorException(code, msg);
+
 			}
-			return new Error(0, "操作成功");
-		} catch (MxException e) {
-			return new Error(e.getStatusCode(), e.getMessage());
+
 		} catch (JSONException e) {
-			return new Error(500, "服务器错误");
+			throw new ApiErrorException("返回JSON错误", 500, e);
 		}
 
 	}
 
-	public Error deleteDepartment(String departmentCode, boolean deleteWithUsers) {
+	public void deleteDepartment(String departmentCode, boolean deleteWithUsers)
+			throws ApiErrorException {
 
 		try {
 
@@ -398,18 +438,19 @@ public class AppAccount extends Account {
 				params.put("force", "true");
 			}
 
-			JSONObject error = delete("/api/v1/departments/" + departmentCode,
-					params);
-			int code = error.getInt("code");
-			String msg = error.getString("message");
+			JSONObject json_result = delete("/api/v1/departments/"
+					+ departmentCode, params);
+			int code = json_result.getInt("code");
+
 			if (code != 200 && code != 201) {
-				return new Error(code, msg);
+
+				String msg = json_result.getString("message");
+				throw new ApiErrorException(code, msg);
+
 			}
-			return new Error(0, "操作成功");
-		} catch (MxException e) {
-			return new Error(e.getStatusCode(), e.getMessage());
+
 		} catch (JSONException e) {
-			return new Error(500, "服务器错误");
+			throw new ApiErrorException("返回JSON错误", 500, e);
 		}
 
 	}
@@ -418,74 +459,82 @@ public class AppAccount extends Account {
 	//
 	// User Api
 	//
-	public Error addNewUser(User user) {
+	public User addNewUser(User user) throws ApiErrorException {
 
 		try {
 
 			HashMap<String, String> params = user.toHash();
 			Map<String, String> headers = new HashMap<String, String>();
 
-			JSONObject error = post("/api/v1/departments", params, headers);
-			int code = error.getInt("code");
-			String msg = error.getString("message");
-			if (code != 200 && code != 201) {
-				return new Error(code, msg);
+			JSONObject json_result = post("/api/v1/departments", params,
+					headers);
+			int code = json_result.getInt("code");
+
+			if (code > 0 && code != 200 && code != 201) {
+
+				String msg = json_result.getString("message");
+				throw new ApiErrorException(code, msg);
+
 			}
-			return new Error(0, "操作成功");
-		} catch (MxException e) {
-			return new Error(e.getStatusCode(), e.getMessage());
+			user.setId(json_result.getLong("id"));
+			return user;
+			
 		} catch (JSONException e) {
-			return new Error(500, "服务器错误");
+			throw new ApiErrorException("返回JSON错误", 500, e);
 		}
 
 	}
 
-	public Error updateUser(User user) {
+	public void updateUser(User user) throws ApiErrorException {
 
 		try {
 
 			HashMap<String, String> params = user.toHash();
 
-			JSONObject error = put("/api/v1/users", params);
-			int code = error.getInt("code");
-			String msg = error.getString("message");
+			JSONObject json_result = put("/api/v1/users", params);
+			int code = json_result.getInt("code");
+
 			if (code != 200 && code != 201) {
-				return new Error(code, msg);
+
+				String msg = json_result.getString("message");
+				throw new ApiErrorException(code, msg);
+
 			}
-			return new Error(0, "操作成功");
-		} catch (MxException e) {
-			return new Error(e.getStatusCode(), e.getMessage());
+			
+
 		} catch (JSONException e) {
-			return new Error(500, "服务器错误");
+			throw new ApiErrorException("返回JSON错误", 500, e);
 		}
 
 	}
 
-	public Error deleteUser(String loginName) {
-		return deleteUser(loginName, false);
+	public void deleteUser(String loginName) throws ApiErrorException {
+		deleteUser(loginName, false);
 	}
 
-	public Error deleteUser(String loginName, boolean deleteAccount) {
+	public void deleteUser(String loginName, boolean withDeleteAccount)
+			throws ApiErrorException {
 
 		try {
 
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put("login_name", loginName);
-			if (deleteAccount) {
+			if (withDeleteAccount) {
 				params.put("with_account", "true");
 			}
 
-			JSONObject error = delete("/api/v1/users/deleted", params);
-			int code = error.getInt("code");
-			String msg = error.getString("message");
+			JSONObject json_result = delete("/api/v1/users/deleted", params);
+			int code = json_result.getInt("code");
+
 			if (code != 200 && code != 201) {
-				return new Error(code, msg);
+
+				String msg = json_result.getString("message");
+				throw new ApiErrorException(code, msg);
+
 			}
-			return new Error(0, "操作成功");
-		} catch (MxException e) {
-			return new Error(e.getStatusCode(), e.getMessage());
+
 		} catch (JSONException e) {
-			return new Error(500, "服务器错误");
+			throw new ApiErrorException("返回JSON错误", 500, e);
 		}
 
 	}
@@ -494,85 +543,96 @@ public class AppAccount extends Account {
 	//
 	// Network Api
 	//
-	public Error createNetwork(Network network) {
+	public Network createNetwork(Network network) throws ApiErrorException {
 
 		try {
 
 			HashMap<String, String> params = network.toHash();
 			Map<String, String> headers = new HashMap<String, String>();
 
-			JSONObject error = post("/api/v1/networks", params, headers);
-			int code = error.getInt("code");
-			String msg = error.getString("message");
-			if (code != 200 && code != 201) {
-				return new Error(code, msg);
+			JSONObject json_result = post("/api/v1/networks", params, headers);
+			int code = json_result.getInt("code");
+
+			if (code > 0 && code != 200 && code != 201) {
+
+				String msg = json_result.getString("message");
+				throw new ApiErrorException(code, msg);
+
 			}
-			return new Error(0, "操作成功");
-		} catch (MxException e) {
-			return new Error(e.getStatusCode(), e.getMessage());
+
+			network.setId(json_result.getLong("id"));
+			return network;
+
 		} catch (JSONException e) {
-			return new Error(500, "服务器错误");
+			throw new ApiErrorException("返回JSON错误", 500, e);
 		}
 
 	}
 
-	public Error updateNetwork(Network network) {
+	public void updateNetwork(Network network) throws ApiErrorException {
 
 		try {
 
 			HashMap<String, String> params = network.toHash();
 
-			JSONObject error = put("/api/v1/networks", params);
-			int code = error.getInt("code");
-			String msg = error.getString("message");
+			JSONObject json_result = put("/api/v1/networks", params);
+
+			int code = json_result.getInt("code");
+
 			if (code != 200 && code != 201) {
-				return new Error(code, msg);
+
+				String msg = json_result.getString("message");
+				throw new ApiErrorException(code, msg);
+
 			}
-			return new Error(0, "操作成功");
-		} catch (MxException e) {
-			return new Error(e.getStatusCode(), e.getMessage());
+
 		} catch (JSONException e) {
-			return new Error(500, "服务器错误");
+			throw new ApiErrorException("返回JSON错误", 500, e);
 		}
 
 	}
 
-	public Error deleteNetwork(String name) {
+	public void deleteNetwork(String name) throws ApiErrorException {
 
 		try {
 
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put("name", name);
 
-			JSONObject error = delete("/api/v1/networks", params);
-			int code = error.getInt("code");
-			String msg = error.getString("message");
+			JSONObject json_result = delete("/api/v1/networks", params);
+			int code = json_result.getInt("code");
+
 			if (code != 200 && code != 201) {
-				return new Error(code, msg);
+				String msg = json_result.getString("message");
+				throw new ApiErrorException(code, msg);
+
 			}
-			return new Error(0, "操作成功");
-		} catch (MxException e) {
-			return new Error(e.getStatusCode(), e.getMessage());
+
 		} catch (JSONException e) {
-			return new Error(500, "服务器错误");
+			throw new ApiErrorException("返回JSON错误", 500, e);
 		}
 
 	}
 
 	/**
 	 * 校验应用商店的应用携带的SSOTOken是否有效，通过连接minxing服务器，检查token代表的敏行用户的身份。
-	 * @param token 客户端提供的SSO Token.
-	 * @param app_id 校验客户端提供的Token是不是来自这个app_id产生的，如果不是，则校验失败。
+	 * 
+	 * @param token
+	 *            客户端提供的SSO Token.
+	 * @param app_id
+	 *            校验客户端提供的Token是不是来自这个app_id产生的，如果不是，则校验失败。
 	 * @return 如果校验成功，返回token对应的用户信息
-	 * @throws MxVerifyException 校验失败，则抛出这个异常.
+	 * @throws MxVerifyException
+	 *             校验失败，则抛出这个异常.
 	 */
-	public User verifyAppSSOToken(String token, String app_id) throws MxVerifyException {
+	public User verifyAppSSOToken(String token, String app_id)
+			throws MxVerifyException {
 
 		try {
 			JSONObject o = this.get("/api/v1/oauth/user_info/" + token);
 
 			User user = new User();
-			user.setId(o.getString("user_id"));
+			user.setId(o.getLong("user_id"));
 			user.setLogin_name(o.getString("login_name"));
 
 			user.setEmail(o.getString("email"));
@@ -583,7 +643,6 @@ public class AppAccount extends Account {
 
 			user.setEmp_code(o.getString("emp_code"));
 			user.setNetworkId(o.getLong("network_id"));
-			
 
 			return user;
 		} catch (JSONException e) {
@@ -594,19 +653,23 @@ public class AppAccount extends Account {
 
 	/**
 	 * 校验公众号消息打开时携带的 SSOTOken，通过连接minxing服务器，检查token代表的敏行用户的身份。
-	 * @param token 客户端提供的SSO Token.
-	 * @param app_id 校验客户端提供的Token是不是来自这个app_id产生的，如果不是，则校验失败。
+	 * 
+	 * @param token
+	 *            客户端提供的SSO Token.
+	 * @param app_id
+	 *            校验客户端提供的Token是不是来自这个app_id产生的，如果不是，则校验失败。
 	 * @return 如果校验成功，返回token对应的用户信息
-	 * @throws MxVerifyException 校验失败，则抛出这个异常.
+	 * @throws MxVerifyException
+	 *             校验失败，则抛出这个异常.
 	 */
-	
+
 	public User verifyOcuSSOToken(String token, String ocu_id) {
 
 		try {
 			JSONObject o = this.get("/api/v1/oauth/user_info/" + token);
 
 			User user = new User();
-			user.setId(o.getString("user_id"));
+			user.setId(o.getLong("user_id"));
 			user.setLogin_name(o.getString("login_name"));
 
 			user.setEmail(o.getString("email"));
@@ -617,7 +680,6 @@ public class AppAccount extends Account {
 
 			user.setEmp_code(o.getString("emp_code"));
 			user.setNetworkId(o.getLong("network_id"));
-			
 
 			return user;
 		} catch (Exception e) {

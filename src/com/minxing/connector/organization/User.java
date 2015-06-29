@@ -3,7 +3,7 @@ package com.minxing.connector.organization;
 import java.util.HashMap;
 
 public class User extends Organization {
-	private String id; // 用户id
+	private Long id; // 用户id
 	private String login_name; // Account's login_name
 	private String password; // 密码
 	private String email; // 邮箱
@@ -139,11 +139,11 @@ public class User extends Organization {
 		this.display_order = display_order;
 	}
 
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -254,7 +254,7 @@ public class User extends Organization {
 	public HashMap<String, String> toHash() {
 		HashMap<String, String> params = new HashMap<String, String>();
 
-		params.put("id", this.getId());
+		params.put("id", String.valueOf(this.getId()));
 		params.put("login_name", this.getLogin_name());
 		params.put("password", this.getPassword());
 		params.put("email", this.getEmail());

@@ -1,7 +1,7 @@
 
 
 import com.minxing.connector.app.AppAccount;
-import com.minxing.connector.model.Error;
+import com.minxing.connector.model.ApiErrorException;
 import com.minxing.connector.organization.Department;
 import com.minxing.connector.organization.Network;
 import com.minxing.connector.organization.User;
@@ -9,13 +9,17 @@ import com.minxing.connector.organization.User;
 public class TestOrgSync {
 	static String network_name = "t.cn";
 	public static void main(String[] args){
-		AppAccount account = AppAccount.loginByToken("http://localhost:3000",
-				"cGTsJXPAJeEwUEXvt2SvJ--0q7cPunUqvc4AMKb8i6y-PUti");
+		AppAccount account = AppAccount.loginByPassword("http://192.168.88.103:3000",
+				"admin","111111","4");
 		
 		//addNetwork(account);
-		//addDepart(account);
+		
+		account = AppAccount.loginByPassword("http://192.168.88.103:3000",
+				"admin@t.cn","111111","4");
+		
+		addDepart(account);
 		//addUser(account);
-		updateUser(account);
+		//updateUser(account);
 	}
 	
 	private static void addNetwork(AppAccount account){
@@ -23,17 +27,32 @@ public class TestOrgSync {
 		Network n = new Network();
 		n.setDisplay_name("电访测试");
 		n.setName(network_name);
-		Error e = account.createNetwork(n);
-		System.out.println(e.getErrorCode() + e.getErrorMessage());
+		Network net;
+		try {
+			net = account.createNetwork(n);
+			System.out.println("成功,id:" + net.getId() );
+		} catch (ApiErrorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	private static void addDepart(AppAccount account){
 		
 		Department d = new Department();
-		d.setDept_code("001001");
-		d.setShort_name("办公室");
+		d.setDept_code("001004");
+		d.setShort_name("客户部");
 		d.setNetwork_name(network_name);
-		Error e = account.addNewDepartment(d);
-		System.out.println(e.getErrorCode() + e.getErrorMessage());
+		
+		try {
+			Department newDept = account.addNewDepartment(d);
+			System.out.println("Depart:" + newDept);
+		} catch (ApiErrorException e) {
+		
+			e.printStackTrace();
+		}
+		
+		//System.out.println(e.getErrorCode() + e.getErrorMessage());
 	}
 	private static void addUser(AppAccount account){
 		
@@ -46,8 +65,14 @@ public class TestOrgSync {
 		u.setTitle("经理");
 		u.setCellvoice1("13145678912");
 		u.setDept_code("10");
-		Error e = account.addNewUser(u);
-		System.out.println(e.getErrorCode() + e.getErrorMessage());
+		try {
+			User user = account.addNewUser(u);
+			System.out.println("user:" + user);
+		} catch (ApiErrorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//System.out.println(e.getErrorCode() + e.getErrorMessage());
 	}
 	private static void updateUser(AppAccount account){
 		
@@ -60,8 +85,13 @@ public class TestOrgSync {
 		u.setTitle("经理");
 		u.setCellvoice1("13145678912");
 		u.setDept_code("10");
-		Error e = account.updateUser(u);
-		System.out.println(e.getErrorCode() + e.getErrorMessage());
+		try {
+			account.updateUser(u);
+		} catch (ApiErrorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 }

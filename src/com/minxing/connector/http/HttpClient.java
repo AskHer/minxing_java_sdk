@@ -163,7 +163,11 @@ public class HttpClient implements java.io.Serializable {
 
 		PostMethod postMethod = new PostMethod(url);
 		for (int i = 0; i < params.length; i++) {
-			postMethod.addParameter(params[i].getName(), params[i].getValue());
+			String pValue = params[i].getValue();
+			if (pValue != null) {
+				postMethod.addParameter(params[i].getName(),
+						params[i].getValue());
+			}
 		}
 		HttpMethodParams param = postMethod.getParams();
 		param.setContentCharset("UTF-8");
@@ -284,6 +288,7 @@ public class HttpClient implements java.io.Serializable {
 
 			Response response = new Response();
 			response.setResponseAsString(this.getResponseBodyAsString(method));
+			response.setStatusCode(responseCode);
 
 			if (responseCode >= 400) {
 
@@ -292,8 +297,8 @@ public class HttpClient implements java.io.Serializable {
 					throw new MxException(getCause(responseCode),
 							response.asJSONObject(), method.getStatusCode());
 				} else {
-					throw new MxException("HTTP " + method.getStatusCode() + ": "
-							+ response.getResponseAsString(),
+					throw new MxException("HTTP " + method.getStatusCode()
+							+ ": " + response.getResponseAsString(),
 							method.getStatusCode());
 				}
 

@@ -1,10 +1,9 @@
 package com.minxing.connector.organization;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class Department extends Organization {
-	private String network_id; // 所在社区ID
+	private long network_id; // 所在社区ID
 	private String short_name; // 部门简称
 	private String full_name; // 部门全名
 	private String display_order; // 部门排序
@@ -13,6 +12,7 @@ public class Department extends Organization {
 	private Boolean root = false;
 
 	private String network_name;
+	private long id;
 
 	public String getNetwork_name() {
 		return network_name;
@@ -22,11 +22,11 @@ public class Department extends Organization {
 		this.network_name = network_name;
 	}
 
-	public String getNetwork_id() {
+	public long getNetworkId() {
 		return network_id;
 	}
 
-	public void setNetwork_id(String network_id) {
+	public void setNetworkId(long network_id) {
 		this.network_id = network_id;
 	}
 
@@ -81,7 +81,7 @@ public class Department extends Organization {
 	public HashMap<String, String> toHash() {
 		HashMap<String, String> params = new HashMap<String, String>();
 
-		params.put("network_id", this.getNetwork_id());
+		params.put("network_id", String.valueOf(this.getNetworkId()));
 		params.put("short_name", this.getShort_name());
 		params.put("full_name", this.getFull_name());
 		params.put("display_order", this.getDisplay_order());
@@ -89,5 +89,26 @@ public class Department extends Organization {
 		params.put("parent_dept_code", this.getParent_dept_code());
 		return params;
 	}
+
+	public void setId(long _id) {
+		this.id = _id;
+		
+	}
+	
+	public long getId() {
+		return this.id;
+	}
+
+	@Override
+	public String toString() {
+		return "Department [network_id=" + network_id + ", short_name="
+				+ short_name + ", full_name=" + full_name + ", display_order="
+				+ display_order + ", dept_code=" + dept_code
+				+ ", parent_dept_code=" + parent_dept_code + ", root=" + root
+				+ ", network_name=" + network_name + ", id=" + id + "]";
+	}
+	
+	
+	
 
 }

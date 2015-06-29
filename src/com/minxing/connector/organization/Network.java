@@ -3,6 +3,7 @@ package com.minxing.connector.organization;
 import java.util.HashMap;
 
 public class Network extends Organization {
+	private long id;
 	private String name;
 	private String display_name;
 
@@ -29,6 +30,15 @@ public class Network extends Organization {
 		params.put("display_name", this.getDisplay_name());
 		return params;
 
+	}
+
+	public void setId(long _id) {
+		// TODO Auto-generated method stub
+		this.id = _id;
+	}
+	
+	public long getId() {
+		return this.id;
 	}
 
 }

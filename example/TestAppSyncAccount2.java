@@ -1,7 +1,6 @@
 
 
 import com.minxing.connector.app.AppAccount;
-import com.minxing.connector.model.Error;
 import com.minxing.connector.organization.Department;
 
 public class TestAppSyncAccount2 {
@@ -35,7 +34,7 @@ public class TestAppSyncAccount2 {
 		
 		
 		
-		Error error = account.addNewDepartment(de);
+		account.addNewDepartment(de);
 		account.updateDepartment(de);
 		
 //		System.out.println(error.getErrorCode());
