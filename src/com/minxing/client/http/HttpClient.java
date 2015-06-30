@@ -28,7 +28,6 @@ import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 
-import com.minxing.client.json.JSONException;
 import com.minxing.client.model.MxException;
 import com.minxing.client.model.MySSLSocketFactory;
 import com.minxing.client.model.PostParameter;
@@ -123,21 +122,12 @@ public class HttpClient implements java.io.Serializable {
 		Protocol.registerProtocol("https", myhttps);
 	}
 
-	public Response get(String url) throws MxException {
-		return get(url, new PostParameter[0], null);
-	}
 
-	public Response get(String url, PostParameter[] params,
+
+	public Response get0(String url, 
 			PostParameter[] headers) throws MxException {
-
-		if (null != params && params.length > 0) {
-			String encodedParams = HttpClient.encodeParameters(params);
-			if (-1 == url.indexOf("?")) {
-				url += "?" + encodedParams;
-			} else {
-				url += "&" + encodedParams;
-			}
-		}
+		
+		
 		GetMethod getmethod = new GetMethod(url);
 		return httpRequest(getmethod, headers);
 
@@ -146,6 +136,7 @@ public class HttpClient implements java.io.Serializable {
 	public Response post(String url, PostParameter[] params,
 			PostParameter[] headers, Boolean WithTokenHeader)
 			throws MxException {
+		
 		return post(url, params, WithTokenHeader, headers);
 
 	}
@@ -335,9 +326,15 @@ public class HttpClient implements java.io.Serializable {
 	public static String encodeParameters(PostParameter[] postParams) {
 		StringBuffer buf = new StringBuffer();
 		for (int j = 0; j < postParams.length; j++) {
+			
+			if (postParams[j].getValue() == null) {
+				continue;
+			}
+			
 			if (j != 0) {
 				buf.append("&");
 			}
+			
 			try {
 				buf.append(URLEncoder.encode(postParams[j].getName(), "UTF-8"))
 						.append("=")

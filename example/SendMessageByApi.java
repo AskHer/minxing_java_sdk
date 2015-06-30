@@ -50,13 +50,13 @@ public class SendMessageByApi {
 	private static void sendTextMessageToUser() {
 		AppAccount account = AppAccount.loginByAppSecret("http://localhost:3000", "1002", "d9e17fd5d3ad54f348492f673029af45");
 		//account.setFromUserId(30938);
-		account.setFromUserLoginName("13911759994");
+		account.setFromUserLoginName("18601360472");
 
 		// 发送消息给莫个人
 
 		User a = new User();
-		//a.setLoginName("oajcs3@js.chinamobile.com");
-		a.setId(30766L);
+		a.setLoginName("oajcs3@js.chinamobile.com");
+		//a.setId(30766L);
 		
 		TextMessage message = account.sendMessageToUser(a, "一条个人消息2");
 		System.out.println(message);

@@ -2,6 +2,7 @@ package com.minxing.client.app;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,14 +29,6 @@ import com.minxing.client.utils.HMACSHA1;
 import com.minxing.client.utils.UrlEncoder;
 
 public class AppAccount extends Account {
-
-	// protected String appId = AppConfig.getValue("AppID");
-	// protected String appSecret = AppConfig.getValue("AppSecret");
-	// protected String redirectUri = AppConfig.getValue("redirect_uri");
-	// protected String authorizeUrl = AppConfig.getValue("authorize_url");
-	//
-	// protected String apiPrefix = AppConfig.getValue("api_prefix");
-	// protected String accessToken = AppConfig.getValue("access_token");
 
 	private String _token = null;
 	private String _loginName;
@@ -120,15 +113,20 @@ public class AppAccount extends Account {
 	 *            bearerToken
 	 * @return
 	 */
-	public static AppAccount loginByAccessToken(String serverURL, String bearerToken) {
+	public static AppAccount loginByAccessToken(String serverURL,
+			String bearerToken) {
 		return new AppAccount(serverURL, bearerToken);
 	}
 
 	/**
 	 * 使用接入端的方式登录系统，
-	 * @param serverURL 系统的url.
-	 * @param app_id 接入端应用的Id,在接入端管理的页面上可以找到。
-	 * @param secret 接入端应用的秘钥，可以在接入端的页面上看到。
+	 * 
+	 * @param serverURL
+	 *            系统的url.
+	 * @param app_id
+	 *            接入端应用的Id,在接入端管理的页面上可以找到。
+	 * @param secret
+	 *            接入端应用的秘钥，可以在接入端的页面上看到。
 	 * @return
 	 */
 	public static AppAccount loginByAppSecret(String serverURL, String app_id,
@@ -155,9 +153,9 @@ public class AppAccount extends Account {
 		return new AppAccount(serverURL, loginName, password, clientId);
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	// //////////////////////////////////////////////////////////////////////////
 	/**
-	 *  before request.
+	 * before request.
 	 */
 	@Override
 	protected String beforeRequest(String url, List<PostParameter> paramsList,
@@ -174,7 +172,7 @@ public class AppAccount extends Account {
 		}
 
 		String _url = "";
-		
+
 		if (url.trim().startsWith("http://")
 				|| url.trim().startsWith("https://")) {
 			_url = url;
@@ -186,20 +184,26 @@ public class AppAccount extends Account {
 			url = _serverURL + url;
 			_url = url;
 		}
-
-		long time = System.currentTimeMillis();
-		String token = UrlEncoder.encode(this.app_id
-				+ ":"
-				+ HMACSHA1.getSignature(_url + "?timestamp=" + time,
-						this.secret));
-		client.setToken(token);
-		client.setTokenType("MAC");
-		headersList.add(new PostParameter("timestamp", "" + time));
+		
+		if ("MAC".equals(client.getTokenType())) {
+			long time = System.currentTimeMillis();
+			
+			String token = UrlEncoder.encode(this.app_id
+					+ ":"
+					+ HMACSHA1.getSignature(_url + "?timestamp=" + time,
+							this.secret));
+			
+			client.setToken(token);
+			client.setTokenType("MAC");
+			headersList.add(new PostParameter("timestamp", "" + time));
+			
+		}
+		
 
 		return _url;
 	}
-	
-	//////////////////////////////////////////////////////////////////////
+
+	// ////////////////////////////////////////////////////////////////////
 
 	public JSONObject get(String url, Map<String, String> params)
 			throws MxException {
@@ -279,29 +283,37 @@ public class AppAccount extends Account {
 	 *            用户登录名
 	 * @return 用户的Id.
 	 */
-	public Long getIdByLoginname(String networkname, String loginname) {
+	public Long getIdByLoginname(String loginname) {
 
 		try {
-			JSONObject o = this.get("/api/v1/users/" + loginname
-					+ "/by_login_name?network_name=" + networkname);
-			return o.getLong("id");
+			User u = findUserByLoginname(loginname);
+			return u.getId();
 		} catch (Exception e) {
 			throw new MxException(e);
 		}
 	}
 
 	public User findUserByLoginname(String loginname) {
+		return findUserByLoginname(null, loginname);
+	}
+
+	public User findUserByLoginname(String network_name, String loginname) {
 
 		try {
-			JSONObject o;
 
-			o = this.get("/api/v1/users/"
-					+ URLEncoder.encode(loginname, "UTF-8") + "/by_login_name");
+			PostParameter login_name_p = new PostParameter("login_name",
+					loginname);
+			PostParameter network_name_p = new PostParameter("network_name",
+					network_name);
+			PostParameter[] params = new PostParameter[] { login_name_p,
+					network_name_p };
+
+			JSONObject o = this.get("/api/v1/users/by_login_name", params);
 
 			User user = new User();
 			user.setId(o.getLong("id"));
 			user.setLoginName(o.getString("login_name"));
-			user.setPassword(o.getString("password"));
+
 			user.setEmail(o.getString("email"));
 			user.setName(o.getString("name"));
 			user.setTitle(o.getString("login_name"));
@@ -309,19 +321,49 @@ public class AppAccount extends Account {
 			user.setCellvoice2(o.getString("cellvoice2"));
 			user.setWorkvoice(o.getString("workvoice"));
 			user.setEmpCode(o.getString("emp_code"));
-			user.setDeptCode(o.getString("dept_code"));
-
-			user.setHidden(o.getString("hidden"));
-			user.setSuspended(o.getString("suspended"));
 
 			return user;
 		} catch (JSONException e) {
 			throw new MxException("解析Json出错.", e);
-		} catch (UnsupportedEncodingException e) {
-			throw new MxException("编码URL出错.", e);
 		}
 
 	}
+
+	// public User getUserInfo(String openId) {
+	// if (userMethods == null) {
+	// createUserMethods();
+	// }
+	// try {
+	// JSONObject json = get("/oauth/user_info/" + openId);
+	// Iterator iter = json.keys();
+	// User user = new User();
+	// while (iter.hasNext()) {
+	// String key = (String) iter.next();
+	// Object obj = json.get(key);
+	// Object value = "";
+	//
+	// if (obj != null && !obj.equals(JSONObject.NULL)) {
+	// value = obj;
+	// }
+	// key = key.substring(0, 1).toUpperCase() + key.substring(1); // first
+	// // letter
+	// // to
+	// // uppercase
+	//
+	// Method m = userMethods.get("set" + key);
+	// if (m != null) {
+	// m.invoke(user, value);
+	// }
+	// }
+	// return user;
+	// } catch (MxException e) {
+	// e.printStackTrace();
+	// return null;
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// return null;
+	// }
+	// }
 
 	// ///////////////////////////////////////////////////////////////////////////////////////////////
 	// Send messages
@@ -405,7 +447,7 @@ public class AppAccount extends Account {
 			if (user == null) {
 				throw new MxException("找不到对应" + login_name + "的用户。");
 			}
-			System.out.println("=>" + user);
+	
 			u.setId(user.getId());
 		}
 
@@ -835,7 +877,8 @@ public class AppAccount extends Account {
 	 *             校验失败，则抛出这个异常.
 	 */
 
-	public User verifyOcuSSOToken(String token, String ocu_id) throws MxVerifyException {
+	public User verifyOcuSSOToken(String token, String ocu_id)
+			throws MxVerifyException {
 
 		try {
 			JSONObject o = this.get("/api/v1/oauth/user_info/" + token);
@@ -856,7 +899,7 @@ public class AppAccount extends Account {
 			return user;
 		} catch (Exception e) {
 			throw new MxVerifyException("校验Token:" + token + "错误", e);
-			
+
 		}
 
 	}

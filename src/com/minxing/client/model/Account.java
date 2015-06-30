@@ -100,40 +100,70 @@ public abstract class Account {
 	private Response apiForResponse(String url, String method,
 			PostParameter[] params, PostParameter[] headers,
 			Boolean WithTokenHeader) throws MxException {
+
 		if (method == null) {
 			method = "get";
+		} else {
+			method = method.trim().toLowerCase();
 		}
-		method = method.trim().toLowerCase();
-		List<PostParameter> paramsList = new ArrayList<PostParameter>(
-				Arrays.asList(params));
-		List<PostParameter> headersList = new ArrayList<PostParameter>(
-				Arrays.asList(headers));
 
-		String tempUrl = beforeRequest(url, paramsList, headersList);
-		int paramsSize = paramsList.size();
-		int headersSize = headersList.size();
-		params = new PostParameter[paramsList.size()];
-		headers = new PostParameter[headersList.size()];
-		for (int i = 0; i < paramsSize; i++) {
-			params[i] = paramsList.get(i);
-		}
-		for (int i = 0; i < headersSize; i++) {
-			headers[i] = headersList.get(i);
-		}
-		if (tempUrl != null && !tempUrl.trim().equals("")) {
-			url = tempUrl;
-		}
+
+
 		Response response = null;
 		if (method.equals("get")) {
-			response = client.get(url, params, headers);
-		} else if (method.equals("post")) {
-			response = client.post(url, params, headers, WithTokenHeader);
-		} else if (method.equals("put")) {
-			response = client.put(url, params, headers, WithTokenHeader);
-		} else if (method.equals("delete")) {
-			response = client.delete(url, params, headers);
-		}
+			StringBuilder sb = new StringBuilder(url);
+			if (null != params && params.length > 0) {
+				String encodedParams = HttpClient.encodeParameters(params);
+				if (-1 == url.indexOf("?")) {
 
+					sb.append("?").append(encodedParams);
+				} else {
+					sb.append("&").append(encodedParams);
+
+				}
+			}
+			
+			List<PostParameter> paramsList = new ArrayList<PostParameter>(
+					Arrays.asList(params));
+			List<PostParameter> headersList = new ArrayList<PostParameter>(
+					Arrays.asList(headers));
+
+			String tempUrl = beforeRequest(sb.toString(), paramsList, headersList);
+
+			params = paramsList.toArray(new PostParameter[0]);
+			headers = headersList.toArray(new PostParameter[0]);
+
+			if (tempUrl != null && !tempUrl.trim().equals("")) {
+				url = tempUrl;
+			}
+			
+
+			response = client.get0(tempUrl, headers);
+		} else {
+			
+			List<PostParameter> paramsList = new ArrayList<PostParameter>(
+					Arrays.asList(params));
+			List<PostParameter> headersList = new ArrayList<PostParameter>(
+					Arrays.asList(headers));
+
+			String tempUrl = beforeRequest(url, paramsList, headersList);
+
+			params = paramsList.toArray(new PostParameter[0]);
+			headers = headersList.toArray(new PostParameter[0]);
+
+			if (tempUrl != null && !tempUrl.trim().equals("")) {
+				url = tempUrl;
+			}
+			
+			
+			if (method.equals("post")) {
+				response = client.post(url, params, headers, WithTokenHeader);
+			} else if (method.equals("put")) {
+				response = client.put(url, params, headers, WithTokenHeader);
+			} else if (method.equals("delete")) {
+				response = client.delete(url, params, headers);
+			}
+		}
 		return response;
 	}
 
