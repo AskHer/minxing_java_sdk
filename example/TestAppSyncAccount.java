@@ -15,7 +15,7 @@ public class TestAppSyncAccount {
 
 	public static void main(String[] args) throws Exception {
 
-		AppAccount account = AppAccount.loginByToken("http://localhost:3000",
+		AppAccount account = AppAccount.loginByAccessToken("http://localhost:3000",
 				"cGTsJXPAJeEwUEXvt2SvJ--0q7cPunUqvc4AMKb8i6y-PUti");
 
 		testSetRootDepartment(account);

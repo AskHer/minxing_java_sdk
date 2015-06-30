@@ -13,7 +13,7 @@ public class TestOcuAccount {
 				am.addArticle(pt);
 				
 				
-				AppAccount account = AppAccount.loginByToken("http://localhost:3000",
+				AppAccount account = AppAccount.loginByAccessToken("http://localhost:3000",
 						"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
 				
 				String ocuId = "82c4084644296524197ae4fd66ae14f3";

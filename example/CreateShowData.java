@@ -12,7 +12,7 @@ public class CreateShowData {
 
 	public static void main(String[] args) throws InterruptedException {
 		
-		AppAccount account = AppAccount.loginByToken("http://localhost:3000",
+		AppAccount account = AppAccount.loginByAccessToken("http://localhost:3000",
 				"cGTsJXPAJeEwUEXvt2SvJ--0q7cPunUqvc4AMKb8i6y-PUti");
 		
 //		createJingfen(account);

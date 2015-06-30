@@ -24,6 +24,8 @@ import com.minxing.client.ocu.TextMessage;
 import com.minxing.client.organization.Department;
 import com.minxing.client.organization.Network;
 import com.minxing.client.organization.User;
+import com.minxing.client.utils.HMACSHA1;
+import com.minxing.client.utils.UrlEncoder;
 
 public class AppAccount extends Account {
 
@@ -39,12 +41,21 @@ public class AppAccount extends Account {
 	private String _loginName;
 	private String _serverURL;
 	private long _currentUserId = 0;
+	private String app_id;
+	private String secret;
 
 	private AppAccount(String serverURL, String token) {
 		this._serverURL = serverURL;
 		this._token = token;
 		client.setToken(this._token);
 		client.setTokenType("Bearer");
+	}
+
+	private AppAccount(String serverURL, String app_id, String secret) {
+		this._serverURL = serverURL;
+		this.app_id = app_id;
+		this.secret = secret;
+		client.setTokenType("MAC");
 	}
 
 	private AppAccount(String serverURL, String loginName, String password,
@@ -109,8 +120,20 @@ public class AppAccount extends Account {
 	 *            bearerToken
 	 * @return
 	 */
-	public static AppAccount loginByToken(String serverURL, String bearerToken) {
+	public static AppAccount loginByAccessToken(String serverURL, String bearerToken) {
 		return new AppAccount(serverURL, bearerToken);
+	}
+
+	/**
+	 * 使用接入端的方式登录系统，
+	 * @param serverURL 系统的url.
+	 * @param app_id 接入端应用的Id,在接入端管理的页面上可以找到。
+	 * @param secret 接入端应用的秘钥，可以在接入端的页面上看到。
+	 * @return
+	 */
+	public static AppAccount loginByAppSecret(String serverURL, String app_id,
+			String secret) {
+		return new AppAccount(serverURL, app_id, secret);
 	}
 
 	/**
@@ -131,6 +154,52 @@ public class AppAccount extends Account {
 
 		return new AppAccount(serverURL, loginName, password, clientId);
 	}
+
+	////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  before request.
+	 */
+	@Override
+	protected String beforeRequest(String url, List<PostParameter> paramsList,
+			List<PostParameter> headersList) {
+
+		if (this._currentUserId != 0L) {
+			PostParameter as_user = new PostParameter("X_AS_USER",
+					this._currentUserId);
+			headersList.add(as_user);
+		} else if (this._loginName != null && this._loginName.length() > 0) {
+			PostParameter as_user = new PostParameter("X_AS_USER",
+					this._loginName);
+			headersList.add(as_user);
+		}
+
+		String _url = "";
+		
+		if (url.trim().startsWith("http://")
+				|| url.trim().startsWith("https://")) {
+			_url = url;
+		} else {
+			if (!url.trim().startsWith("/")) {
+				url = "/" + url.trim();
+			}
+			// url = rootUrl + apiPrefix + url;
+			url = _serverURL + url;
+			_url = url;
+		}
+
+		long time = System.currentTimeMillis();
+		String token = UrlEncoder.encode(this.app_id
+				+ ":"
+				+ HMACSHA1.getSignature(_url + "?timestamp=" + time,
+						this.secret));
+		client.setToken(token);
+		client.setTokenType("MAC");
+		headersList.add(new PostParameter("timestamp", "" + time));
+
+		return _url;
+	}
+	
+	//////////////////////////////////////////////////////////////////////
 
 	public JSONObject get(String url, Map<String, String> params)
 			throws MxException {
@@ -177,35 +246,6 @@ public class AppAccount extends Account {
 			pps[i++] = p;
 		}
 		return pps;
-	}
-
-	@Override
-	protected String beforeRequest(String url, List<PostParameter> paramsList,
-			List<PostParameter> headersList) {
-
-		if (this._currentUserId != 0L) {
-			PostParameter as_user = new PostParameter("X_AS_USER",
-					this._currentUserId);
-			headersList.add(as_user);
-		} else if (this._loginName != null && this._loginName.length() > 0) {
-			PostParameter as_user = new PostParameter("X_AS_USER",
-					this._loginName);
-			headersList.add(as_user);
-		}
-
-		// TODO Auto-generated method stub
-		if (url.trim().startsWith("http://")
-				|| url.trim().startsWith("https://")) {
-			return url;
-		} else {
-			if (!url.trim().startsWith("/")) {
-				url = "/" + url.trim();
-			}
-			// url = rootUrl + apiPrefix + url;
-			url = _serverURL + url;
-			return url;
-		}
-
 	}
 
 	public long[] uploadConversationFile(String conversation_id, File file) {
@@ -795,7 +835,7 @@ public class AppAccount extends Account {
 	 *             校验失败，则抛出这个异常.
 	 */
 
-	public User verifyOcuSSOToken(String token, String ocu_id) {
+	public User verifyOcuSSOToken(String token, String ocu_id) throws MxVerifyException {
 
 		try {
 			JSONObject o = this.get("/api/v1/oauth/user_info/" + token);
@@ -815,8 +855,8 @@ public class AppAccount extends Account {
 
 			return user;
 		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			throw new MxVerifyException("校验Token:" + token + "错误", e);
+			
 		}
 
 	}

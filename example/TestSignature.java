@@ -41,7 +41,7 @@ public class TestSignature {
 //		oa.setRootUrl("http://ezjkx.ziq.gov.cn");
 		
 		
-		AppAccount account = AppAccount.loginByToken("http://localhost:3000",
+		AppAccount account = AppAccount.loginByAccessToken("http://localhost:3000",
 				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
 		
 		try {

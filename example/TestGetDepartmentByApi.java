@@ -14,7 +14,7 @@ public class TestGetDepartmentByApi {
 	}
 	private static JSONObject getDepartmentsUsers(int last_dept_id, int last_user_id, int parent_id,int limit){
 		
-		AppAccount account = AppAccount.loginByToken("http://localhost:3000",
+		AppAccount account = AppAccount.loginByAccessToken("http://localhost:3000",
 				"cGTsJXPAJeEwUEXvt2SvJ--0q7cPunUqvc4AMKb8i6y-PUti");
 		
 		Map<String,String> params = new HashMap<String, String>();

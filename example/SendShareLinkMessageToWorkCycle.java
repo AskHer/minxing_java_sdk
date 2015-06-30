@@ -11,7 +11,7 @@ public class SendShareLinkMessageToWorkCycle {
 		int fromuserid = 20;// 一个用户的id，接口会模拟该id发送消息.web上打开一个用户，从url里获取id
 		int MY_SALE_GROUPE = 2;// 工作圈id，web上打开一个工作圈，从url里获取
 
-		AppAccount account = AppAccount.loginByToken("http://localhost:3000",
+		AppAccount account = AppAccount.loginByAccessToken("http://localhost:3000",
 				"cGTsJXPAJeEwUEXvt2SvJ--0q7cPunUqvc4AMKb8i6y-PUti");
 
 		String body = "XXX转发了一个连接";

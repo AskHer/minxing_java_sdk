@@ -4,7 +4,7 @@ import com.minxing.client.organization.User;
 public class TestGetUser {
 	public static void main(String[] args) {
 
-		AppAccount account = AppAccount.loginByToken("http://localhost:3000",
+		AppAccount account = AppAccount.loginByAccessToken("http://localhost:3000",
 				"cGTsJXPAJeEwUEXvt2SvJ--0q7cPunUqvc4AMKb8i6y-PUti");
 
 		// OcuAccount oa = new OcuAccount();

@@ -8,7 +8,7 @@ import com.minxing.client.organization.User;
 public class SendMessageByApi {
 
 	public static void main(String[] args) {
-		AppAccount account = AppAccount.loginByToken("http://localhost:3000",
+		AppAccount account = AppAccount.loginByAccessToken("http://localhost:3000",
 				"yh5EgUi0rV51l2_s0oZ6Q45nd8zWdgUqiyxiLgwEDtzPmNVy");
 
 		// sendTextMessageToGroup(account);
@@ -16,7 +16,7 @@ public class SendMessageByApi {
 		// sendMessageAndFile(account);
 		//
 		// sendSharelinkToGroup(account);
-		sendTextMessageToUser(account);
+		sendTextMessageToUser();
 	}
 
 	private static void sendMessageAndFile(AppAccount account) {
@@ -47,16 +47,17 @@ public class SendMessageByApi {
 		System.out.println(message);
 	}
 
-	private static void sendTextMessageToUser(AppAccount account) {
-
-		// account.setFromUserId(30766);
+	private static void sendTextMessageToUser() {
+		AppAccount account = AppAccount.loginByAppSecret("http://localhost:3000", "1002", "d9e17fd5d3ad54f348492f673029af45");
+		//account.setFromUserId(30938);
 		account.setFromUserLoginName("13911759994");
 
 		// 发送消息给莫个人
 
 		User a = new User();
-		a.setLoginName("oajcs3@js.chinamobile.com");
-
+		//a.setLoginName("oajcs3@js.chinamobile.com");
+		a.setId(30766L);
+		
 		TextMessage message = account.sendMessageToUser(a, "一条个人消息2");
 		System.out.println(message);
 	}
