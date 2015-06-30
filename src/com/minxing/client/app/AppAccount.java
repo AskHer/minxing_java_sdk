@@ -34,7 +34,7 @@ public class AppAccount extends Account {
 	private String _loginName;
 	private String _serverURL;
 	private long _currentUserId = 0;
-	private String app_id;
+	private String client_id;
 	private String secret;
 
 	private AppAccount(String serverURL, String token) {
@@ -46,7 +46,7 @@ public class AppAccount extends Account {
 
 	private AppAccount(String serverURL, String app_id, String secret) {
 		this._serverURL = serverURL;
-		this.app_id = app_id;
+		this.client_id = app_id;
 		this.secret = secret;
 		client.setTokenType("MAC");
 	}
@@ -184,21 +184,20 @@ public class AppAccount extends Account {
 			url = _serverURL + url;
 			_url = url;
 		}
-		
+
 		if ("MAC".equals(client.getTokenType())) {
 			long time = System.currentTimeMillis();
-			
-			String token = UrlEncoder.encode(this.app_id
+
+			String token = UrlEncoder.encode(this.client_id
 					+ ":"
 					+ HMACSHA1.getSignature(_url + "?timestamp=" + time,
 							this.secret));
-			
+
 			client.setToken(token);
 			client.setTokenType("MAC");
 			headersList.add(new PostParameter("timestamp", "" + time));
-			
+
 		}
-		
 
 		return _url;
 	}
@@ -329,42 +328,6 @@ public class AppAccount extends Account {
 
 	}
 
-	// public User getUserInfo(String openId) {
-	// if (userMethods == null) {
-	// createUserMethods();
-	// }
-	// try {
-	// JSONObject json = get("/oauth/user_info/" + openId);
-	// Iterator iter = json.keys();
-	// User user = new User();
-	// while (iter.hasNext()) {
-	// String key = (String) iter.next();
-	// Object obj = json.get(key);
-	// Object value = "";
-	//
-	// if (obj != null && !obj.equals(JSONObject.NULL)) {
-	// value = obj;
-	// }
-	// key = key.substring(0, 1).toUpperCase() + key.substring(1); // first
-	// // letter
-	// // to
-	// // uppercase
-	//
-	// Method m = userMethods.get("set" + key);
-	// if (m != null) {
-	// m.invoke(user, value);
-	// }
-	// }
-	// return user;
-	// } catch (MxException e) {
-	// e.printStackTrace();
-	// return null;
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// return null;
-	// }
-	// }
-
 	// ///////////////////////////////////////////////////////////////////////////////////////////////
 	// Send messages
 	//
@@ -447,7 +410,7 @@ public class AppAccount extends Account {
 			if (user == null) {
 				throw new MxException("找不到对应" + login_name + "的用户。");
 			}
-	
+
 			u.setId(user.getId());
 		}
 
@@ -845,6 +808,13 @@ public class AppAccount extends Account {
 		try {
 			JSONObject o = this.get("/api/v1/oauth/user_info/" + token);
 
+			String by_app_id = o.getString("by_app_id");
+
+			if (app_id != null && !app_id.equals(by_app_id)) {
+				throw new MxVerifyException("校验Token:" + token
+						+ "错误, token创建的AppId为" + by_app_id + ",但期望的是:" + app_id);
+			}
+
 			User user = new User();
 			user.setId(o.getLong("user_id"));
 			user.setLoginName(o.getString("login_name"));
@@ -857,6 +827,19 @@ public class AppAccount extends Account {
 
 			user.setEmpCode(o.getString("emp_code"));
 			user.setNetworkId(o.getLong("network_id"));
+
+			JSONArray depts = o.getJSONArray("departs");
+			Department[] allDept = new Department[depts.length()];
+			for (int i = 0, n = depts.length(); i < n; i++) {
+				JSONObject dobj = depts.getJSONObject(i);
+
+				Department udept = new Department();
+				udept.setDept_code(dobj.getString("dept_code"));
+				udept.setShort_name(dobj.getString("dept_short_name"));
+				udept.setFull_name(dobj.getString("dept_full_name"));
+				allDept[i] = udept;
+			}
+			user.setAllDepartments(allDept);
 
 			return user;
 		} catch (JSONException e) {
@@ -882,7 +865,12 @@ public class AppAccount extends Account {
 
 		try {
 			JSONObject o = this.get("/api/v1/oauth/user_info/" + token);
+			String by_ocu_id = o.getString("by_ocu_id");
 
+			if (ocu_id != null && !ocu_id.equals(by_ocu_id)) {
+				throw new MxVerifyException("校验Token:" + token
+						+ "错误, token创建的AppId为" + by_ocu_id + ",不是:" + ocu_id);
+			}
 			User user = new User();
 			user.setId(o.getLong("user_id"));
 			user.setLoginName(o.getString("login_name"));
@@ -895,6 +883,19 @@ public class AppAccount extends Account {
 
 			user.setEmpCode(o.getString("emp_code"));
 			user.setNetworkId(o.getLong("network_id"));
+			
+			JSONArray depts = o.getJSONArray("departs");
+			Department[] allDept = new Department[depts.length()];
+			for (int i = 0, n = depts.length(); i < n; i++) {
+				JSONObject dobj = depts.getJSONObject(i);
+
+				Department udept = new Department();
+				udept.setDept_code(dobj.getString("dept_code"));
+				udept.setShort_name(dobj.getString("dept_short_name"));
+				udept.setFull_name(dobj.getString("dept_full_name"));
+				allDept[i] = udept;
+			}
+			user.setAllDepartments(allDept);
 
 			return user;
 		} catch (Exception e) {

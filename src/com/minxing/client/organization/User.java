@@ -15,7 +15,7 @@ public class User extends Organization {
 	private String emp_code; // 工号
 	private String dept_code; // 部门标识
 	private String display_order; // 排序
-	
+
 	private long network_id;
 
 	private String hidden; // set user be hidden “true” "false"
@@ -34,6 +34,7 @@ public class User extends Organization {
 	private String ext9;
 	private String ext10;
 	private String network_name;
+	private Department[] allDepartment = null;
 
 	public String getNetworkName() {
 		return network_name;
@@ -282,4 +283,16 @@ public class User extends Organization {
 				+ this.login_name + ">";
 	}
 
+	public void setAllDepartments(Department[] allDept) {
+		this.allDepartment = allDept;
+
+	}
+
+	public Department[] getAllDepartments() {
+		if (this.allDepartment == null) {
+			return new Department[] {};
+		}
+		return this.allDepartment;
+
+	}
 }

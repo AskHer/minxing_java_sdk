@@ -5,7 +5,9 @@ public class MxVerifyException extends Exception {
 	public MxVerifyException(String msg, Throwable e) {
 		super(msg,e);
 	}
-
+	public MxVerifyException(String msg) {
+		super(msg);
+	}
 	/**
 	 * 
 	 */
