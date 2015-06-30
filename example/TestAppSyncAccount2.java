@@ -1,7 +1,7 @@
 
 
-import com.minxing.connector.app.AppAccount;
-import com.minxing.connector.organization.Department;
+import com.minxing.client.app.AppAccount;
+import com.minxing.client.organization.Department;
 
 public class TestAppSyncAccount2 {
 	
@@ -34,7 +34,7 @@ public class TestAppSyncAccount2 {
 		
 		
 		
-		account.addNewDepartment(de);
+		account.createDepartment(de);
 		account.updateDepartment(de);
 		
 //		System.out.println(error.getErrorCode());

@@ -1,6 +1,6 @@
 
-import com.minxing.connector.app.AppAccount;
-import com.minxing.connector.model.ShareLink;
+import com.minxing.client.app.AppAccount;
+import com.minxing.client.model.ShareLink;
 
 public class SendShareLinkMessageToWorkCycle {
 

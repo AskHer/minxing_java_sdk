@@ -3,10 +3,10 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import com.minxing.connector.app.AppAccount;
-import com.minxing.connector.ocu.Article;
-import com.minxing.connector.ocu.ArticleMessage;
-import com.minxing.connector.ocu.Resource;
+import com.minxing.client.app.AppAccount;
+import com.minxing.client.ocu.Article;
+import com.minxing.client.ocu.ArticleMessage;
+import com.minxing.client.ocu.Resource;
 
 public class CreateShowData {
 

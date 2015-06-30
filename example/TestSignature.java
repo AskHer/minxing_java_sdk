@@ -1,8 +1,8 @@
 
 
-import com.minxing.connector.app.AppAccount;
-import com.minxing.connector.model.MxVerifyException;
-import com.minxing.connector.organization.User;
+import com.minxing.client.app.AppAccount;
+import com.minxing.client.model.MxVerifyException;
+import com.minxing.client.organization.User;
 
 public class TestSignature {
 	public static void main(String[] args) {

@@ -1,6 +1,6 @@
 
 
-import com.minxing.connector.app.AppAccount;
+import com.minxing.client.app.AppAccount;
 
 public class TestAppThirdAccount {
 	

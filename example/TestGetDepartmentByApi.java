@@ -3,9 +3,9 @@
 import java.util.HashMap;
 import java.util.Map;
 
-import com.minxing.connector.app.AppAccount;
-import com.minxing.connector.json.JSONObject;
-import com.minxing.connector.model.MxException;
+import com.minxing.client.app.AppAccount;
+import com.minxing.client.json.JSONObject;
+import com.minxing.client.model.MxException;
 
 public class TestGetDepartmentByApi {
 	public static void main(String[] args) {

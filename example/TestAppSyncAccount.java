@@ -1,11 +1,11 @@
-import com.minxing.connector.app.AppAccount;
-import com.minxing.connector.json.JSONException;
-import com.minxing.connector.model.ApiErrorException;
-import com.minxing.connector.model.Error;
-import com.minxing.connector.model.MxException;
-import com.minxing.connector.organization.Department;
-import com.minxing.connector.organization.Network;
-import com.minxing.connector.organization.User;
+import com.minxing.client.app.AppAccount;
+import com.minxing.client.json.JSONException;
+import com.minxing.client.model.ApiErrorException;
+import com.minxing.client.model.Error;
+import com.minxing.client.model.MxException;
+import com.minxing.client.organization.Department;
+import com.minxing.client.organization.Network;
+import com.minxing.client.organization.User;
 
 public class TestAppSyncAccount {
 
@@ -54,7 +54,7 @@ public class TestAppSyncAccount {
 		// ret_status.getErrorCode()=0，表明是成功，其他信息表明失败了，失败原因为ret_status.getErrorMessage()。其他接口同理。
 
 		try {
-			Department new_dept = account.addNewDepartment(dept);
+			Department new_dept = account.createDepartment(dept);
 		} catch (ApiErrorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -95,12 +95,12 @@ public class TestAppSyncAccount {
 			user.setEmail("user" + i + "@" + networkName);
 			user.setPassword("222222");
 			// user.setCellvoice2("1");
-			user.setDept_code(deptPrefix + "9"); // 对应Department的dept_code,这样可以创建用户到指定部门
-			user.setEmp_code(String.valueOf(9000 + i + 5));
+			user.setDeptCode(deptPrefix + "9"); // 对应Department的dept_code,这样可以创建用户到指定部门
+			user.setEmpCode(String.valueOf(9000 + i + 5));
 			user.setDisplay_order(String.valueOf(10 - i));
 			user.setWorkvoice("11888871");
 			if (all)
-				user.setNetwork_name(networkName);
+				user.setNetworkName(networkName);
 
 			try {
 				account.updateUser(user);
@@ -124,7 +124,7 @@ public class TestAppSyncAccount {
 					dept.setNetwork_name(networkName);
 				dept.setShort_name("子公司" + i);
 
-				account.addNewDepartment(dept);
+				account.createDepartment(dept);
 
 			}
 		} catch (ApiErrorException e) {
@@ -177,7 +177,7 @@ public class TestAppSyncAccount {
 		try {
 			for (int i = 0; i < 10; i++) {
 				User user = new User();
-				user.setLogin_name("9000");
+				user.setLoginName("9000");
 				user.setName("user" + i);
 				user.setEmail("user" + i + "@" + networkName);
 				user.setPassword("111111");
@@ -185,12 +185,12 @@ public class TestAppSyncAccount {
 				user.setCellvoice1("1");
 				user.setCellvoice2("1");
 				user.setWorkvoice("1");
-				user.setDept_code(deptPrefix + i); // 对应Department的dept_code,这样可以创建用户到指定部门
-				user.setEmp_code("9000");
+				user.setDeptCode(deptPrefix + i); // 对应Department的dept_code,这样可以创建用户到指定部门
+				user.setEmpCode("9000");
 				user.setDisplay_order(String.valueOf(i));
 				user.setExt1("ext");
 				if (all)
-					user.setNetwork_name(networkName);
+					user.setNetworkName(networkName);
 
 				account.addNewUser(user);
 
@@ -216,8 +216,8 @@ public class TestAppSyncAccount {
 				user.setTitle("经理1");
 				user.setCellvoice1("13900000000");
 				user.setCellvoice2("13911111111");
-				user.setDept_code(deptPrefix + "9"); // 对应Department的dept_code,这样可以创建用户到指定部门
-				user.setEmp_code(String.valueOf(9000 + i));
+				user.setDeptCode(deptPrefix + "9"); // 对应Department的dept_code,这样可以创建用户到指定部门
+				user.setEmpCode(String.valueOf(9000 + i));
 				user.setDisplay_order(String.valueOf(10 - i));
 				user.setHidden("1");
 				user.setWorkvoice("99999888");
@@ -233,7 +233,7 @@ public class TestAppSyncAccount {
 				user.setExt10("ext10");
 
 				if (all)
-					user.setNetwork_name(networkName);
+					user.setNetworkName(networkName);
 
 				account.updateUser(user);
 
@@ -249,9 +249,9 @@ public class TestAppSyncAccount {
 			for (int i = 0; i < 10; i++) {
 				User user = new User();
 				if (all)
-					user.setNetwork_name(networkName);
+					user.setNetworkName(networkName);
 
-				account.deleteUser(user.getLogin_name());
+				account.deleteUser(user);
 
 			}
 
@@ -275,7 +275,7 @@ public class TestAppSyncAccount {
 			if (all)
 				dept.setNetwork_name(networkName);
 
-			account.addNewDepartment(dept);
+			account.createDepartment(dept);
 		} catch (ApiErrorException e) {
 			e.printStackTrace();
 		}
@@ -315,18 +315,18 @@ public class TestAppSyncAccount {
 
 	public static void testAddUser(AppAccount account) {
 		User user = new User();
-		user.setLogin_name("9000");
+		user.setLoginName("9000");
 		user.setName("jobs");
 		user.setEmail("jobs@htsc.view.cn");
 		user.setPassword("111111");
 		user.setTitle("经理");
 		user.setCellvoice1("13211111111");
 		user.setCellvoice2("13211111112");
-		user.setDept_code("001011012"); // 对应Department的dept_code,这样可以创建用户到指定部门
-		user.setEmp_code("9000");
+		user.setDeptCode("001011012"); // 对应Department的dept_code,这样可以创建用户到指定部门
+		user.setEmpCode("9000");
 		user.setDisplay_order("100");
 		if (all)
-			user.setNetwork_name(networkName);
+			user.setNetworkName(networkName);
 
 		try {
 			account.addNewUser(user);
