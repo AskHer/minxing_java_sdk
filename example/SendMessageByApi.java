@@ -8,6 +8,7 @@ import com.minxing.client.organization.User;
 public class SendMessageByApi {
 
 	public static void main(String[] args) {
+		
 		AppAccount account = AppAccount.loginByAccessToken("http://localhost:3000",
 				"yh5EgUi0rV51l2_s0oZ6Q45nd8zWdgUqiyxiLgwEDtzPmNVy");
 

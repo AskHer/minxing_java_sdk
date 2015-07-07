@@ -35,7 +35,8 @@ public class MxException extends RuntimeException {
 				JSONObject errors_json = json.getJSONObject("errors");
 				if (errors_json != null) {
 					this.code = errors_json.getInt("code");
-					this.message = this.code + ": " + errors_json.getString("message");
+					this.message = this.code + ": " + statusCode + " "
+							+ errors_json.getString("message");
 				}
 			} else {
 				this.message = json.getString("message");
@@ -46,9 +47,8 @@ public class MxException extends RuntimeException {
 			this.errorCode = json.getInt("error_code");
 			this.error = json.getString("error");
 			this.request = json.getString("request");
-			
+
 		} catch (Exception e) {
-			
 
 		}
 

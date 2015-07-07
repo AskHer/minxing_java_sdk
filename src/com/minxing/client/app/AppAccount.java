@@ -1,9 +1,7 @@
 package com.minxing.client.app;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
-import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -186,6 +184,7 @@ public class AppAccount extends Account {
 		}
 
 		if ("MAC".equals(client.getTokenType())) {
+			
 			long time = System.currentTimeMillis();
 
 			String token = UrlEncoder.encode(this.client_id
@@ -295,7 +294,27 @@ public class AppAccount extends Account {
 	public User findUserByLoginname(String loginname) {
 		return findUserByLoginname(null, loginname);
 	}
+	
+	/**
+	 * 得到某个部门下的全部用户
+	 * @param departmentCode 部门代码
+	 * @param networkId 网络部门
+	 * @return 用户的列表
+	 */
+	public List<User> getAllUsersInDepartment(String networkId,String departmentCode) {
+		ArrayList<User> users = new ArrayList<User>();
+		
+		
+		
+		return users;
+	}
 
+	/**
+	 * 获得某个网络下的用户信息
+	 * @param network_name 网络名称，例如 abc.com
+	 * @param loginname 要查询的用户的登录名称
+	 * @return 账户对应的网络用户，如果找不到则抛出MxException.
+	 */
 	public User findUserByLoginname(String network_name, String loginname) {
 
 		try {
@@ -586,6 +605,11 @@ public class AppAccount extends Account {
 
 	}
 
+	/**
+	 * 更新部门数据
+	 * @param departement 更新的部门对象
+	 * @throws ApiErrorException
+	 */
 	public void updateDepartment(Department departement)
 			throws ApiErrorException {
 
@@ -609,6 +633,13 @@ public class AppAccount extends Account {
 		}
 
 	}
+	
+	/**
+	 * 删除某个部门
+	 * @param departmentCode 需要删除的部门代码
+	 * @param deleteWithUsers 是否连同部门下的人员一起删除
+	 * @throws ApiErrorException
+	 */
 
 	public void deleteDepartment(String departmentCode, boolean deleteWithUsers)
 			throws ApiErrorException {
