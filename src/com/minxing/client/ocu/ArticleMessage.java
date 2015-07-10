@@ -87,6 +87,10 @@ public class ArticleMessage implements Message {
 						sb.append(",");
 						sb.append("\"url\":").append("\"").append(pt.getUrl()).append("\"");
 					}
+					if(pt.getAction_label()!=null){
+						sb.append(",");
+						sb.append("\"action_label\":").append("\"").append(pt.getAction_label()).append("\"");
+					}
 				}
 				
 				sb.append("}");
@@ -99,6 +103,6 @@ public class ArticleMessage implements Message {
 		@Override
 		public int messageType() {
 			// TODO Auto-generated method stub
-			return 0;
+			return RICH_TEXT_MESSAGE;
 		}
 }

@@ -20,6 +20,7 @@ import com.minxing.client.model.PostParameter;
 import com.minxing.client.model.ShareLink;
 import com.minxing.client.ocu.Message;
 import com.minxing.client.ocu.TextMessage;
+import com.minxing.client.ocu.UserInfo;
 import com.minxing.client.organization.Department;
 import com.minxing.client.organization.Network;
 import com.minxing.client.organization.User;
@@ -184,7 +185,7 @@ public class AppAccount extends Account {
 		}
 
 		if ("MAC".equals(client.getTokenType())) {
-			
+
 			long time = System.currentTimeMillis();
 
 			String token = UrlEncoder.encode(this.client_id
@@ -294,25 +295,48 @@ public class AppAccount extends Account {
 	public User findUserByLoginname(String loginname) {
 		return findUserByLoginname(null, loginname);
 	}
-	
+
 	/**
 	 * 得到某个部门下的全部用户
-	 * @param departmentCode 部门代码
-	 * @param networkId 网络部门
+	 * 
+	 * @param departmentCode
+	 *            部门代码
+	 * @param networkId
+	 *            网络部门
 	 * @return 用户的列表
 	 */
-	public List<User> getAllUsersInDepartment(String networkId,String departmentCode) {
-		ArrayList<User> users = new ArrayList<User>();
-		
-		
-		
+	public List<UserInfo> getAllUsersInDepartment(String networkId,
+			String departmentCode) {
+		ArrayList<UserInfo> users = new ArrayList<UserInfo>();
+		try {
+			JSONArray arrs = this.getJSONArray("/api/v1/departments/dept/"
+					+ departmentCode + "/" + networkId);
+			for (int i = 0; i < arrs.length(); i++) {
+				JSONObject o = (JSONObject) arrs.get(i);
+				UserInfo u = new UserInfo();
+				u.setAccount_id(o.getInt("account_id"));
+				u.setId(o.getInt("id"));
+				u.setName(o.getString("name"));
+				u.setLogin_name(o.getString("login_name"));
+				users.add(u);
+			}
+		} catch (MxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return users;
 	}
 
 	/**
 	 * 获得某个网络下的用户信息
-	 * @param network_name 网络名称，例如 abc.com
-	 * @param loginname 要查询的用户的登录名称
+	 * 
+	 * @param network_name
+	 *            网络名称，例如 abc.com
+	 * @param loginname
+	 *            要查询的用户的登录名称
 	 * @return 账户对应的网络用户，如果找不到则抛出MxException.
 	 */
 	public User findUserByLoginname(String network_name, String loginname) {
@@ -607,7 +631,9 @@ public class AppAccount extends Account {
 
 	/**
 	 * 更新部门数据
-	 * @param departement 更新的部门对象
+	 * 
+	 * @param departement
+	 *            更新的部门对象
 	 * @throws ApiErrorException
 	 */
 	public void updateDepartment(Department departement)
@@ -633,11 +659,14 @@ public class AppAccount extends Account {
 		}
 
 	}
-	
+
 	/**
 	 * 删除某个部门
-	 * @param departmentCode 需要删除的部门代码
-	 * @param deleteWithUsers 是否连同部门下的人员一起删除
+	 * 
+	 * @param departmentCode
+	 *            需要删除的部门代码
+	 * @param deleteWithUsers
+	 *            是否连同部门下的人员一起删除
 	 * @throws ApiErrorException
 	 */
 
@@ -914,7 +943,7 @@ public class AppAccount extends Account {
 
 			user.setEmpCode(o.getString("emp_code"));
 			user.setNetworkId(o.getLong("network_id"));
-			
+
 			JSONArray depts = o.getJSONArray("departs");
 			Department[] allDept = new Department[depts.length()];
 			for (int i = 0, n = depts.length(); i < n; i++) {

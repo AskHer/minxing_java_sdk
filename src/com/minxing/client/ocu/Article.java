@@ -12,6 +12,7 @@ public class Article {
 		private String resourceId;
 		private String type;
 		private Resource resource;
+		private String action_label;
 		
 		public Article(String title, String desc, String picUrl, String url, String app_url){
 			this.title = title;
@@ -151,5 +152,14 @@ public class Article {
 				return false;
 			return true;
 		}
+
+		public void setAction_label(String label) {
+			this.action_label = label;
+		}
+
+		public String getAction_label() {
+			return action_label;
+		}
+		
 
 }
