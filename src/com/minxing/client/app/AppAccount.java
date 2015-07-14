@@ -489,23 +489,20 @@ public class AppAccount extends Account {
 	public int sendOcuMessageToUsers(String[] toUserIds, Message message,
 			String ocuId, String ocuSecret) {
 		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
-
+		String direct_to_user_ids = "";
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("body", message.getBody());
 		params.put("content_type", String.valueOf(message.messageType()));
-
-		StringBuffer sb = new StringBuffer();
-		int i = 0;
-		for (String id : toUserIds) {
-			sb.append(id);
-			if (i > 0) {
-				sb.append(",");
+		
+		if(toUserIds != null && toUserIds.length>0){
+			StringBuffer sb = new StringBuffer(toUserIds[0]);
+			for (int i = 1;i<toUserIds.length;i++) {
+				sb.append(",").append(toUserIds[i]);
+				
 			}
-			i++;
+			direct_to_user_ids = sb.toString();
 		}
-
-		String direct_to_user_ids = sb.toString();
-
+		
 		params.put("direct_to_user_ids", direct_to_user_ids);
 		params.put("ocu_id", ocuId);
 		params.put("ocu_secret", ocuSecret);
