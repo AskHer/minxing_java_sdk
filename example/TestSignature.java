@@ -53,6 +53,22 @@ public class TestSignature {
 		}
 		
 	}
+private static void getUserBySsoToken(String mx_sso_token){
+		
+		String ocu_id="DAAAAFc_nNNEOvkO1J8JnKy9QEBbrncpACutQ-25jauPlRb0";
+		String access_token="59p68NMCUftkkeiXAz9Pj4wpjB7umUSzFyPbQUHsxcHPibuf";
+		
+		AppAccount account = AppAccount.loginByAccessToken("http://敏行服务器:3000",access_token);
+		
+		try {
+			User u = account.verifyAppSSOToken(mx_sso_token,ocu_id);
+			System.out.println(u.toString());
+		} catch (MxVerifyException e) {
+			
+			e.printStackTrace();
+		}
+		
+	}
 	//quail/admin/minxing_callback?token=203663f72a307792263e2aa9c3c5df06%3AQd8Iv6Nkq0QjOCk6kHcils5gtKk%3D
 	//&timestamp=1420600435
 	//&nonce=943385

@@ -1,11 +1,15 @@
 package com.minxing.client.app;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
 import com.minxing.client.http.HttpClient;
 import com.minxing.client.http.Response;
@@ -25,6 +29,7 @@ import com.minxing.client.organization.Department;
 import com.minxing.client.organization.Network;
 import com.minxing.client.organization.User;
 import com.minxing.client.utils.HMACSHA1;
+import com.minxing.client.utils.StringUtil;
 import com.minxing.client.utils.UrlEncoder;
 
 public class AppAccount extends Account {
@@ -35,6 +40,8 @@ public class AppAccount extends Account {
 	private long _currentUserId = 0;
 	private String client_id;
 	private String secret;
+	protected boolean disabledCookie = false; // 默认只能从cookie获取mx_sso_token,如果第三方主动设置disabledCookie，则可以继续从header parameters中获取
+	
 
 	private AppAccount(String serverURL, String token) {
 		this._serverURL = serverURL;
@@ -488,7 +495,6 @@ public class AppAccount extends Account {
 	 */
 	public int sendOcuMessageToUsers(String[] toUserIds, Message message,
 			String ocuId, String ocuSecret) {
-		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
 		String direct_to_user_ids = "";
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("body", message.getBody());
@@ -961,5 +967,111 @@ public class AppAccount extends Account {
 		}
 
 	}
+	/**
+	 * url签名验证，通过后返回mx_sso_token
+	 * @param HttpServletRequest request
+	 * @return mx_sso_token
+	 */
+	public String checkSignature(HttpServletRequest request, String ocuId, String ocuSecret) {
 
+		String signed = null;
+		String timestamp = null;
+		String nonce = null;
+		String mx_sso_token = null;
+		String login_name = null;
+
+		if (request != null) {
+			try {
+				signed = UrlEncoder.encode(StringUtil
+						.pathDecode(getSigned(request)));
+				timestamp = request.getParameter("timestamp");
+				nonce = request.getParameter("nonce");
+				login_name = request.getParameter("login_name");
+				mx_sso_token = StringUtil.pathDecode(getMxSsoToken(request));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				return null;
+			}
+
+		}
+
+		if (signed == null || mx_sso_token == null || timestamp == null
+				|| nonce == null) {
+			return null;
+		}
+
+		boolean check_success = false;
+		if (login_name != null && request.getParameter("open_id") == null) {
+			check_success = checkv2(timestamp, nonce, login_name, mx_sso_token,
+					signed, ocuSecret);
+		} else {
+			check_success = checkv1(timestamp, nonce, signed, ocuId, ocuSecret);
+		}
+
+		if (check_success) {
+			return mx_sso_token;
+		}
+		return null;
+	}
+
+	// 改造后为signed，老版为token
+	private String getSigned(HttpServletRequest request) {
+		if (request.getParameter("signed") != null) {
+			return request.getParameter("signed");
+		} else {
+			return request.getParameter("token");
+		}
+	}
+
+	// 改造后为mx_sso_token,老版为open_id
+	private String getMxSsoToken(HttpServletRequest request) {
+		String mx_sso_token = null;
+		if ((mx_sso_token = request.getParameter("open_id")) != null) {// 老版本兼容
+			setDisabledCookie(true);
+		} else {
+			if ((mx_sso_token = getCookie(request, "mx_sso_token")) != null) {
+			} else if (this.disabledCookie) {// 默认只能从cookie获取mx_sso_token,如果第三方主动设置disabledCookie，则可以继续从header
+												// parameter获取
+				if ((mx_sso_token = request.getHeader("mx_sso_token")) != null) {
+				} else if ((mx_sso_token = request.getParameter("mx_sso_token")) != null) {
+				}
+			}
+		}
+		return mx_sso_token;
+	}
+	// 兼容老版的签名验证
+	private boolean checkv1(String timestamp, String nonce, String signed, String ocuId, String ocuSecret) {
+		String sign = HMACSHA1.getSignature(timestamp + nonce, ocuSecret);
+		String t = UrlEncoder.encode(ocuId + ":" + sign);
+		return t.equals(signed);
+	}
+
+	// 新版的签名验证
+	private boolean checkv2(String timestamp, String nonce, String login_name,
+			String mx_sso_token, String signed, String ocuSecret) {
+		String t = UrlEncoder.encode(HMACSHA1.getSignature(timestamp + ":"
+				+ nonce + ":" + login_name + ":" + mx_sso_token, ocuSecret));
+		return t.equals(signed);
+	}
+
+	private String getCookie(HttpServletRequest request, String cName) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (int i = 0; i < cookies.length; i++) {
+				Cookie cookie = cookies[i];
+				if (cookie != null && cName.equals(cookie.getName())) {
+					return cookie.getValue();
+				}
+			}
+		}
+		return null;
+	}
+	public boolean isDisabledCookie() {
+		return disabledCookie;
+	}
+
+	public void setDisabledCookie(boolean disabledCookie) {
+		this.disabledCookie = disabledCookie;
+	
+	}
 }
