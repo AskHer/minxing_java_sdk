@@ -495,6 +495,27 @@ public class AppAccount extends Account {
 	 */
 	public int sendOcuMessageToUsers(String[] toUserIds, Message message,
 			String ocuId, String ocuSecret) {
+		return sendOcuMessageToUsers(null,toUserIds,  message,
+		 ocuId, ocuSecret);
+
+	}
+	/**
+	 * 发送公众号消息,指定社区id
+	 * 
+	 * @param toUserIds
+	 *            用户的login_name列表，用逗号分割,例如id1,id2
+	 * @param network_id
+	 *            用户的社区
+	 * @param message
+	 *            消息对象数据，可以是复杂文本，也可以是简单对象
+	 * @param ocuId
+	 *            公众号的id
+	 * @param ocuSecret
+	 *            公众号的秘钥，校验是否可以发送
+	 * @return
+	 */
+	public int sendOcuMessageToUsers(String network_id, String[] toUserIds, Message message,
+			String ocuId, String ocuSecret) {
 		String direct_to_user_ids = "";
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("body", message.getBody());
@@ -509,6 +530,7 @@ public class AppAccount extends Account {
 			direct_to_user_ids = sb.toString();
 		}
 		
+		if(network_id!=null) params.put("network_id", network_id);
 		params.put("direct_to_user_ids", direct_to_user_ids);
 		params.put("ocu_id", ocuId);
 		params.put("ocu_secret", ocuSecret);
