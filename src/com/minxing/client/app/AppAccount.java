@@ -111,12 +111,12 @@ public class AppAccount extends Account {
 	}
 
 	/**
-	 * 使用用Token登录系统
+	 * 使用接入端的Token登录系统
 	 * 
 	 * @param serverURL
 	 *            服务器的访问地址
 	 * @param bearerToken
-	 *            bearerToken
+	 *            bearerToken，从接入端的配置中获取
 	 * @return
 	 */
 	public static AppAccount loginByAccessToken(String serverURL,
@@ -125,7 +125,7 @@ public class AppAccount extends Account {
 	}
 
 	/**
-	 * 使用接入端的方式登录系统，
+	 * 使用接入端的appid、appsecret登录系统，
 	 * 
 	 * @param serverURL
 	 *            系统的url.
@@ -150,7 +150,7 @@ public class AppAccount extends Account {
 	 * @param password
 	 *            用户密码
 	 * @param clientId
-	 *            使用的注册客户端，可以设置为4,表示PC的客户端。
+	 *            使用的注册客户端，可以设置为4,表示PC的客户端。0-web 1-ios 2-android
 	 * @return
 	 */
 	public static AppAccount loginByPassword(String serverURL,
@@ -161,7 +161,7 @@ public class AppAccount extends Account {
 
 	// //////////////////////////////////////////////////////////////////////////
 	/**
-	 * before request.
+	 * url拼接
 	 */
 	@Override
 	protected String beforeRequest(String url, List<PostParameter> paramsList,
@@ -211,32 +211,67 @@ public class AppAccount extends Account {
 
 	// ////////////////////////////////////////////////////////////////////
 
+	/**
+	 * rest api通道，get方法API调用
+	 * @param url
+	 * @param params
+	 * @return
+	 * @throws MxException
+	 */
 	public JSONObject get(String url, Map<String, String> params)
 			throws MxException {
 		PostParameter[] pps = createParams(params);
 		return this.get(url, pps);
 	}
 
+	/**
+	 * rest api通道，post方法API调用
+	 * @param url
+	 * @param params
+	 * @param headers
+	 * @return
+	 * @throws MxException
+	 */
 	public JSONObject post(String url, Map<String, String> params,
 			Map<String, String> headers) throws MxException {
 		PostParameter[] pps = createParams(params);
 		PostParameter[] hs = createParams(headers);
 		return this.post(url, pps, hs, true);
 	}
-
+	/**
+	 * rest api通道，post方法API调用,上传文件
+	 * @param url
+	 * @param params
+	 * @param headers
+	 * @param file
+	 * @return
+	 * @throws MxException
+	 */
 	public JSONArray post(String url, Map<String, String> params,
 			Map<String, String> headers, File file) throws MxException {
 		PostParameter[] pps = createParams(params);
 		PostParameter[] hs = createParams(headers);
 		return this.post(url, pps, hs, file, true);
 	}
-
+	/**
+	 * rest api通道，put方法API调用
+	 * @param url
+	 * @param params
+	 * @return
+	 * @throws MxException
+	 */
 	public JSONObject put(String url, Map<String, String> params)
 			throws MxException {
 		PostParameter[] pps = createParams(params);
 		return this.put(url, pps);
 	}
-
+	/**
+	 * rest api通道，delete方法的API调用
+	 * @param url
+	 * @param params
+	 * @return
+	 * @throws MxException
+	 */
 	public JSONObject delete(String url, Map<String, String> params)
 			throws MxException {
 		PostParameter[] pps = createParams(params);
@@ -257,7 +292,12 @@ public class AppAccount extends Account {
 		}
 		return pps;
 	}
-
+	/**
+	 * 发送文件到会话聊天中
+	 * @param conversation_id
+	 * @param file
+	 * @return
+	 */
 	public long[] uploadConversationFile(String conversation_id, File file) {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("conversation_id", conversation_id);
@@ -283,8 +323,6 @@ public class AppAccount extends Account {
 	/**
 	 * 获得某个用户的Id.
 	 * 
-	 * @param networkname
-	 *            如果是全网管理员身份，请给出账户用户所在的网络。
 	 * @param loginname
 	 *            用户登录名
 	 * @return 用户的Id.
@@ -299,6 +337,11 @@ public class AppAccount extends Account {
 		}
 	}
 
+	/**
+	 * 获得某个用户
+	 * @param loginname
+	 * @return
+	 */
 	public User findUserByLoginname(String loginname) {
 		return findUserByLoginname(null, loginname);
 	}
@@ -383,7 +426,7 @@ public class AppAccount extends Account {
 	//
 
 	/**
-	 * 
+	 * 发送消息到会话中。需要调用setFromUserLoginname()设置发送者身份
 	 * @param sender_login_name
 	 *            发送用户的账户名字，该账户做为消息的发送人
 	 * @param conversation_id
@@ -406,7 +449,12 @@ public class AppAccount extends Account {
 		return TextMessage.fromJSON(return_json);
 
 	}
-
+	/**
+	 * 发送文件到会话中。需要调用setFromUserLoginname()设置发送者身份
+	 * @param conversation_id
+	 * @param file
+	 * @return
+	 */
 	public TextMessage sendConversationFileMessage(String conversation_id,
 			File file) {
 		long[] file_ids = uploadConversationFile(conversation_id, file);
@@ -422,15 +470,33 @@ public class AppAccount extends Account {
 		return TextMessage.fromJSON(return_json);
 	}
 
+	/**
+	 * 发送消息到工作圈中。需要调用setFromUserLoginname()设置发送者身份
+	 * @param groupId
+	 * @param message
+	 * @return
+	 */
 	public TextMessage sendTextMessageToGroup(long groupId, String message) {
 		return sendTextMessageToGroup(groupId, message, null);
 	}
-
+	/**
+	 * 发送分享消息到工作圈中。需要调用setFromUserLoginname()设置发送者身份
+	 * @param groupId
+	 * @param message
+	 * @param shareLink
+	 * @return
+	 */
 	public TextMessage sendSharelinkToGroup(long groupId, String message,
 			ShareLink shareLink) {
 		return sendTextMessageToGroup(groupId, message, shareLink.toJson());
 	}
-
+	/**
+	 * 发送消息到工作圈中。需要调用setFromUserLoginname()设置发送者身份
+	 * @param groupId
+	 * @param message
+	 * @param story
+	 * @return
+	 */
 	public TextMessage sendTextMessageToGroup(long groupId, String message,
 			String story) {
 
@@ -448,7 +514,12 @@ public class AppAccount extends Account {
 		return TextMessage.fromJSON(new_message);
 
 	}
-
+	/**
+	 * 发送消息到与某人的聊天中。需要调用setFromUserLoginname()设置发送者身份
+	 * @param u
+	 * @param message
+	 * @return
+	 */
 	public TextMessage sendMessageToUser(User u, String message) {
 		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
 		if (u.getId() == null || u.getId() == 0) {
@@ -467,7 +538,12 @@ public class AppAccount extends Account {
 		return sendMessageToUser(u.getId(), message);
 
 	}
-
+	/**
+	 * 发送消息到与某人的聊天会话中。需要调用setFromUserLoginname()设置发送者身份
+	 * @param toUserId
+	 * @param message
+	 * @return
+	 */
 	public TextMessage sendMessageToUser(long toUserId, String message) {
 		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
 
@@ -484,7 +560,7 @@ public class AppAccount extends Account {
 	 * 发送公众号消息
 	 * 
 	 * @param toUserIds
-	 *            用户的login_name列表，用逗号分割,例如id1,id2
+	 *            用户的login_name数组
 	 * @param message
 	 *            消息对象数据，可以是复杂文本，也可以是简单对象
 	 * @param ocuId
@@ -503,7 +579,7 @@ public class AppAccount extends Account {
 	 * 发送公众号消息,指定社区id
 	 * 
 	 * @param toUserIds
-	 *            用户的login_name列表，用逗号分割,例如id1,id2
+	 *            用户的login_name数组
 	 * @param network_id
 	 *            用户的社区
 	 * @param message
@@ -620,10 +696,12 @@ public class AppAccount extends Account {
 
 	}
 
-	// //////////////////////////////////////////////////////////////////////////////////////////
-	//
-	// Department Api
-	//
+	/**
+	 * 人员组织同步接口，增加机构部门
+	 * @param departement
+	 * @return
+	 * @throws ApiErrorException
+	 */
 	public Department createDepartment(Department departement)
 			throws ApiErrorException {
 
@@ -655,7 +733,7 @@ public class AppAccount extends Account {
 	}
 
 	/**
-	 * 更新部门数据
+	 * 人员组织同步接口，更新部门数据
 	 * 
 	 * @param departement
 	 *            更新的部门对象
@@ -686,7 +764,7 @@ public class AppAccount extends Account {
 	}
 
 	/**
-	 * 删除某个部门
+	 * 人员组织同步接口，删除某个部门
 	 * 
 	 * @param departmentCode
 	 *            需要删除的部门代码
@@ -722,10 +800,12 @@ public class AppAccount extends Account {
 
 	}
 
-	// //////////////////////////////////////////////////////////////////////////////////////////
-	//
-	// User Api
-	//
+	/**
+	 * 人员组织同步接口，增加用户
+	 * @param user
+	 * @return
+	 * @throws ApiErrorException
+	 */
 	public User addNewUser(User user) throws ApiErrorException {
 
 		try {
@@ -751,21 +831,40 @@ public class AppAccount extends Account {
 
 	}
 
+	/**
+	 * 人员组织同步接口，更新用户
+	 * @param user
+	 * @throws ApiErrorException
+	 */
 	public void updateUser(User user) throws ApiErrorException {
 
 		HashMap<String, String> params = user.toHash();
 		put("/api/v1/users/" + user.getId(), params);
 
 	}
-
+	/**
+	 * 人员组织同步接口，如果一个用户在多个社区里，该接口只删除指定社区的用户信息
+	 * @param user
+	 * @throws ApiErrorException
+	 */
 	public void deleteUser(User user) throws ApiErrorException {
 		deleteUser(user, false);
 	}
 
+	/**
+	 * 人员组织同步接口，删除该用户所有社区的信息
+	 * @param user
+	 * @throws ApiErrorException
+	 */
 	public void deleteUserWithAccount(User user) throws ApiErrorException {
 		deleteUser(user, true);
 	}
 
+	/**
+	 * 根据loginname删除用户
+	 * @param loginName
+	 * @throws ApiErrorException
+	 */
 	public void deleteUserByLoginName(String loginName)
 			throws ApiErrorException {
 		User u = new User();
@@ -801,10 +900,12 @@ public class AppAccount extends Account {
 
 	}
 
-	// //////////////////////////////////////////////////////////////////////////////////////////
-	//
-	// Network Api
-	//
+	/**
+	 * 创建社区
+	 * @param network
+	 * @return
+	 * @throws ApiErrorException
+	 */
 	public Network createNetwork(Network network) throws ApiErrorException {
 
 		try {
@@ -830,7 +931,11 @@ public class AppAccount extends Account {
 		}
 
 	}
-
+	/**
+	 * 更新社区
+	 * @param network
+	 * @throws ApiErrorException
+	 */
 	public void updateNetwork(Network network) throws ApiErrorException {
 
 		try {
@@ -854,6 +959,11 @@ public class AppAccount extends Account {
 
 	}
 
+	/**
+	 * 删除社区
+	 * @param name
+	 * @throws ApiErrorException
+	 */
 	public void deleteNetwork(String name) throws ApiErrorException {
 
 		try {
@@ -1088,10 +1198,17 @@ public class AppAccount extends Account {
 		}
 		return null;
 	}
+	/**
+	 * 是否禁用从cookie获取mx_sso_token
+	 * @return
+	 */
 	public boolean isDisabledCookie() {
 		return disabledCookie;
 	}
-
+	/**
+	 * 验证sso的时候，如果第三方系统跟敏行不是一个域下的，则需要禁用cookie才能获取mx_sso_token
+	 * @param disabledCookie
+	 */
 	public void setDisabledCookie(boolean disabledCookie) {
 		this.disabledCookie = disabledCookie;
 	
