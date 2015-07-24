@@ -11,6 +11,11 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.util.ParameterParser;
+import org.apache.commons.httpclient.util.URIUtil;
+
 import com.minxing.client.http.HttpClient;
 import com.minxing.client.http.Response;
 import com.minxing.client.json.JSONArray;
@@ -40,8 +45,8 @@ public class AppAccount extends Account {
 	private long _currentUserId = 0;
 	private String client_id;
 	private String secret;
-	protected boolean disabledCookie = false; // 默认只能从cookie获取mx_sso_token,如果第三方主动设置disabledCookie，则可以继续从header parameters中获取
-	
+	protected boolean disabledCookie = false; // 默认只能从cookie获取mx_sso_token,如果第三方主动设置disabledCookie，则可以继续从header
+												// parameters中获取
 
 	private AppAccount(String serverURL, String token) {
 		this._serverURL = serverURL;
@@ -213,6 +218,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * rest api通道，get方法API调用
+	 * 
 	 * @param url
 	 * @param params
 	 * @return
@@ -226,6 +232,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * rest api通道，post方法API调用
+	 * 
 	 * @param url
 	 * @param params
 	 * @param headers
@@ -238,8 +245,10 @@ public class AppAccount extends Account {
 		PostParameter[] hs = createParams(headers);
 		return this.post(url, pps, hs, true);
 	}
+
 	/**
 	 * rest api通道，post方法API调用,上传文件
+	 * 
 	 * @param url
 	 * @param params
 	 * @param headers
@@ -253,8 +262,10 @@ public class AppAccount extends Account {
 		PostParameter[] hs = createParams(headers);
 		return this.post(url, pps, hs, file, true);
 	}
+
 	/**
 	 * rest api通道，put方法API调用
+	 * 
 	 * @param url
 	 * @param params
 	 * @return
@@ -265,8 +276,10 @@ public class AppAccount extends Account {
 		PostParameter[] pps = createParams(params);
 		return this.put(url, pps);
 	}
+
 	/**
 	 * rest api通道，delete方法的API调用
+	 * 
 	 * @param url
 	 * @param params
 	 * @return
@@ -292,8 +305,10 @@ public class AppAccount extends Account {
 		}
 		return pps;
 	}
+
 	/**
 	 * 发送文件到会话聊天中
+	 * 
 	 * @param conversation_id
 	 * @param file
 	 * @return
@@ -339,6 +354,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 获得某个用户
+	 * 
 	 * @param loginname
 	 * @return
 	 */
@@ -427,6 +443,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送消息到会话中。需要调用setFromUserLoginname()设置发送者身份
+	 * 
 	 * @param sender_login_name
 	 *            发送用户的账户名字，该账户做为消息的发送人
 	 * @param conversation_id
@@ -449,8 +466,10 @@ public class AppAccount extends Account {
 		return TextMessage.fromJSON(return_json);
 
 	}
+
 	/**
 	 * 发送文件到会话中。需要调用setFromUserLoginname()设置发送者身份
+	 * 
 	 * @param conversation_id
 	 * @param file
 	 * @return
@@ -472,6 +491,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送消息到工作圈中。需要调用setFromUserLoginname()设置发送者身份
+	 * 
 	 * @param groupId
 	 * @param message
 	 * @return
@@ -479,8 +499,10 @@ public class AppAccount extends Account {
 	public TextMessage sendTextMessageToGroup(long groupId, String message) {
 		return sendTextMessageToGroup(groupId, message, null);
 	}
+
 	/**
 	 * 发送分享消息到工作圈中。需要调用setFromUserLoginname()设置发送者身份
+	 * 
 	 * @param groupId
 	 * @param message
 	 * @param shareLink
@@ -490,8 +512,10 @@ public class AppAccount extends Account {
 			ShareLink shareLink) {
 		return sendTextMessageToGroup(groupId, message, shareLink.toJson());
 	}
+
 	/**
 	 * 发送消息到工作圈中。需要调用setFromUserLoginname()设置发送者身份
+	 * 
 	 * @param groupId
 	 * @param message
 	 * @param story
@@ -514,8 +538,10 @@ public class AppAccount extends Account {
 		return TextMessage.fromJSON(new_message);
 
 	}
+
 	/**
 	 * 发送消息到与某人的聊天中。需要调用setFromUserLoginname()设置发送者身份
+	 * 
 	 * @param u
 	 * @param message
 	 * @return
@@ -538,8 +564,10 @@ public class AppAccount extends Account {
 		return sendMessageToUser(u.getId(), message);
 
 	}
+
 	/**
 	 * 发送消息到与某人的聊天会话中。需要调用setFromUserLoginname()设置发送者身份
+	 * 
 	 * @param toUserId
 	 * @param message
 	 * @return
@@ -571,10 +599,10 @@ public class AppAccount extends Account {
 	 */
 	public int sendOcuMessageToUsers(String[] toUserIds, Message message,
 			String ocuId, String ocuSecret) {
-		return sendOcuMessageToUsers(null,toUserIds,  message,
-		 ocuId, ocuSecret);
+		return sendOcuMessageToUsers(null, toUserIds, message, ocuId, ocuSecret);
 
 	}
+
 	/**
 	 * 发送公众号消息,指定社区id
 	 * 
@@ -590,23 +618,24 @@ public class AppAccount extends Account {
 	 *            公众号的秘钥，校验是否可以发送
 	 * @return
 	 */
-	public int sendOcuMessageToUsers(String network_id, String[] toUserIds, Message message,
-			String ocuId, String ocuSecret) {
+	public int sendOcuMessageToUsers(String network_id, String[] toUserIds,
+			Message message, String ocuId, String ocuSecret) {
 		String direct_to_user_ids = "";
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("body", message.getBody());
 		params.put("content_type", String.valueOf(message.messageType()));
-		
-		if(toUserIds != null && toUserIds.length>0){
+
+		if (toUserIds != null && toUserIds.length > 0) {
 			StringBuffer sb = new StringBuffer(toUserIds[0]);
-			for (int i = 1;i<toUserIds.length;i++) {
+			for (int i = 1; i < toUserIds.length; i++) {
 				sb.append(",").append(toUserIds[i]);
-				
+
 			}
 			direct_to_user_ids = sb.toString();
 		}
-		
-		if(network_id!=null) params.put("network_id", network_id);
+
+		if (network_id != null)
+			params.put("network_id", network_id);
 		params.put("direct_to_user_ids", direct_to_user_ids);
 		params.put("ocu_id", ocuId);
 		params.put("ocu_secret", ocuSecret);
@@ -698,6 +727,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 人员组织同步接口，增加机构部门
+	 * 
 	 * @param departement
 	 * @return
 	 * @throws ApiErrorException
@@ -802,6 +832,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 人员组织同步接口，增加用户
+	 * 
 	 * @param user
 	 * @return
 	 * @throws ApiErrorException
@@ -833,6 +864,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 人员组织同步接口，更新用户
+	 * 
 	 * @param user
 	 * @throws ApiErrorException
 	 */
@@ -842,8 +874,10 @@ public class AppAccount extends Account {
 		put("/api/v1/users/" + user.getId(), params);
 
 	}
+
 	/**
 	 * 人员组织同步接口，如果一个用户在多个社区里，该接口只删除指定社区的用户信息
+	 * 
 	 * @param user
 	 * @throws ApiErrorException
 	 */
@@ -853,6 +887,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 人员组织同步接口，删除该用户所有社区的信息
+	 * 
 	 * @param user
 	 * @throws ApiErrorException
 	 */
@@ -862,6 +897,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 根据loginname删除用户
+	 * 
 	 * @param loginName
 	 * @throws ApiErrorException
 	 */
@@ -902,6 +938,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 创建社区
+	 * 
 	 * @param network
 	 * @return
 	 * @throws ApiErrorException
@@ -931,8 +968,10 @@ public class AppAccount extends Account {
 		}
 
 	}
+
 	/**
 	 * 更新社区
+	 * 
 	 * @param network
 	 * @throws ApiErrorException
 	 */
@@ -961,6 +1000,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 删除社区
+	 * 
 	 * @param name
 	 * @throws ApiErrorException
 	 */
@@ -1099,12 +1139,85 @@ public class AppAccount extends Account {
 		}
 
 	}
+
+	/**
+	 * 校验一下URL上的签名信息，确认这个请求来自敏行的服务器
+	 * @param queryString url的query String部分，例如 http://g.com?abc=1&de=2 的url，query string 为abc=1&de=2
+	 * @param securet ocu或者app的 securet。
+	 * @return true 如果签名被认证。
+	 */
+	public boolean verifyURLSignature(String queryString, String secret) {
+
+		String signed = null;
+		String timestamp = null;
+		String nonce = null;
+		String mx_sso_token = null;
+		String login_name = null;
+
+		String qstring = queryString;
+		if (queryString.startsWith("http://")
+				|| queryString.startsWith("https://")) {
+			
+			qstring = URIUtil.getQuery(queryString);
+		}
+
+		ParameterParser pp = new ParameterParser();
+		
+		@SuppressWarnings("unchecked")
+		List<NameValuePair> list = (List<NameValuePair>)pp.parse(qstring, '&');
+
+		try {
+
+			for (NameValuePair np : list) {
+
+				if (np.getName().equals("timestamp")) {
+					timestamp = URIUtil.decode(np.getValue());
+					continue;
+				}
+
+				if (np.getName().equals("nonce")) {
+					nonce = URIUtil.decode(np.getValue());
+					continue;
+				}
+
+				if (np.getName().equals("login_name")) {
+					login_name = URIUtil.decode(np.getValue());
+					continue;
+				}
+
+				if (np.getName().equals("mx_sso_token")) {
+					mx_sso_token = URIUtil.decode(np.getValue());
+					continue;
+				}
+
+				if (np.getName().equals("signed")) {
+					signed = URIUtil.decode(np.getValue());
+					continue;
+				}
+			}
+
+		} catch (URIException e) {
+			throw new MxException("Query string not valid:" + queryString, e);
+		}
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(timestamp).append(":").append(nonce).append(":")
+				.append(login_name).append(":").append(mx_sso_token);
+
+		String t = HMACSHA1.getSignature(sb.toString(), secret);
+		return t.equals(signed);
+
+	}
+
 	/**
 	 * url签名验证，通过后返回mx_sso_token
-	 * @param HttpServletRequest request
+	 * 
+	 * @param HttpServletRequest
+	 *            request
 	 * @return mx_sso_token
 	 */
-	public String checkSignature(HttpServletRequest request, String ocuId, String ocuSecret) {
+	public String checkSignature(HttpServletRequest request, String ocuId,
+			String ocuSecret) {
 
 		String signed = null;
 		String timestamp = null;
@@ -1171,8 +1284,10 @@ public class AppAccount extends Account {
 		}
 		return mx_sso_token;
 	}
+
 	// 兼容老版的签名验证
-	private boolean checkv1(String timestamp, String nonce, String signed, String ocuId, String ocuSecret) {
+	private boolean checkv1(String timestamp, String nonce, String signed,
+			String ocuId, String ocuSecret) {
 		String sign = HMACSHA1.getSignature(timestamp + nonce, ocuSecret);
 		String t = UrlEncoder.encode(ocuId + ":" + sign);
 		return t.equals(signed);
@@ -1198,19 +1313,23 @@ public class AppAccount extends Account {
 		}
 		return null;
 	}
+
 	/**
 	 * 是否禁用从cookie获取mx_sso_token
+	 * 
 	 * @return
 	 */
 	public boolean isDisabledCookie() {
 		return disabledCookie;
 	}
+
 	/**
 	 * 验证sso的时候，如果第三方系统跟敏行不是一个域下的，则需要禁用cookie才能获取mx_sso_token
+	 * 
 	 * @param disabledCookie
 	 */
 	public void setDisabledCookie(boolean disabledCookie) {
 		this.disabledCookie = disabledCookie;
-	
+
 	}
 }
