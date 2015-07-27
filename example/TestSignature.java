@@ -6,7 +6,8 @@ import com.minxing.client.organization.User;
 
 public class TestSignature {
 	public static void main(String[] args) {
-		getUserByOpenid();
+//		getUserByOpenid();
+		getUserAccessToken();
 	}
 //	private static void validate() {
 //		try {
@@ -73,4 +74,14 @@ private static void getUserBySsoToken(String mx_sso_token){
 	//&timestamp=1420600435
 	//&nonce=943385
 	//&open_id=ec92040544cd062dc14afcabdb5dfb2143839684916a3e482d889bc14ecd7f394469bc5892f89e8e8d21eb69a326a020"
+	public static void getUserAccessToken(){
+		//从创建的接入端获取到接入端的access_token
+		String access_token="Dsl-RVAru1qTd_xoku_yRoB0fogJwbDGS4S6ny7WizYNh4_I";
+		AppAccount account = AppAccount.loginByAccessToken("https://www.minxing365.com",access_token);
+		//敏行系统的登录名
+		String login_name="test1@ecinc";
+		//生成该用户的sso_token
+		String mx_sso_token=account.createMXSSOToken(login_name);
+		System.out.println(mx_sso_token);
+	}
 }
