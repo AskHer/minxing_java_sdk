@@ -166,11 +166,11 @@ public class AppAccount extends Account {
 			List<PostParameter> headersList) {
 
 		if (this._currentUserId != 0L) {
-			PostParameter as_user = new PostParameter("X_AS_USER",
+			PostParameter as_user = new PostParameter("X-AS-USER",
 					this._currentUserId);
 			headersList.add(as_user);
 		} else if (this._loginName != null && this._loginName.length() > 0) {
-			PostParameter as_user = new PostParameter("X_AS_USER",
+			PostParameter as_user = new PostParameter("X-AS-USER",
 					this._loginName);
 			headersList.add(as_user);
 		}
