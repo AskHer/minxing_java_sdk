@@ -1046,33 +1046,7 @@ public class AppAccount extends Account {
 						+ "错误, token创建的AppId为" + by_app_id + ",但期望的是:" + app_id);
 			}
 
-			User user = new User();
-			user.setId(o.getLong("user_id"));
-			user.setLoginName(o.getString("login_name"));
-
-			user.setEmail(o.getString("email"));
-			user.setName(o.getString("name"));
-			user.setTitle(o.getString("login_name"));
-			user.setCellvoice1(o.getString("cell_phone"));
-			user.setCellvoice2(o.getString("preferred_mobile"));
-
-			user.setEmpCode(o.getString("emp_code"));
-			user.setNetworkId(o.getLong("network_id"));
-
-			JSONArray depts = o.getJSONArray("departs");
-			Department[] allDept = new Department[depts.length()];
-			for (int i = 0, n = depts.length(); i < n; i++) {
-				JSONObject dobj = depts.getJSONObject(i);
-
-				Department udept = new Department();
-				udept.setDept_code(dobj.getString("dept_code"));
-				udept.setShort_name(dobj.getString("dept_short_name"));
-				udept.setFull_name(dobj.getString("dept_full_name"));
-				allDept[i] = udept;
-			}
-			user.setAllDepartments(allDept);
-
-			return user;
+			return getUser(o);
 		} catch (JSONException e) {
 			throw new MxVerifyException("校验Token:" + token + "错误", e);
 		}
@@ -1105,40 +1079,64 @@ public class AppAccount extends Account {
 				throw new MxVerifyException("校验Token:" + token
 						+ "错误, token创建的AppId为" + by_ocu_id + ",不是:" + ocu_id);
 			}
-			User user = new User();
-			user.setId(o.getLong("user_id"));
-			user.setLoginName(o.getString("login_name"));
-
-			user.setEmail(o.getString("email"));
-			user.setName(o.getString("name"));
-			user.setTitle(o.getString("login_name"));
-			user.setCellvoice1(o.getString("cell_phone"));
-			user.setCellvoice2(o.getString("preferred_mobile"));
-
-			user.setEmpCode(o.getString("emp_code"));
-			user.setNetworkId(o.getLong("network_id"));
-
-			JSONArray depts = o.getJSONArray("departs");
-			Department[] allDept = new Department[depts.length()];
-			for (int i = 0, n = depts.length(); i < n; i++) {
-				JSONObject dobj = depts.getJSONObject(i);
-
-				Department udept = new Department();
-				udept.setDept_code(dobj.getString("dept_code"));
-				udept.setShort_name(dobj.getString("dept_short_name"));
-				udept.setFull_name(dobj.getString("dept_full_name"));
-				allDept[i] = udept;
-			}
-			user.setAllDepartments(allDept);
-
-			return user;
+			return getUser(o);
 		} catch (Exception e) {
 			throw new MxVerifyException("校验Token:" + token + "错误", e);
 
 		}
 
 	}
+	/**
+	 * 校验应用商店的应用携带的SSOTOken是否有效，通过连接minxing服务器，检查token代表的敏行用户的身份。
+	 * 
+	 * @param token
+	 *            客户端提供的SSO Token。几种获取方式
+	 *            1.第三方系统如果和敏行属于一个域下，比如类似的*.minxin.com，可以从cookie获取mx_sso_token
+	 *            2.第三方系统可以从HttpServletRequest的parameter中获取mx_sso_token
+	 *            3.第三方系统可以从HttpServletRequest的header中获取mx_sso_token
+	 * @return 如果校验成功，返回token对应的用户信息
+	 * @throws MxVerifyException
+	 *             校验失败，则抛出这个异常.
+	 */
+	public User verifySSOToken(String token)
+			throws MxVerifyException {
 
+		try {
+			JSONObject o = this.get("/api/v1/oauth/user_info/" + token);
+			return getUser(o);
+		} catch (JSONException e) {
+			throw new MxVerifyException("校验Token:" + token + "错误", e);
+		}
+
+	}
+	private User getUser(JSONObject o) throws JSONException  {
+		User user = new User();
+		user.setId(o.getLong("user_id"));
+		user.setLoginName(o.getString("login_name"));
+
+		user.setEmail(o.getString("email"));
+		user.setName(o.getString("name"));
+		user.setTitle(o.getString("login_name"));
+		user.setCellvoice1(o.getString("cell_phone"));
+		user.setCellvoice2(o.getString("preferred_mobile"));
+
+		user.setEmpCode(o.getString("emp_code"));
+		user.setNetworkId(o.getLong("network_id"));
+
+		JSONArray depts = o.getJSONArray("departs");
+		Department[] allDept = new Department[depts.length()];
+		for (int i = 0, n = depts.length(); i < n; i++) {
+			JSONObject dobj = depts.getJSONObject(i);
+
+			Department udept = new Department();
+			udept.setDept_code(dobj.getString("dept_code"));
+			udept.setShort_name(dobj.getString("dept_short_name"));
+			udept.setFull_name(dobj.getString("dept_full_name"));
+			allDept[i] = udept;
+		}
+		user.setAllDepartments(allDept);
+		return user;
+	}
 	/**
 	 * 校验一下URL上的签名信息，确认这个请求来自敏行的服务器
 	 * @param queryString url的query String部分，例如 http://g.com?abc=1&de=2 的url，query string 为abc=1&de=2
