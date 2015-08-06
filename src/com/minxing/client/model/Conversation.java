@@ -7,6 +7,10 @@ public class Conversation {
 	public Conversation(Long _id) {
 		id = _id;
 	}
+	
+	public Long getId() {
+		return id;
+	}
 
 	public String toString() {
 		return "<Conversation id:" + id + ">";
