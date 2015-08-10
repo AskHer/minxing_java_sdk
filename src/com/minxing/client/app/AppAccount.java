@@ -423,7 +423,7 @@ public class AppAccount extends Account {
 				user.setWorkvoice(o.getString("workvoice"));
 				user.setEmpCode(o.getString("emp_code"));
 			}
-			
+
 			return user;
 		} catch (JSONException e) {
 			throw new MxException("解析Json出错.", e);
@@ -444,15 +444,18 @@ public class AppAccount extends Account {
 	 * @return Conversation对象和对象的Id。
 	 */
 	public Conversation createConversation(String[] login_names, String message) {
-		return createConversation(login_names,message,null);
+		return createConversation(login_names, message, null);
 	}
-	
-	
+
 	/**
 	 * 创建一个Graph的conversation。
-	 * @param login_names 创建会话的用户列表，不包括创建人自身.
-	 * @param message 消息内容，如果不提供，则忽略这个参数。
-	 * @param g Graph对象，可以包含任何链接地址的对象.
+	 * 
+	 * @param login_names
+	 *            创建会话的用户列表，不包括创建人自身.
+	 * @param message
+	 *            消息内容，如果不提供，则忽略这个参数。
+	 * @param g
+	 *            Graph对象，可以包含任何链接地址的对象.
 	 * @return Conversation对象和对象的Id。
 	 */
 	public Conversation createConversationWithGraph(String[] login_names,
@@ -466,77 +469,75 @@ public class AppAccount extends Account {
 			params.put("app_url", g.getAppURL());
 			params.put("description", g.getDescription());
 		}
-		
+
 		Map<String, String> headers = new HashMap<String, String>();
 
-		JSONObject return_json = this.post("/api/v1/graphs", params,
-				headers);
+		JSONObject return_json = this.post("/api/v1/graphs", params, headers);
 		try {
 			Long graph_id = return_json.getLong("id");
-			if (graph_id != null && graph_id > 0 ) {
-				return createConversation(login_names,message,graph_id);
+			if (graph_id != null && graph_id > 0) {
+				return createConversation(login_names, message, graph_id);
 			} else {
 				throw new MxException("无效的Graph id:" + graph_id);
 			}
-			
-			
+
 		} catch (JSONException e) {
 			throw new MxException("解析Json出错.", e);
 		}
-		
+
 	}
-	
-	private Conversation createConversation(String[] login_names,String messageBody,Long graphId) {
+
+	private Conversation createConversation(String[] login_names,
+			String messageBody, Long graphId) {
 		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
 
-				Map<String, String> params = new HashMap<String, String>();
-				if (messageBody != null) {
-					params.put("body", messageBody);
+		Map<String, String> params = new HashMap<String, String>();
+		if (messageBody != null) {
+			params.put("body", messageBody);
+		}
+
+		StringBuilder user_ids = new StringBuilder();
+		for (int i = 0, n = login_names.length; i < n; i++) {
+			User u = findUserByLoginname(null, login_names[i]);
+			if (u != null) {
+				if (i > 0) {
+					user_ids.append(",");
 				}
 
-				StringBuilder user_ids = new StringBuilder();
-				for (int i = 0, n = login_names.length; i < n; i++) {
-					User u = findUserByLoginname(null, login_names[i]);
-					if (u != null) {
-						if (i > 0) {
-							user_ids.append(",");
-						}
-						
-						user_ids.append(u.getId());
+				user_ids.append(u.getId());
 
-					}
+			}
+		}
+
+		params.put("direct_to_user_ids", user_ids.toString());
+
+		if (graphId != null && graphId > 0) {
+			params.put("attached[]", String.format("graph:%d", graphId));
+		}
+
+		Map<String, String> headers = new HashMap<String, String>();
+
+		JSONObject return_json = this.post("/api/v1/conversations", params,
+				headers);
+
+		Conversation created = null;
+		try {
+			JSONArray references_itmes = return_json.getJSONArray("references");
+			for (int i = 0, n = references_itmes.length(); i < n; i++) {
+				JSONObject r = references_itmes.getJSONObject(i);
+
+				if ("conversation".equals(r.getString("type"))) {
+					long convesation_id = r.getLong("id");
+					created = new Conversation(convesation_id);
+					break;
 				}
 
-				params.put("direct_to_user_ids", user_ids.toString());
-				
-				if (graphId != null && graphId > 0) {
-					params.put("attached[]",
-							String.format("graph:%d", graphId));
-				}
+			}
 
-				Map<String, String> headers = new HashMap<String, String>();
-
-				JSONObject return_json = this.post("/api/v1/conversations", params,
-						headers);
-
-				Conversation created = null;
-				try {
-					JSONArray references_itmes = return_json.getJSONArray("references");
-					for (int i = 0, n = references_itmes.length(); i < n; i++) {
-						JSONObject r = references_itmes.getJSONObject(i);
-						
-						if ("conversation".equals(r.getString("type"))) {
-							long convesation_id = r.getLong("id");
-							created = new Conversation(convesation_id);
-							break;
-						}
-
-					}
-
-				} catch (JSONException e) {
-					throw new MxException("解析Json出错.", e);
-				}
-				return created;
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+		return created;
 	}
 
 	// ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -1185,8 +1186,17 @@ public class AppAccount extends Account {
 			String by_ocu_id = o.getString("by_ocu_id");
 
 			if (ocu_id != null && !ocu_id.equals(by_ocu_id)) {
-				throw new MxVerifyException("校验Token:" + token
-						+ "错误, token创建的AppId为" + by_ocu_id + ",不是:" + ocu_id);
+
+				String created_id = null;
+				if (by_ocu_id == null) {
+					created_id = "app_id:" + o.getString("by_app_id");
+				} else {
+					created_id = "ocu_id:" + by_ocu_id;
+				}
+
+				throw new MxVerifyException("Verify token:" + token
+						+ "Failed, token created by " + created_id + ",not:"
+						+ ocu_id);
 			}
 			return getUser(o);
 		} catch (Exception e) {
@@ -1320,7 +1330,5 @@ public class AppAccount extends Account {
 		return t.equals(signed);
 
 	}
-
-
 
 }
