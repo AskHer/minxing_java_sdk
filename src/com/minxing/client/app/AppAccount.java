@@ -1183,7 +1183,9 @@ public class AppAccount extends Account {
 
 		try {
 			JSONObject o = this.get("/api/v1/oauth/user_info/" + token);
-			String by_ocu_id = o.getString("by_ocu_id");
+			String by_ocu_id;
+
+			by_ocu_id = o.getString("by_ocu_id");
 
 			if (ocu_id != null && !ocu_id.equals(by_ocu_id)) {
 
@@ -1199,9 +1201,8 @@ public class AppAccount extends Account {
 						+ ocu_id);
 			}
 			return getUser(o);
-		} catch (Exception e) {
-			throw new MxVerifyException("校验Token:" + token + "错误", e);
-
+		} catch (JSONException e) {
+			throw new MxVerifyException("JSON parse error",e);
 		}
 
 	}
