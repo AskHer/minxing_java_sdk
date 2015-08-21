@@ -16,31 +16,33 @@ public class TestAppSyncAccount {
 	public static void main(String[] args) throws Exception {
 
 		AppAccount account = AppAccount.loginByAccessToken("http://localhost:3000",
-				"cGTsJXPAJeEwUEXvt2SvJ--0q7cPunUqvc4AMKb8i6y-PUti");
-
-		testSetRootDepartment(account);
-		testAddDepartment(account);
-		testUpdateDepartment(account);
-		testDeleteDepartment(account);
-
-		testAddUser(account);
-		testUpdateUser(account);
-
-		testGenerateToken(account);
-
-		testAdd10Dept(account);
-		testAdd10Dept(account);
-		testUpdate5toSameDept(account);
-		testUpdate10Dept(account);
-		testAdd10User(account);
-		testUpdate5toSameUser(account);
-		testUpdate10User(account);
-		testDelete10User(account);
-		testDelete10Dept(account);
-
-		testAddNetworks(account);
-		testUpdateNetworks(account);
-		testRemoveNetworks(account);
+				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
+		
+//		testSetRootDepartment(account);
+//		testAddDepartment(account);
+//		testUpdateDepartment(account);
+//		testDeleteDepartment(account);
+//
+//		testAddUser(account);
+//		testUpdateUser(account);
+//
+//		testGenerateToken(account);
+//
+//		testAdd10Dept(account);
+//		testAdd10Dept(account);
+//		testUpdate5toSameDept(account);
+//		testUpdate10Dept(account);
+//		testAdd10User(account);
+//		testUpdate5toSameUser(account);
+//		testUpdate10User(account);
+//		testDelete10User(account);
+//		testDelete10Dept(account);
+//
+//		testAddNetworks(account);
+//		testUpdateNetworks(account);
+//		testRemoveNetworks(account);
+		
+		testAddUserSecondaryDepartment(account);
 	}
 
 	private static void testSetRootDepartment(AppAccount account) {
@@ -195,6 +197,20 @@ public class TestAppSyncAccount {
 				account.addNewUser(user);
 
 			}
+
+		} catch (ApiErrorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public static void testAddUserSecondaryDepartment(AppAccount account) {
+
+		try {
+
+			
+			account.addUserSecondDepartment("oajcs3@js.chinamobile.com","23227100","","开发经理");
 
 		} catch (ApiErrorException e) {
 			// TODO Auto-generated catch block

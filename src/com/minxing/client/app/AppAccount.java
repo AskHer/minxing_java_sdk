@@ -964,6 +964,52 @@ public class AppAccount extends Account {
 		}
 
 	}
+	/**
+	 * 人员组织同步接口，增加用户
+	 * 
+	 * @param user
+	 * @return
+	 * @throws ApiErrorException
+	 */
+	
+	/**
+	 * 为用户新增一个兼职部门
+	 * @param userLoginName 要处理的用户
+	 * @param departmentCode 兼职部门的code
+	 * @param displayOrder 用户在兼职部门的显示顺序，必须是一个整数，例如“20”,如果不是数字，则被设置为0。
+	 * @param title 兼职部门的职务
+	 * @return true 如果创建成功
+	 * @throws ApiErrorException
+	 */
+	public boolean addUserSecondDepartment(String userLoginName,String departmentCode,String displayOrder,String title) throws ApiErrorException {
+
+		try {
+
+			HashMap<String, String> params = new HashMap<String,String>();
+			params.put("login_name", userLoginName);
+			params.put("second_dept_code", departmentCode);
+			params.put("display_order", displayOrder);
+			params.put("title", title);
+			
+			
+			Map<String, String> headers = new HashMap<String, String>();
+
+			JSONObject json_result = post("/api/v1/users", params, headers);
+			int code = json_result.getInt("code");
+
+			if (code > 0 && code != 200 && code != 201) {
+
+				String msg = json_result.getString("message");
+				throw new ApiErrorException(code, msg);
+
+			}
+			return true;
+
+		} catch (JSONException e) {
+			throw new ApiErrorException("返回JSON错误", 500, e);
+		}
+
+	}
 
 	/**
 	 * 人员组织同步接口，更新用户
