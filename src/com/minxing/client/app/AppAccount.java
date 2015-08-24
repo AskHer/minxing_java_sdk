@@ -19,6 +19,8 @@ import com.minxing.client.json.JSONException;
 import com.minxing.client.json.JSONObject;
 import com.minxing.client.model.Account;
 import com.minxing.client.model.ApiErrorException;
+import com.minxing.client.model.Conversation;
+import com.minxing.client.model.Graph;
 import com.minxing.client.model.MxException;
 import com.minxing.client.model.MxVerifyException;
 import com.minxing.client.model.PostParameter;
@@ -379,12 +381,8 @@ public class AppAccount extends Account {
 				u.setLogin_name(o.getString("login_name"));
 				users.add(u);
 			}
-		} catch (MxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new MxException("解析Json出错.", e);
 		}
 		return users;
 	}
@@ -411,23 +409,135 @@ public class AppAccount extends Account {
 
 			JSONObject o = this.get("/api/v1/users/by_login_name", params);
 
-			User user = new User();
-			user.setId(o.getLong("id"));
-			user.setLoginName(o.getString("login_name"));
+			User user = null;
+			if (o.getLong("id") > 0) {
+				user = new User();
+				user.setId(o.getLong("id"));
+				user.setLoginName(o.getString("login_name"));
 
-			user.setEmail(o.getString("email"));
-			user.setName(o.getString("name"));
-			user.setTitle(o.getString("login_name"));
-			user.setCellvoice1(o.getString("cellvoice1"));
-			user.setCellvoice2(o.getString("cellvoice2"));
-			user.setWorkvoice(o.getString("workvoice"));
-			user.setEmpCode(o.getString("emp_code"));
+				user.setEmail(o.getString("email"));
+				user.setName(o.getString("name"));
+				user.setTitle(o.getString("login_name"));
+				user.setCellvoice1(o.getString("cellvoice1"));
+				user.setCellvoice2(o.getString("cellvoice2"));
+				user.setWorkvoice(o.getString("workvoice"));
+				user.setEmpCode(o.getString("emp_code"));
+			}
 
 			return user;
 		} catch (JSONException e) {
 			throw new MxException("解析Json出错.", e);
 		}
 
+	}
+
+	// ///////////////////////////////////////////////////////////////////////////////////////////////
+	// Create Conversation
+	//
+	/**
+	 * 发送消息到会话中。需要调用setFromUserLoginname()设置发送者身份
+	 * 
+	 * @param login_names
+	 *            创建会话的用户列表，不需要包括创建人自己
+	 * @param message
+	 *            消息内容,如果不提供，只会得到一条系统消息
+	 * @return Conversation对象和对象的Id。
+	 */
+	public Conversation createConversation(String[] login_names, String message) {
+		return createConversation(login_names, message, null);
+	}
+
+	/**
+	 * 创建一个Graph的conversation。
+	 * 
+	 * @param login_names
+	 *            创建会话的用户列表，不包括创建人自身.
+	 * @param message
+	 *            消息内容，如果不提供，则忽略这个参数。
+	 * @param g
+	 *            Graph对象，可以包含任何链接地址的对象.
+	 * @return Conversation对象和对象的Id。
+	 */
+	public Conversation createConversationWithGraph(String[] login_names,
+			String message, Graph g) {
+		Map<String, String> params = new HashMap<String, String>();
+		if (g != null) {
+			params.put("title", g.getTitle());
+			params.put("type", g.getType());
+			params.put("url", g.getURL());
+			params.put("image", g.getImageURL());
+			params.put("app_url", g.getAppURL());
+			params.put("description", g.getDescription());
+		}
+
+		Map<String, String> headers = new HashMap<String, String>();
+
+		JSONObject return_json = this.post("/api/v1/graphs", params, headers);
+		try {
+			Long graph_id = return_json.getLong("id");
+			if (graph_id != null && graph_id > 0) {
+				return createConversation(login_names, message, graph_id);
+			} else {
+				throw new MxException("无效的Graph id:" + graph_id);
+			}
+
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+
+	}
+
+	private Conversation createConversation(String[] login_names,
+			String messageBody, Long graphId) {
+		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
+
+		Map<String, String> params = new HashMap<String, String>();
+		if (messageBody != null) {
+			params.put("body", messageBody);
+		}
+
+		StringBuilder user_ids = new StringBuilder();
+		for (int i = 0, n = login_names.length; i < n; i++) {
+			User u = findUserByLoginname(null, login_names[i]);
+			if (u != null) {
+				if (i > 0) {
+					user_ids.append(",");
+				}
+
+				user_ids.append(u.getId());
+
+			}
+		}
+
+		params.put("direct_to_user_ids", user_ids.toString());
+
+		if (graphId != null && graphId > 0) {
+			params.put("attached[]", String.format("graph:%d", graphId));
+		}
+
+		Map<String, String> headers = new HashMap<String, String>();
+
+		JSONObject return_json = this.post("/api/v1/conversations", params,
+				headers);
+
+		Conversation created = null;
+		try {
+			JSONArray references_itmes = return_json.getJSONArray("references");
+			for (int i = 0, n = references_itmes.length(); i < n; i++) {
+				JSONObject r = references_itmes.getJSONObject(i);
+
+				if ("conversation".equals(r.getString("type"))) {
+					long convesation_id = r.getLong("id");
+					created = new Conversation(convesation_id);
+					break;
+				}
+
+			}
+
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+		return created;
 	}
 
 	// ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -854,6 +964,52 @@ public class AppAccount extends Account {
 		}
 
 	}
+	/**
+	 * 人员组织同步接口，增加用户
+	 * 
+	 * @param user
+	 * @return
+	 * @throws ApiErrorException
+	 */
+	
+	/**
+	 * 为用户新增一个兼职部门
+	 * @param userLoginName 要处理的用户
+	 * @param departmentCode 兼职部门的code
+	 * @param displayOrder 用户在兼职部门的显示顺序，必须是一个整数，例如“20”,如果不是数字，则被设置为0。
+	 * @param title 兼职部门的职务
+	 * @return true 如果创建成功
+	 * @throws ApiErrorException
+	 */
+	public boolean addUserSecondDepartment(String userLoginName,String departmentCode,String displayOrder,String title) throws ApiErrorException {
+
+		try {
+
+			HashMap<String, String> params = new HashMap<String,String>();
+			params.put("login_name", userLoginName);
+			params.put("second_dept_code", departmentCode);
+			params.put("display_order", displayOrder);
+			params.put("title", title);
+			
+			
+			Map<String, String> headers = new HashMap<String, String>();
+
+			JSONObject json_result = post("/api/v1/users", params, headers);
+			int code = json_result.getInt("code");
+
+			if (code > 0 && code != 200 && code != 201) {
+
+				String msg = json_result.getString("message");
+				throw new ApiErrorException(code, msg);
+
+			}
+			return true;
+
+		} catch (JSONException e) {
+			throw new ApiErrorException("返回JSON错误", 500, e);
+		}
+
+	}
 
 	/**
 	 * 人员组织同步接口，更新用户
@@ -1073,19 +1229,30 @@ public class AppAccount extends Account {
 
 		try {
 			JSONObject o = this.get("/api/v1/oauth/user_info/" + token);
-			String by_ocu_id = o.getString("by_ocu_id");
+			String by_ocu_id;
+
+			by_ocu_id = o.getString("by_ocu_id");
 
 			if (ocu_id != null && !ocu_id.equals(by_ocu_id)) {
-				throw new MxVerifyException("校验Token:" + token
-						+ "错误, token创建的AppId为" + by_ocu_id + ",不是:" + ocu_id);
+
+				String created_id = null;
+				if (by_ocu_id == null) {
+					created_id = "app_id:" + o.getString("by_app_id");
+				} else {
+					created_id = "ocu_id:" + by_ocu_id;
+				}
+
+				throw new MxVerifyException("Verify token:" + token
+						+ "Failed, token created by " + created_id + ",not:"
+						+ ocu_id);
 			}
 			return getUser(o);
-		} catch (Exception e) {
-			throw new MxVerifyException("校验Token:" + token + "错误", e);
-
+		} catch (JSONException e) {
+			throw new MxVerifyException("JSON parse error",e);
 		}
 
 	}
+
 	/**
 	 * 校验应用商店的应用携带的SSOTOken是否有效，通过连接minxing服务器，检查token代表的敏行用户的身份。
 	 * 
@@ -1098,8 +1265,7 @@ public class AppAccount extends Account {
 	 * @throws MxVerifyException
 	 *             校验失败，则抛出这个异常.
 	 */
-	public User verifySSOToken(String token)
-			throws MxVerifyException {
+	public User verifySSOToken(String token) throws MxVerifyException {
 
 		try {
 			JSONObject o = this.get("/api/v1/oauth/user_info/" + token);
@@ -1109,7 +1275,8 @@ public class AppAccount extends Account {
 		}
 
 	}
-	private User getUser(JSONObject o) throws JSONException  {
+
+	private User getUser(JSONObject o) throws JSONException {
 		User user = new User();
 		user.setId(o.getLong("user_id"));
 		user.setLoginName(o.getString("login_name"));
@@ -1137,10 +1304,15 @@ public class AppAccount extends Account {
 		user.setAllDepartments(allDept);
 		return user;
 	}
+
 	/**
 	 * 校验一下URL上的签名信息，确认这个请求来自敏行的服务器
-	 * @param queryString url的query String部分，例如 http://g.com?abc=1&de=2 的url，query string 为abc=1&de=2
-	 * @param securet ocu或者app的 securet。
+	 * 
+	 * @param queryString
+	 *            url的query String部分，例如 http://g.com?abc=1&de=2 的url，query
+	 *            string 为abc=1&de=2
+	 * @param securet
+	 *            ocu或者app的 securet。
 	 * @return true 如果签名被认证。
 	 */
 	public boolean verifyURLSignature(String queryString, String secret) {
@@ -1154,14 +1326,14 @@ public class AppAccount extends Account {
 		String qstring = queryString;
 		if (queryString.startsWith("http://")
 				|| queryString.startsWith("https://")) {
-			
+
 			qstring = URIUtil.getQuery(queryString);
 		}
 
 		ParameterParser pp = new ParameterParser();
-		
+
 		@SuppressWarnings("unchecked")
-		List<NameValuePair> list = (List<NameValuePair>)pp.parse(qstring, '&');
+		List<NameValuePair> list = (List<NameValuePair>) pp.parse(qstring, '&');
 
 		try {
 
@@ -1206,5 +1378,4 @@ public class AppAccount extends Account {
 
 	}
 
-	
 }

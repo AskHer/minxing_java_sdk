@@ -28,7 +28,7 @@ public class Response {
         try {
             return new JSONObject(responseAsString);
         } catch (JSONException jsone) {
-            throw new MxException(jsone.getMessage() + ":" + this.responseAsString, jsone);
+            throw new MxException("Server Error:" + this.responseAsString, jsone);
         }
     }
 

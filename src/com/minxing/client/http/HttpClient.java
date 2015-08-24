@@ -1,6 +1,7 @@
 package com.minxing.client.http;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -122,12 +123,9 @@ public class HttpClient implements java.io.Serializable {
 		Protocol.registerProtocol("https", myhttps);
 	}
 
+	public Response get0(String url, PostParameter[] headers)
+			throws MxException {
 
-
-	public Response get0(String url, 
-			PostParameter[] headers) throws MxException {
-		
-		
 		GetMethod getmethod = new GetMethod(url);
 		return httpRequest(getmethod, headers);
 
@@ -136,7 +134,7 @@ public class HttpClient implements java.io.Serializable {
 	public Response post(String url, PostParameter[] params,
 			PostParameter[] headers, Boolean WithTokenHeader)
 			throws MxException {
-		
+
 		return post(url, params, WithTokenHeader, headers);
 
 	}
@@ -278,15 +276,15 @@ public class HttpClient implements java.io.Serializable {
 			responseCode = method.getStatusCode();
 
 			Response response = new Response();
+
 			response.setResponseAsString(this.getResponseBodyAsString(method));
 			response.setStatusCode(responseCode);
 
 			if (responseCode >= 400) {
-				
+
 				if (responseCode == 405) {
 					throw new MxException("HTTP " + method.getStatusCode()
-							+ ": Method Not Allowed",
-							method.getStatusCode());
+							+ ": Method Not Allowed", method.getStatusCode());
 				}
 
 				if (content_type != null
@@ -313,28 +311,42 @@ public class HttpClient implements java.io.Serializable {
 	private String getResponseBodyAsString(HttpMethod method)
 			throws IOException {
 		InputStream resStream = method.getResponseBodyAsStream();
-		BufferedReader br = new BufferedReader(new InputStreamReader(resStream));
-		StringBuffer resBuffer = new StringBuffer();
-		String resTemp = "";
-		while ((resTemp = br.readLine()) != null) {
-			resBuffer.append(resTemp);
-		}
-		String response = resBuffer.toString();
-		return response;
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		byte[] buffer = new byte[8 * 1024];
+
+		int read_count = resStream.read(buffer);
+		do {
+
+			out.write(buffer, 0, read_count);
+			read_count = resStream.read(buffer);
+		} while (read_count != -1);
+
+		byte[] read_bytes = out.toByteArray();
+		
+		return new String(read_bytes,"UTF-8");
+
+//		BufferedReader br = new BufferedReader(new InputStreamReader(resStream));
+//		StringBuffer resBuffer = new StringBuffer();
+//		String resTemp = "";
+//		while ((resTemp = br.readLine()) != null) {
+//			resBuffer.append(resTemp);
+//		}
+//		String response = resBuffer.toString();
+//		return response;
 	}
 
 	public static String encodeParameters(PostParameter[] postParams) {
 		StringBuffer buf = new StringBuffer();
 		for (int j = 0; j < postParams.length; j++) {
-			
+
 			if (postParams[j].getValue() == null) {
 				continue;
 			}
-			
+
 			if (j != 0) {
 				buf.append("&");
 			}
-			
+
 			try {
 				buf.append(URLEncoder.encode(postParams[j].getName(), "UTF-8"))
 						.append("=")
