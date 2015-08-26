@@ -691,7 +691,7 @@ public class AppAccount extends Account {
 	 * 发送公众号消息
 	 * 
 	 * @param toUserIds
-	 *            用户的login_name数组
+	 *            用户的login_name数组，如果传null,则是给订阅的所有人发消息
 	 * @param message
 	 *            消息对象数据，可以是复杂文本，也可以是简单对象
 	 * @param ocuId
@@ -710,7 +710,7 @@ public class AppAccount extends Account {
 	 * 发送公众号消息,指定社区id
 	 * 
 	 * @param toUserIds
-	 *            用户的login_name数组
+	 *            用户的login_name数组，如果传null,则是给订阅的所有人发消息
 	 * @param network_id
 	 *            用户的社区
 	 * @param message
@@ -872,23 +872,27 @@ public class AppAccount extends Account {
 	 *            更新的部门对象
 	 * @throws ApiErrorException
 	 */
-	public void updateDepartment(Department departement)
+	public Department updateDepartment(Department departement)
 			throws ApiErrorException {
 
 		try {
 
 			HashMap<String, String> params = departement.toHash();
 
-			JSONObject json_result = put("/api/v1/departments", params);
+			JSONObject json_result = put("/api/v1/departments/" + departement.getDept_code(), params);
 
 			int code = json_result.getInt("code");
 
-			if (code != 200 && code != 201) {
+			if (code > 0 && code != 200 && code != 201) {
 
 				String msg = json_result.getString("message");
 				throw new ApiErrorException(code, msg);
 
 			}
+			departement.setId(json_result.getLong("id"));
+			departement.setNetworkId(json_result.getLong("network_id"));
+
+			return departement;
 
 		} catch (JSONException e) {
 			throw new ApiErrorException("返回JSON错误", 500, e);
