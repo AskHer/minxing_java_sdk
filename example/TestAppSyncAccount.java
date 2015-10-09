@@ -1,7 +1,6 @@
 import com.minxing.client.app.AppAccount;
 import com.minxing.client.json.JSONException;
 import com.minxing.client.model.ApiErrorException;
-import com.minxing.client.model.Error;
 import com.minxing.client.model.MxException;
 import com.minxing.client.organization.Department;
 import com.minxing.client.organization.Network;
@@ -15,8 +14,8 @@ public class TestAppSyncAccount {
 
 	public static void main(String[] args) throws Exception {
 
-		AppAccount account = AppAccount.loginByAccessToken("http://localhost:3000",
-				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
+		AppAccount account = AppAccount.loginByAccessToken("http://127.0.0.1:3000",
+				"oaXjq51wVMTcfF_33MzpyfsLevOaTZbCAvZaoqBS207s8icu");
 		
 //		testSetRootDepartment(account);
 //		testAddDepartment(account);
@@ -210,7 +209,7 @@ public class TestAppSyncAccount {
 		try {
 
 			
-			account.addUserSecondDepartment("oajcs3@js.chinamobile.com","23227100","","开发经理");
+			account.addUserSecondDepartment("zhangsan","001001","","开发经理");
 
 		} catch (ApiErrorException e) {
 			// TODO Auto-generated catch block
@@ -282,14 +281,14 @@ public class TestAppSyncAccount {
 
 		try {
 			Department dept = new Department();
-			dept.setDept_code("001011014");
+			dept.setDept_code("001002");
 			dept.setDisplay_order("12");
-			// dept.setParent_dept_code("11");
+//			 dept.setParent_dept_code("11");
 			dept.setShort_name("微软公司");
 
 			// dept.setFull_name(full_name);
-			if (all)
-				dept.setNetwork_name(networkName);
+//			if (all)
+//				dept.setNetwork_name(networkName);
 
 			account.createDepartment(dept);
 		} catch (ApiErrorException e) {
@@ -300,12 +299,12 @@ public class TestAppSyncAccount {
 	public static void testUpdateDepartment(AppAccount account) {
 
 		Department dept = new Department();
-		dept.setDept_code("001012001"); // 该字段用于查询更新
+		dept.setDept_code("001001"); // 该字段用于查询更新
 		// dept.setDisplay_order("14");
-		dept.setParent_dept_code("10");
-		// dept.setShort_name("青岛");
-		if (all)
-			dept.setNetwork_name(networkName);
+//		dept.setParent_dept_code("10");
+		 dept.setShort_name("广东");
+//		if (all)
+//			dept.setNetwork_name(networkName);
 		// dept.setFull_name(full_name);
 		// dept.setNetwork_id(network_id);
 
