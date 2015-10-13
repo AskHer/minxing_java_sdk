@@ -894,7 +894,8 @@ public class AppAccount extends Account {
 
 			HashMap<String, String> params = departement.toHash();
 
-			JSONObject json_result = put("/api/v1/departments/" + departement.getDept_code(), params);
+			JSONObject json_result = put(
+					"/api/v1/departments/" + departement.getDept_code(), params);
 
 			int code = json_result.getInt("code");
 
@@ -1004,33 +1005,74 @@ public class AppAccount extends Account {
 	 *            用户在兼职部门的显示顺序，必须是一个整数，例如“20”,如果不是数字，则被设置为0。
 	 * @param title
 	 *            兼职部门的职务
-	 * @return true 如果创建成功
+	 * @return true 如果创建成功, 失败则抛出异常
 	 * @throws ApiErrorException
 	 */
-	public boolean addUserSecondDepartment(String userLoginName,
+	public boolean addUserDepartment(String userLoginName,
 			String departmentCode, String displayOrder, String title)
 			throws ApiErrorException {
 
 		try {
 
+			User user = this.findUserByLoginname(userLoginName);
+			if (user == null) {
+				throw new ApiErrorException(400, "无法找到用户:" + userLoginName);
+			}
+
 			HashMap<String, String> params = new HashMap<String, String>();
-			params.put("login_name", userLoginName);
-			params.put("second_dept_code", departmentCode);
+
+			params.put("dept_code", departmentCode);
 			params.put("display_order", displayOrder);
 			params.put("title", title);
 
 			Map<String, String> headers = new HashMap<String, String>();
 
-			JSONObject json_result = post("/api/v1/users", params, headers)
-					.asJSONObject();
+			JSONObject json_result = post(
+					"/api/v1/users/" + user.getId() + "/departments", params,
+					headers).asJSONObject();
 			int code = json_result.getInt("code");
 
 			if (code > 0 && code != 200 && code != 201) {
-
 				String msg = json_result.getString("message");
 				throw new ApiErrorException(code, msg);
-
 			}
+
+			return true;
+
+		} catch (JSONException e) {
+			throw new ApiErrorException("返回JSON错误", 500, e);
+		}
+
+	}
+
+	/**
+	 * 删除用户的部门或者兼职部门
+	 * @param userLoginName 要删除用户的登录名称
+	 * @param departmentCode 需要删除的部门代码
+	 * @return
+	 * @throws ApiErrorException
+	 */
+	public boolean removeUserDepartment(String userLoginName,
+			String departmentCode) throws ApiErrorException {
+
+		try {
+
+			User user = this.findUserByLoginname(userLoginName);
+			if (user == null) {
+				throw new ApiErrorException(400, "无法找到用户:" + userLoginName);
+			}
+			
+			HashMap<String, String> params = new HashMap<String, String>();
+			JSONObject json_result = delete(
+					"/api/v1/users/" + user.getId() + "/departments/"
+							+ departmentCode, params);
+			int code = json_result.getInt("code");
+
+			if (code > 0 && code != 200 && code != 201) {
+				String msg = json_result.getString("message");
+				throw new ApiErrorException(code, msg);
+			}
+
 			return true;
 
 		} catch (JSONException e) {
@@ -1406,8 +1448,7 @@ public class AppAccount extends Account {
 		return t.equals(signed);
 
 	}
-	
-	
+
 	/**
 	 * 创建工作圈。
 	 * 
@@ -1415,14 +1456,16 @@ public class AppAccount extends Account {
 	 *            工作圈的名字
 	 * @param description
 	 *            工作圈的名字
+	 * @param isPublic
+	 *            公开的还是私有的工作圈，true创建公开的工作圈，false：创建私有的工作圈
 	 * @param groupType
-	 *            工作圈的类型，有三种，Group.PUBLIC，Group.SUPPORT，
-	 *            Group.PRIVATE,表示公开，咨询组，私有组
+	 *            工作圈的类型，Group.SUPPORT， Group.NORMAL,表示咨询组，普通类型的组
 	 * @return 如果创建成功，则返回创建成功的组信息。如果失败抛出 ApiErrorException。
 	 * @throws ApiErrorException
 	 */
-	public Group createGroup(String name, String description, String groupType) throws ApiErrorException {
-		return createGroup(name,description,groupType,false, 0);
+	public Group createGroup(String name, String description, boolean isPublic,
+			String groupType) throws ApiErrorException {
+		return createGroup(name, description, isPublic, groupType, false, 0);
 	}
 
 	/**
@@ -1432,9 +1475,10 @@ public class AppAccount extends Account {
 	 *            工作圈的名字
 	 * @param description
 	 *            工作圈的名字
+	 * @param isPublic
+	 *            公开的还是私有的工作圈，true创建公开的工作圈，false：创建私有的工作圈
 	 * @param groupType
-	 *            工作圈的类型，有三种，Group.PUBLIC，Group.SUPPORT，
-	 *            Group.PRIVATE,表示公开，咨询组，私有组
+	 *            工作圈的类型，Group.SUPPORT， Group.NORMAL,表示咨询组，普通类型的组
 	 * @param hidden
 	 *            是否隐藏，仅对私有组生效。
 	 * @param limteSize
@@ -1442,21 +1486,19 @@ public class AppAccount extends Account {
 	 * @return 如果创建成功，则返回创建成功的组信息。如果失败抛出 ApiErrorException。
 	 * @throws ApiErrorException
 	 */
-	public Group createGroup(String name, String description, String groupType,
-			boolean hidden, int limteSize) throws ApiErrorException {
+	public Group createGroup(String name, String description, boolean isPublic,
+			String groupType, boolean hidden, int limteSize)
+			throws ApiErrorException {
 		try {
 
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put("name", name);
 
-			boolean isPublic = false;
 			boolean isHidden = false;
 			boolean isSupportGroup = false;
 
-			if (Group.PUBLIC.equals(groupType)
-					|| Group.SUPPORT.equals(groupType)) {
+			if (isPublic) {
 				params.put("public", "true");
-				isPublic = true;
 			} else {
 				params.put("public", "false");
 				params.put("moderated", "true");
@@ -1483,7 +1525,7 @@ public class AppAccount extends Account {
 				throw respone.getApiError();
 
 			}
-			JSONArray json_result = respone.asJSONArray(); //设计有问题，应该返回一个对象
+			JSONArray json_result = respone.asJSONArray(); // 设计有问题，应该返回一个对象
 			Long groupId = json_result.getJSONObject(0).getLong("id");
 			Group g = new Group(groupId, name, description, isPublic,
 					isSupportGroup, isHidden);

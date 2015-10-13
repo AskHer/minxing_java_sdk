@@ -15,7 +15,7 @@ public class TestAppSyncAccount {
 	public static void main(String[] args) throws Exception {
 
 		AppAccount account = AppAccount.loginByAccessToken("http://127.0.0.1:3000",
-				"oaXjq51wVMTcfF_33MzpyfsLevOaTZbCAvZaoqBS207s8icu");
+				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
 		
 //		testSetRootDepartment(account);
 //		testAddDepartment(account);
@@ -41,7 +41,9 @@ public class TestAppSyncAccount {
 //		testUpdateNetworks(account);
 //		testRemoveNetworks(account);
 		
-		testAddUserSecondaryDepartment(account);
+		testAddUserDepartment(account);
+		
+		testRemoveUserDepartment(account);
 	}
 
 	private static void testSetRootDepartment(AppAccount account) {
@@ -204,18 +206,28 @@ public class TestAppSyncAccount {
 	}
 	
 	
-	public static void testAddUserSecondaryDepartment(AppAccount account) {
+	public static void testAddUserDepartment(AppAccount account) {
 
 		try {
-
-			
-			account.addUserSecondDepartment("zhangsan","001001","","开发经理");
+			account.addUserDepartment("w8@js.chinamobile.com","23227200","","开发经理");
 
 		} catch (ApiErrorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+	
+	public static void testRemoveUserDepartment(AppAccount account) {
+
+		try {
+			account.removeUserDepartment("w8@js.chinamobile.com","23227200");
+
+		} catch (ApiErrorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 
 	public static void testUpdate10User(AppAccount account) {
 

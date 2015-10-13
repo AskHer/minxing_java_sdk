@@ -5,6 +5,7 @@ public class Group {
 	final public static String PUBLIC = "public";/* 公开组 */
 	final public static String PRIVATE = "private"; /* 私有组 */
 	final public static String SUPPORT = "support"; /* 专家支持组 */
+	final public static String NORMAL = "normal"; /* 普通组，默认类型 */
 
 	Long id;
 	private String name;
