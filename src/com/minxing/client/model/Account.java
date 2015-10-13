@@ -42,11 +42,19 @@ public abstract class Account {
 			Boolean WithTokenHeader) throws MxException {
 		return api(url, "post", params, new PostParameter[0], WithTokenHeader);
 	}
+	
+	
 
 	protected JSONObject post(String url, PostParameter[] params,
 			PostParameter[] headers, Boolean WithTokenHeader)
 			throws MxException {
 		return api(url, "post", params, headers, WithTokenHeader);
+	}
+	
+	protected Response postForResponse(String url, PostParameter[] params,
+			PostParameter[] headers, Boolean WithTokenHeader)
+			throws MxException {
+		return apiForResponse(url, "post", params, headers, WithTokenHeader);
 	}
 
 	protected JSONArray post(String url, PostParameter[] params, File file,

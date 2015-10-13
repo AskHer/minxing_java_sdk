@@ -21,6 +21,7 @@ import com.minxing.client.model.Account;
 import com.minxing.client.model.ApiErrorException;
 import com.minxing.client.model.Conversation;
 import com.minxing.client.model.Graph;
+import com.minxing.client.model.Group;
 import com.minxing.client.model.MxException;
 import com.minxing.client.model.MxVerifyException;
 import com.minxing.client.model.PostParameter;
@@ -234,11 +235,18 @@ public class AppAccount extends Account {
 	 * @return
 	 * @throws MxException
 	 */
-	public JSONObject post(String url, Map<String, String> params,
+	// public JSONObject post(String url, Map<String, String> params,
+	// Map<String, String> headers) throws MxException {
+	// PostParameter[] pps = createParams(params);
+	// PostParameter[] hs = createParams(headers);
+	// return this.post(url, pps, hs, true);
+	// }
+
+	public Response post(String url, Map<String, String> params,
 			Map<String, String> headers) throws MxException {
 		PostParameter[] pps = createParams(params);
 		PostParameter[] hs = createParams(headers);
-		return this.post(url, pps, hs, true);
+		return this.postForResponse(url, pps, hs, true);
 	}
 
 	/**
@@ -472,7 +480,8 @@ public class AppAccount extends Account {
 
 		Map<String, String> headers = new HashMap<String, String>();
 
-		JSONObject return_json = this.post("/api/v1/graphs", params, headers);
+		JSONObject return_json = this.post("/api/v1/graphs", params, headers)
+				.asJSONObject();
 		try {
 			Long graph_id = return_json.getLong("id");
 			if (graph_id != null && graph_id > 0) {
@@ -518,7 +527,7 @@ public class AppAccount extends Account {
 		Map<String, String> headers = new HashMap<String, String>();
 
 		JSONObject return_json = this.post("/api/v1/conversations", params,
-				headers);
+				headers).asJSONObject();
 
 		Conversation created = null;
 		try {
@@ -563,8 +572,9 @@ public class AppAccount extends Account {
 		params.put("body", message);
 		Map<String, String> headers = new HashMap<String, String>();
 
-		JSONObject return_json = this.post("/api/v1/conversations/"
-				+ conversation_id + "/messages", params, headers);
+		JSONObject return_json = this.post(
+				"/api/v1/conversations/" + conversation_id + "/messages",
+				params, headers).asJSONObject();
 
 		return TextMessage.fromJSON(return_json);
 
@@ -587,8 +597,9 @@ public class AppAccount extends Account {
 		}
 		Map<String, String> headers = new HashMap<String, String>();
 
-		JSONObject return_json = this.post("/api/v1/conversations/"
-				+ conversation_id + "/messages", params, headers);
+		JSONObject return_json = this.post(
+				"/api/v1/conversations/" + conversation_id + "/messages",
+				params, headers).asJSONObject();
 		return TextMessage.fromJSON(return_json);
 	}
 
@@ -637,7 +648,8 @@ public class AppAccount extends Account {
 
 		Map<String, String> headers = new HashMap<String, String>();
 
-		JSONObject new_message = this.post("/api/v1/messages", params, headers);
+		JSONObject new_message = this.post("/api/v1/messages", params, headers)
+				.asJSONObject();
 		return TextMessage.fromJSON(new_message);
 
 	}
@@ -682,8 +694,9 @@ public class AppAccount extends Account {
 		params.put("body", message);
 		Map<String, String> headers = new HashMap<String, String>();
 
-		JSONObject new_message = this.post("/api/v1/conversations/to_user/"
-				+ toUserId, params, headers);
+		JSONObject new_message = this.post(
+				"/api/v1/conversations/to_user/" + toUserId, params, headers)
+				.asJSONObject();
 		return TextMessage.fromJSON(new_message);
 	}
 
@@ -745,7 +758,8 @@ public class AppAccount extends Account {
 		Map<String, String> headers = new HashMap<String, String>();
 
 		JSONObject result_json = this.post(
-				"/api/v1/conversations/ocu_messages", params, headers);
+				"/api/v1/conversations/ocu_messages", params, headers)
+				.asJSONObject();
 
 		try {
 			return result_json.getInt("count");
@@ -775,7 +789,7 @@ public class AppAccount extends Account {
 
 		try {
 			JSONObject json = this.post("/api/v1/oauth/mx_sso_token", params,
-					headers);
+					headers).asJSONObject();
 			return json.getString("token");
 
 		} catch (JSONException e) {
@@ -817,7 +831,8 @@ public class AppAccount extends Account {
 
 			Map<String, String> headers = new HashMap<String, String>();
 
-			JSONObject json_result = post("/api/v1/push", params, headers);
+			JSONObject json_result = post("/api/v1/push", params, headers)
+					.asJSONObject();
 			int send_to = json_result.getInt("send_count");
 
 			return send_to;
@@ -844,7 +859,7 @@ public class AppAccount extends Account {
 			Map<String, String> headers = new HashMap<String, String>();
 
 			JSONObject json_result = post("/api/v1/departments", params,
-					headers);
+					headers).asJSONObject();
 			int code = json_result.getInt("code");
 
 			if (code > 0 && code != 200 && code != 201) {
@@ -879,7 +894,8 @@ public class AppAccount extends Account {
 
 			HashMap<String, String> params = departement.toHash();
 
-			JSONObject json_result = put("/api/v1/departments/" + departement.getDept_code(), params);
+			JSONObject json_result = put(
+					"/api/v1/departments/" + departement.getDept_code(), params);
 
 			int code = json_result.getInt("code");
 
@@ -951,7 +967,8 @@ public class AppAccount extends Account {
 			HashMap<String, String> params = user.toHash();
 			Map<String, String> headers = new HashMap<String, String>();
 
-			JSONObject json_result = post("/api/v1/users", params, headers);
+			JSONObject json_result = post("/api/v1/users", params, headers)
+					.asJSONObject();
 			int code = json_result.getInt("code");
 
 			if (code > 0 && code != 200 && code != 201) {
@@ -968,6 +985,7 @@ public class AppAccount extends Account {
 		}
 
 	}
+
 	/**
 	 * 人员组织同步接口，增加用户
 	 * 
@@ -975,38 +993,86 @@ public class AppAccount extends Account {
 	 * @return
 	 * @throws ApiErrorException
 	 */
-	
+
 	/**
 	 * 为用户新增一个兼职部门
-	 * @param userLoginName 要处理的用户
-	 * @param departmentCode 兼职部门的code
-	 * @param displayOrder 用户在兼职部门的显示顺序，必须是一个整数，例如“20”,如果不是数字，则被设置为0。
-	 * @param title 兼职部门的职务
-	 * @return true 如果创建成功
+	 * 
+	 * @param userLoginName
+	 *            要处理的用户
+	 * @param departmentCode
+	 *            兼职部门的code
+	 * @param displayOrder
+	 *            用户在兼职部门的显示顺序，必须是一个整数，例如“20”,如果不是数字，则被设置为0。
+	 * @param title
+	 *            兼职部门的职务
+	 * @return true 如果创建成功, 失败则抛出异常
 	 * @throws ApiErrorException
 	 */
-	public boolean addUserSecondDepartment(String userLoginName,String departmentCode,String displayOrder,String title) throws ApiErrorException {
+	public boolean addUserDepartment(String userLoginName,
+			String departmentCode, String displayOrder, String title)
+			throws ApiErrorException {
 
 		try {
 
-			HashMap<String, String> params = new HashMap<String,String>();
-			params.put("login_name", userLoginName);
-			params.put("second_dept_code", departmentCode);
+			User user = this.findUserByLoginname(userLoginName);
+			if (user == null) {
+				throw new ApiErrorException(400, "无法找到用户:" + userLoginName);
+			}
+
+			HashMap<String, String> params = new HashMap<String, String>();
+
+			params.put("dept_code", departmentCode);
 			params.put("display_order", displayOrder);
 			params.put("title", title);
-			
-			
+
 			Map<String, String> headers = new HashMap<String, String>();
 
-			JSONObject json_result = post("/api/v1/users", params, headers);
+			JSONObject json_result = post(
+					"/api/v1/users/" + user.getId() + "/departments", params,
+					headers).asJSONObject();
 			int code = json_result.getInt("code");
 
 			if (code > 0 && code != 200 && code != 201) {
-
 				String msg = json_result.getString("message");
 				throw new ApiErrorException(code, msg);
-
 			}
+
+			return true;
+
+		} catch (JSONException e) {
+			throw new ApiErrorException("返回JSON错误", 500, e);
+		}
+
+	}
+
+	/**
+	 * 删除用户的部门或者兼职部门
+	 * @param userLoginName 要删除用户的登录名称
+	 * @param departmentCode 需要删除的部门代码
+	 * @return
+	 * @throws ApiErrorException
+	 */
+	public boolean removeUserDepartment(String userLoginName,
+			String departmentCode) throws ApiErrorException {
+
+		try {
+
+			User user = this.findUserByLoginname(userLoginName);
+			if (user == null) {
+				throw new ApiErrorException(400, "无法找到用户:" + userLoginName);
+			}
+			
+			HashMap<String, String> params = new HashMap<String, String>();
+			JSONObject json_result = delete(
+					"/api/v1/users/" + user.getId() + "/departments/"
+							+ departmentCode, params);
+			int code = json_result.getInt("code");
+
+			if (code > 0 && code != 200 && code != 201) {
+				String msg = json_result.getString("message");
+				throw new ApiErrorException(code, msg);
+			}
+
 			return true;
 
 		} catch (JSONException e) {
@@ -1103,7 +1169,8 @@ public class AppAccount extends Account {
 			HashMap<String, String> params = network.toHash();
 			Map<String, String> headers = new HashMap<String, String>();
 
-			JSONObject json_result = post("/api/v1/networks", params, headers);
+			JSONObject json_result = post("/api/v1/networks", params, headers)
+					.asJSONObject();
 			int code = json_result.getInt("code");
 
 			if (code > 0 && code != 200 && code != 201) {
@@ -1252,7 +1319,7 @@ public class AppAccount extends Account {
 			}
 			return getUser(o);
 		} catch (JSONException e) {
-			throw new MxVerifyException("JSON parse error",e);
+			throw new MxVerifyException("JSON parse error", e);
 		}
 
 	}
@@ -1379,6 +1446,93 @@ public class AppAccount extends Account {
 
 		String t = HMACSHA1.getSignature(sb.toString(), secret);
 		return t.equals(signed);
+
+	}
+
+	/**
+	 * 创建工作圈。
+	 * 
+	 * @param name
+	 *            工作圈的名字
+	 * @param description
+	 *            工作圈的名字
+	 * @param isPublic
+	 *            公开的还是私有的工作圈，true创建公开的工作圈，false：创建私有的工作圈
+	 * @param groupType
+	 *            工作圈的类型，Group.SUPPORT， Group.NORMAL,表示咨询组，普通类型的组
+	 * @return 如果创建成功，则返回创建成功的组信息。如果失败抛出 ApiErrorException。
+	 * @throws ApiErrorException
+	 */
+	public Group createGroup(String name, String description, boolean isPublic,
+			String groupType) throws ApiErrorException {
+		return createGroup(name, description, isPublic, groupType, false, 0);
+	}
+
+	/**
+	 * 创建工作圈。
+	 * 
+	 * @param name
+	 *            工作圈的名字
+	 * @param description
+	 *            工作圈的名字
+	 * @param isPublic
+	 *            公开的还是私有的工作圈，true创建公开的工作圈，false：创建私有的工作圈
+	 * @param groupType
+	 *            工作圈的类型，Group.SUPPORT， Group.NORMAL,表示咨询组，普通类型的组
+	 * @param hidden
+	 *            是否隐藏，仅对私有组生效。
+	 * @param limteSize
+	 *            组内成员数限制.
+	 * @return 如果创建成功，则返回创建成功的组信息。如果失败抛出 ApiErrorException。
+	 * @throws ApiErrorException
+	 */
+	public Group createGroup(String name, String description, boolean isPublic,
+			String groupType, boolean hidden, int limteSize)
+			throws ApiErrorException {
+		try {
+
+			HashMap<String, String> params = new HashMap<String, String>();
+			params.put("name", name);
+
+			boolean isHidden = false;
+			boolean isSupportGroup = false;
+
+			if (isPublic) {
+				params.put("public", "true");
+			} else {
+				params.put("public", "false");
+				params.put("moderated", "true");
+			}
+
+			if (hidden) {
+				params.put("hidden", "true");
+				isHidden = true;
+			}
+
+			if (Group.SUPPORT.equals(groupType)) {
+				params.put("group_type", "support");
+				isSupportGroup = true;
+			}
+
+			params.put("limit_size", String.valueOf(limteSize));
+			Map<String, String> headers = new HashMap<String, String>();
+
+			Response respone = post("/api/v1/groups", params, headers);
+
+			if (respone.getStatusCode() != 200
+					&& respone.getStatusCode() != 201) {
+
+				throw respone.getApiError();
+
+			}
+			JSONArray json_result = respone.asJSONArray(); // 设计有问题，应该返回一个对象
+			Long groupId = json_result.getJSONObject(0).getLong("id");
+			Group g = new Group(groupId, name, description, isPublic,
+					isSupportGroup, isHidden);
+			return g;
+		} catch (JSONException e) {
+			throw new ApiErrorException("返回JSON错误", 500, e);
+		}
 
 	}
 
