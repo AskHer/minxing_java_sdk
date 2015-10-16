@@ -24,7 +24,9 @@ public class TextMessage implements Message {
 			JSONArray message_item = data.getJSONArray("items");
 			JSONObject message = message_item.getJSONObject(0);
 			this.id = message.getLong("id");
-			this.body = message.getString("body");
+			JSONObject message_body = message.getJSONObject("body");
+			this.body = message_body.getString("plain");
+			
 			
 		} catch (JSONException e) {
 			throw new MxException(e);

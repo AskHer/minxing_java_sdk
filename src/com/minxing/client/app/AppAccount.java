@@ -220,10 +220,16 @@ public class AppAccount extends Account {
 	 * @return
 	 * @throws MxException
 	 */
-	public JSONObject get(String url, Map<String, String> params)
+	// public JSONObject get(String url, Map<String, String> params)
+	// throws MxException {
+	// PostParameter[] pps = createParams(params);
+	// return this.get(url, pps);
+	// }
+	//
+	public Response get(String url, Map<String, String> params)
 			throws MxException {
 		PostParameter[] pps = createParams(params);
-		return this.get(url, pps);
+		return this.getForResponse(url, pps, new PostParameter[0], true);
 	}
 
 	/**
@@ -433,6 +439,69 @@ public class AppAccount extends Account {
 			}
 
 			return user;
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+
+	}
+
+	/**
+	 * 给出多个loginName，返回login name 对应的用户列表.
+	 * 
+	 * @param network_name
+	 * @param loginNames
+	 * @return
+	 */
+	public User[] findUserByLoginNames(String[] loginNames) {
+
+		try {
+
+			if (loginNames == null || loginNames.length == 0) {
+				return new User[] {};
+			}
+
+			PostParameter ssoKey = new PostParameter("sso_key", "login_name");
+			StringBuilder loginNameString = new StringBuilder();
+			for (int i = 0; i < loginNames.length; i++) {
+				if (i > 0) {
+					loginNameString.append(",");
+
+				}
+				loginNameString.append(loginNames[i]);
+			}
+			PostParameter ssoKeyValues = new PostParameter("key_values",
+					loginNameString.toString());
+
+			PostParameter[] params = new PostParameter[] { ssoKey, ssoKeyValues };
+
+			JSONObject o = this.get("/api/v1/networks/about_user", params);
+			JSONArray users = o.getJSONArray("items");
+			ArrayList<User> userList = new ArrayList<User>();
+			for (int i = 0; i < users.length(); i++) {
+				JSONObject u = users.getJSONObject(i);
+				User user = null;
+				if (u.getLong("id") > 0) {
+					user = new User();
+					user.setId(u.getLong("id"));
+					user.setLoginName(u.getString("login_name"));
+
+					user.setEmail(u.getString("email"));
+					user.setName(u.getString("name"));
+					user.setTitle(u.getString("login_name"));
+					user.setCellvoice1(u.getString("cellvoice1"));
+					user.setCellvoice2(u.getString("cellvoice2"));
+					user.setWorkvoice(u.getString("workvoice"));
+					user.setEmpCode(u.getString("emp_code"));
+				}
+
+				if (user != null) {
+					userList.add(user);
+				}
+
+			}
+
+			return userList.toArray(new User[userList.size()]);
+
 		} catch (JSONException e) {
 			throw new MxException("解析Json出错.", e);
 		}
@@ -844,6 +913,25 @@ public class AppAccount extends Account {
 	}
 
 	/**
+	 * 获得一个消息的消息文本
+	 * 
+	 * @param messageId
+	 *            消息的Id
+	 * @return 消息对象，body属性就是消息的文本
+	 * @throws ApiErrorException
+	 */
+	public Message getMessage(Long messageId) throws ApiErrorException {
+
+		Map<String, String> headers = new HashMap<String, String>();
+		JSONObject o = get("/api/v1/messages/" + messageId, headers)
+				.asJSONObject();
+
+		Message m = TextMessage.fromJSON(o);
+		return m;
+
+	}
+
+	/**
 	 * 人员组织同步接口，增加机构部门
 	 * 
 	 * @param departement
@@ -1047,8 +1135,11 @@ public class AppAccount extends Account {
 
 	/**
 	 * 删除用户的部门或者兼职部门
-	 * @param userLoginName 要删除用户的登录名称
-	 * @param departmentCode 需要删除的部门代码
+	 * 
+	 * @param userLoginName
+	 *            要删除用户的登录名称
+	 * @param departmentCode
+	 *            需要删除的部门代码
 	 * @return
 	 * @throws ApiErrorException
 	 */
@@ -1061,11 +1152,10 @@ public class AppAccount extends Account {
 			if (user == null) {
 				throw new ApiErrorException(400, "无法找到用户:" + userLoginName);
 			}
-			
+
 			HashMap<String, String> params = new HashMap<String, String>();
-			JSONObject json_result = delete(
-					"/api/v1/users/" + user.getId() + "/departments/"
-							+ departmentCode, params);
+			JSONObject json_result = delete("/api/v1/users/" + user.getId()
+					+ "/departments/" + departmentCode, params);
 			int code = json_result.getInt("code");
 
 			if (code > 0 && code != 200 && code != 201) {
@@ -1533,6 +1623,146 @@ public class AppAccount extends Account {
 		} catch (JSONException e) {
 			throw new ApiErrorException("返回JSON错误", 500, e);
 		}
+
+	}
+
+	/**
+	 * 为群组增加管理员
+	 * 
+	 * @param departement
+	 * @return
+	 * @throws ApiErrorException
+	 */
+
+	/**
+	 * 为群组增加管理人员
+	 * 
+	 * @param groupId
+	 *            群组的Id
+	 * @param loginNames
+	 *            人员的登录名
+	 * @throws ApiErrorException
+	 *             如果执行失败，抛出异常
+	 */
+	public void AddGroupAdmin(Long groupId, String[] loginNames)
+			throws ApiErrorException {
+
+		HashMap<String, String> params = new HashMap<String, String>();
+		User[] users = this.findUserByLoginNames(loginNames);
+
+		if (users != null && users.length > 0) {
+			StringBuilder user_ids = new StringBuilder();
+			for (int i = 0; i < users.length; i++) {
+				if (i > 0) {
+					user_ids.append(",");
+				}
+				user_ids.append(users[i].getId());
+
+			}
+			params.put("user_ids", user_ids.toString());
+		}
+
+		Map<String, String> headers = new HashMap<String, String>();
+
+		post("/api/v1/groups/" + groupId + "/admins", params, headers)
+				.asJSONObject();
+
+	}
+	
+	
+	/**
+	 * 列出专家支持组
+	 * @return 专家支持组的列表
+	 * @throws ApiErrorException
+	 */
+	public Group[] getSupportTypeGroups() throws ApiErrorException {
+		return getGroups(true);
+	}
+
+	public Group[] getGroups(boolean only_support_type) throws ApiErrorException {
+
+		HashMap<String, String> params = new HashMap<String, String>();
+		if (only_support_type) {
+			params.put("only_support_type", "true");
+		}
+		
+		JSONObject o = this.get("/api/v1/groups", params)
+				.asJSONObject();
+
+		ArrayList<Group> userList = new ArrayList<Group>();
+
+		try {
+			
+			JSONArray groups = o.getJSONArray("items");
+			
+			for (int i = 0; i < groups.length(); i++) {
+				JSONObject g = groups.getJSONObject(i);
+				Group user = null;
+				if (g.getLong("id") > 0) {
+					user = new Group(g.getLong("id"), g.getString("name"),
+							g.getString("description"),
+							g.getBoolean("public_group"), "support".equals(g
+									.getString("group_type")), false);
+
+				}
+
+				if (user != null) {
+					userList.add(user);
+				}
+
+			}
+		} catch (JSONException e) {
+			throw new ApiErrorException("返回JSON错误", 500, e);
+		}
+
+		return userList.toArray(new Group[userList.size()]);
+
+	}
+
+	/**
+	 * 获得组的管理员列表
+	 * 
+	 * @param groupId
+	 *            组的Id信息。
+	 * @return
+	 * @throws ApiErrorException
+	 */
+	public User[] getGroupAdmins(Long groupId) throws ApiErrorException {
+
+		HashMap<String, String> params = new HashMap<String, String>();
+		JSONArray users = this.get("/api/v1/groups/" + groupId + "/admins",
+				params).asJSONArray();
+
+		ArrayList<User> userList = new ArrayList<User>();
+
+		try {
+			for (int i = 0; i < users.length(); i++) {
+				JSONObject u = users.getJSONObject(i);
+				User user = null;
+				if (u.getLong("id") > 0) {
+					user = new User();
+					user.setId(u.getLong("id"));
+					user.setLoginName(u.getString("login_name"));
+
+					user.setEmail(u.getString("email"));
+					user.setName(u.getString("name"));
+					user.setTitle(u.getString("login_name"));
+					user.setCellvoice1(u.getString("cellvoice1"));
+					user.setCellvoice2(u.getString("cellvoice2"));
+					user.setWorkvoice(u.getString("workvoice"));
+					user.setEmpCode(u.getString("emp_code"));
+				}
+
+				if (user != null) {
+					userList.add(user);
+				}
+
+			}
+		} catch (JSONException e) {
+			throw new ApiErrorException("返回JSON错误", 500, e);
+		}
+
+		return userList.toArray(new User[userList.size()]);
 
 	}
 

@@ -14,36 +14,39 @@ public class TestAppSyncAccount {
 
 	public static void main(String[] args) throws Exception {
 
-		AppAccount account = AppAccount.loginByAccessToken("http://127.0.0.1:3000",
+		AppAccount account = AppAccount.loginByAccessToken(
+				"http://127.0.0.1:3000",
 				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
-		
-//		testSetRootDepartment(account);
-//		testAddDepartment(account);
-//		testUpdateDepartment(account);
-//		testDeleteDepartment(account);
+
+		// testSetRootDepartment(account);
+		// testAddDepartment(account);
+		// testUpdateDepartment(account);
+		// testDeleteDepartment(account);
+		//
+		// testAddUser(account);
+		// testUpdateUser(account);
+		//
+		// testGenerateToken(account);
+		//
+		// testAdd10Dept(account);
+		// testAdd10Dept(account);
+		// testUpdate5toSameDept(account);
+		// testUpdate10Dept(account);
+		// testAdd10User(account);
+		// testUpdate5toSameUser(account);
+		// testUpdate10User(account);
+		testUpdateUserPhone(account);
+
+		// testDelete10User(account);
+		// testDelete10Dept(account);
+		//
+		// testAddNetworks(account);
+		// testUpdateNetworks(account);
+		// testRemoveNetworks(account);
+
+//		testAddUserDepartment(account);
 //
-//		testAddUser(account);
-//		testUpdateUser(account);
-//
-//		testGenerateToken(account);
-//
-//		testAdd10Dept(account);
-//		testAdd10Dept(account);
-//		testUpdate5toSameDept(account);
-//		testUpdate10Dept(account);
-//		testAdd10User(account);
-//		testUpdate5toSameUser(account);
-//		testUpdate10User(account);
-//		testDelete10User(account);
-//		testDelete10Dept(account);
-//
-//		testAddNetworks(account);
-//		testUpdateNetworks(account);
-//		testRemoveNetworks(account);
-		
-		testAddUserDepartment(account);
-		
-		testRemoveUserDepartment(account);
+//		testRemoveUserDepartment(account);
 	}
 
 	private static void testSetRootDepartment(AppAccount account) {
@@ -52,7 +55,7 @@ public class TestAppSyncAccount {
 		dept.setDept_code("iii004");// 必填
 		dept.setDisplay_order("10");
 		dept.setShort_name("部门名称2");// 必填
-		//dept.setNetwork_id("usa");
+		// dept.setNetwork_id("usa");
 
 		// ret_status.getErrorCode()=0，表明是成功，其他信息表明失败了，失败原因为ret_status.getErrorMessage()。其他接口同理。
 
@@ -204,30 +207,29 @@ public class TestAppSyncAccount {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 	public static void testAddUserDepartment(AppAccount account) {
 
 		try {
-			account.addUserDepartment("w8@js.chinamobile.com","23227200","","开发经理");
+			account.addUserDepartment("w8@js.chinamobile.com", "23227200", "",
+					"开发经理");
 
 		} catch (ApiErrorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void testRemoveUserDepartment(AppAccount account) {
 
 		try {
-			account.removeUserDepartment("w8@js.chinamobile.com","23227200");
+			account.removeUserDepartment("w8@js.chinamobile.com", "23227200");
 
 		} catch (ApiErrorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
 
 	public static void testUpdate10User(AppAccount account) {
 
@@ -271,6 +273,21 @@ public class TestAppSyncAccount {
 		}
 	}
 
+	public static void testUpdateUserPhone(AppAccount account) {
+
+		try {
+
+			// user.setLogin_name(String.valueOf(9000+(10-i)));
+			User oa = account.findUserByLoginname("oajcs3@js.chinamobile.com");
+			oa.setName("刘江");
+			oa.setCellvoice1("18601360472");
+			account.updateUser(oa);
+
+		} catch (ApiErrorException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static void testDelete10User(AppAccount account) {
 		try {
 			for (int i = 0; i < 10; i++) {
@@ -295,12 +312,12 @@ public class TestAppSyncAccount {
 			Department dept = new Department();
 			dept.setDept_code("001002");
 			dept.setDisplay_order("12");
-//			 dept.setParent_dept_code("11");
+			// dept.setParent_dept_code("11");
 			dept.setShort_name("微软公司");
 
 			// dept.setFull_name(full_name);
-//			if (all)
-//				dept.setNetwork_name(networkName);
+			// if (all)
+			// dept.setNetwork_name(networkName);
 
 			account.createDepartment(dept);
 		} catch (ApiErrorException e) {
@@ -313,10 +330,10 @@ public class TestAppSyncAccount {
 		Department dept = new Department();
 		dept.setDept_code("001001"); // 该字段用于查询更新
 		// dept.setDisplay_order("14");
-//		dept.setParent_dept_code("10");
-		 dept.setShort_name("广东");
-//		if (all)
-//			dept.setNetwork_name(networkName);
+		// dept.setParent_dept_code("10");
+		dept.setShort_name("广东");
+		// if (all)
+		// dept.setNetwork_name(networkName);
 		// dept.setFull_name(full_name);
 		// dept.setNetwork_id(network_id);
 
@@ -419,8 +436,6 @@ public class TestAppSyncAccount {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-	
 
 	}
 

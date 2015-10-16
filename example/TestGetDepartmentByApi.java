@@ -35,7 +35,7 @@ public class TestGetDepartmentByApi {
 		JSONObject result=null;
 		
 		try {
-			result = account.get("/api/v1/departments.json",params);
+			result = account.get("/api/v1/departments.json",params).asJSONObject();
 		} catch (MxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

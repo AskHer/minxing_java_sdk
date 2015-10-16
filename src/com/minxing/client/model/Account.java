@@ -42,15 +42,13 @@ public abstract class Account {
 			Boolean WithTokenHeader) throws MxException {
 		return api(url, "post", params, new PostParameter[0], WithTokenHeader);
 	}
-	
-	
 
 	protected JSONObject post(String url, PostParameter[] params,
 			PostParameter[] headers, Boolean WithTokenHeader)
 			throws MxException {
 		return api(url, "post", params, headers, WithTokenHeader);
 	}
-	
+
 	protected Response postForResponse(String url, PostParameter[] params,
 			PostParameter[] headers, Boolean WithTokenHeader)
 			throws MxException {
@@ -105,6 +103,12 @@ public abstract class Account {
 				.asJSONArray();
 	}
 
+	protected Response getForResponse(String url, PostParameter[] params,
+			PostParameter[] headers, Boolean WithTokenHeader)
+			throws MxException {
+		return apiForResponse(url, "get", params, headers, WithTokenHeader);
+	}
+
 	private Response apiForResponse(String url, String method,
 			PostParameter[] params, PostParameter[] headers,
 			Boolean WithTokenHeader) throws MxException {
@@ -114,8 +118,6 @@ public abstract class Account {
 		} else {
 			method = method.trim().toLowerCase();
 		}
-
-
 
 		Response response = null;
 		if (method.equals("get")) {
@@ -130,13 +132,14 @@ public abstract class Account {
 
 				}
 			}
-			
+
 			List<PostParameter> paramsList = new ArrayList<PostParameter>(
 					Arrays.asList(params));
 			List<PostParameter> headersList = new ArrayList<PostParameter>(
 					Arrays.asList(headers));
 
-			String tempUrl = beforeRequest(sb.toString(), paramsList, headersList);
+			String tempUrl = beforeRequest(sb.toString(), paramsList,
+					headersList);
 
 			params = paramsList.toArray(new PostParameter[0]);
 			headers = headersList.toArray(new PostParameter[0]);
@@ -144,11 +147,10 @@ public abstract class Account {
 			if (tempUrl != null && !tempUrl.trim().equals("")) {
 				url = tempUrl;
 			}
-			
 
 			response = client.get0(tempUrl, headers);
 		} else {
-			
+
 			List<PostParameter> paramsList = new ArrayList<PostParameter>(
 					Arrays.asList(params));
 			List<PostParameter> headersList = new ArrayList<PostParameter>(
@@ -162,8 +164,7 @@ public abstract class Account {
 			if (tempUrl != null && !tempUrl.trim().equals("")) {
 				url = tempUrl;
 			}
-			
-			
+
 			if (method.equals("post")) {
 				response = client.post(url, params, headers, WithTokenHeader);
 			} else if (method.equals("put")) {

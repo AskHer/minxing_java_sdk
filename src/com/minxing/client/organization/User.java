@@ -4,14 +4,14 @@ import java.util.HashMap;
 
 public class User extends Organization {
 	private Long id; // 用户id
-	private String login_name; // Account's login_name
+	private String login_name = null; // Account's login_name
 	private String password; // 密码
 	private String email; // 邮箱
 	private String name; // 姓名
 	private String title; // 职务
 	private String cellvoice1; // 手机号码
 	private String cellvoice2; // 备用手机号码
-	private String workvoice; // 固定电话
+	private String workvoice = null; // 固定电话
 	private String emp_code; // 工号
 	private String dept_code; // 部门标识
 	private String display_order; // 排序
@@ -255,24 +255,61 @@ public class User extends Organization {
 	public HashMap<String, String> toHash() {
 		HashMap<String, String> params = new HashMap<String, String>();
 
-		params.put("id", String.valueOf(this.getId()));
-		params.put("login_name", this.getLoginName());
-		params.put("password", this.getPassword());
-		params.put("email", this.getEmail());
-		params.put("name", this.getName());
-		params.put("title", this.getTitle());
+		
+		if (null != this.getLoginName()) {
+			params.put("login_name", this.getLoginName());
+		}
 
-		params.put("cellvoice1", this.getCellvoice1());
-		params.put("cellvoice2", this.getCellvoice2());
-		params.put("workvoice", this.getWorkvoice());
-		params.put("emp_code", this.getEmpCode());
-		params.put("dept_code", this.getDeptCode());
-		params.put("display_order", this.getDisplay_order());
+		if (null != this.getPassword()) {
+			params.put("password", this.getPassword());
+		}
 
-		params.put("hidden", this.getHidden());
-		params.put("suspended", this.getSuspended());
-		params.put("display_order", this.getDisplay_order());
-		params.put("network_name", this.getNetworkName());
+		if (null != this.getEmail()) {
+			params.put("email", this.getEmail());
+		}
+
+		if (null != this.getName()) {
+			params.put("name", this.getName());
+		}
+
+		if (null != this.getTitle()) {
+			params.put("title", this.getTitle());
+		}
+
+		if (null != this.getCellvoice1()) {
+			params.put("cellvoice1", this.getCellvoice1());
+		}
+		if (null != this.getCellvoice2()) {
+			System.out.println("params11:" + params);
+			params.put("cellvoice2", this.getCellvoice2());
+		}
+
+		if (null != this.getWorkvoice()) {
+			params.put("workvoice", this.getWorkvoice());
+		}
+
+		if (null != this.getEmpCode()) {
+			params.put("emp_code", this.getEmpCode());
+		}
+
+		if (null != this.getDeptCode()) {
+			params.put("dept_code", this.getDeptCode());
+		}
+		if (null != this.getDisplay_order()) {
+			params.put("display_order", this.getDisplay_order());
+		}
+		if (null != this.getHidden()) {
+			params.put("hidden", this.getHidden());
+		}
+		if (null != this.getSuspended()) {
+			params.put("suspended", this.getSuspended());
+		}
+		if (null != this.getDisplay_order()) {
+			params.put("display_order", this.getDisplay_order());
+		}
+		if (null != this.getNetworkName()) {
+			params.put("network_name", this.getNetworkName());
+		}
 
 		return params;
 	}

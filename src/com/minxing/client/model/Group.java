@@ -19,25 +19,25 @@ public class Group {
 	}
 
 	public Group(Long _id, String _name, String _description,
-			boolean _publicGroup, boolean _supportType,boolean _hidden) {
-		
+			boolean _publicGroup, boolean _supportType, boolean _hidden) {
+
 		id = _id;
 		name = _name;
 		description = _description;
 		publicGroup = _publicGroup;
 		supportType = _supportType;
 		hidden = _hidden;
-		
+
 	}
 
 	public Long getId() {
 		return id;
 	}
-	
-	
 
 	public String toString() {
-		return "<Group id:" + id + ">";
+		return "<Group id:" + id + ", name:" + this.name + ", public:"
+				+ this.isPublicGroup() + ", support_type:"
+				+ this.isSupportType() + ">";
 	}
 
 	public String getName() {
