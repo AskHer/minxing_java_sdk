@@ -645,7 +645,12 @@ public class AppAccount extends Account {
 				"/api/v1/conversations/" + conversation_id + "/messages",
 				params, headers).asJSONObject();
 
-		return TextMessage.fromJSON(return_json);
+		try {
+			return TextMessage.fromJSON(return_json.getJSONArray("items")
+					.getJSONObject(0));
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
 
 	}
 
@@ -669,7 +674,12 @@ public class AppAccount extends Account {
 		JSONObject return_json = this.post(
 				"/api/v1/conversations/" + conversation_id + "/messages",
 				params, headers).asJSONObject();
-		return TextMessage.fromJSON(return_json);
+		try {
+			return TextMessage.fromJSON(return_json.getJSONArray("items")
+					.getJSONObject(0));
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
 	}
 
 	/**
@@ -719,7 +729,12 @@ public class AppAccount extends Account {
 
 		JSONObject new_message = this.post("/api/v1/messages", params, headers)
 				.asJSONObject();
-		return TextMessage.fromJSON(new_message);
+		try {
+			return TextMessage.fromJSON(new_message.getJSONArray("items")
+					.getJSONObject(0));
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
 
 	}
 
@@ -766,7 +781,12 @@ public class AppAccount extends Account {
 		JSONObject new_message = this.post(
 				"/api/v1/conversations/to_user/" + toUserId, params, headers)
 				.asJSONObject();
-		return TextMessage.fromJSON(new_message);
+		try {
+			return TextMessage.fromJSON(new_message.getJSONArray("items")
+					.getJSONObject(0));
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
 	}
 
 	/**
@@ -913,21 +933,32 @@ public class AppAccount extends Account {
 	}
 
 	/**
-	 * 获得一个消息的消息文本
+	 * 获得一个会话的全部消息消息的消息文本，第一条消息就是主消息。
 	 * 
-	 * @param messageId
-	 *            消息的Id
-	 * @return 消息对象，body属性就是消息的文本
+	 * @param threadId
+	 *            会话的Id
+	 * @return Message的数组
 	 * @throws ApiErrorException
 	 */
-	public Message getMessage(Long messageId) throws ApiErrorException {
+	public Message[] getAllMessagesInThread(Long threadId)
+			throws ApiErrorException {
 
-		Map<String, String> headers = new HashMap<String, String>();
-		JSONObject o = get("/api/v1/messages/" + messageId, headers)
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("limit", "500");
+		params.put("with_starter", "true");
+		JSONObject o = get("/api/v1/messages/in_thread/" + threadId, params)
 				.asJSONObject();
-
-		Message m = TextMessage.fromJSON(o);
-		return m;
+		try {
+			JSONArray items = o.getJSONArray("items");
+			Message[] messages = new Message[items.length()];
+			for (int i = 0; i < items.length(); i++) {
+				Message m = TextMessage.fromJSON(items.getJSONObject(i));
+				messages[i] = m;
+			}
+			return messages;
+		} catch (JSONException e) {
+			throw new ApiErrorException("返回JSON错误", 500, e);
+		}
 
 	}
 
@@ -1668,10 +1699,10 @@ public class AppAccount extends Account {
 				.asJSONObject();
 
 	}
-	
-	
+
 	/**
 	 * 列出专家支持组
+	 * 
 	 * @return 专家支持组的列表
 	 * @throws ApiErrorException
 	 */
@@ -1679,22 +1710,22 @@ public class AppAccount extends Account {
 		return getGroups(true);
 	}
 
-	public Group[] getGroups(boolean only_support_type) throws ApiErrorException {
+	public Group[] getGroups(boolean only_support_type)
+			throws ApiErrorException {
 
 		HashMap<String, String> params = new HashMap<String, String>();
 		if (only_support_type) {
 			params.put("only_support_type", "true");
 		}
-		
-		JSONObject o = this.get("/api/v1/groups", params)
-				.asJSONObject();
+
+		JSONObject o = this.get("/api/v1/groups", params).asJSONObject();
 
 		ArrayList<Group> userList = new ArrayList<Group>();
 
 		try {
-			
+
 			JSONArray groups = o.getJSONArray("items");
-			
+
 			for (int i = 0; i < groups.length(); i++) {
 				JSONObject g = groups.getJSONObject(i);
 				Group user = null;

@@ -2,8 +2,6 @@ import com.minxing.client.app.AppAccount;
 import com.minxing.client.model.ApiErrorException;
 import com.minxing.client.ocu.Message;
 
-
-
 public class TestGetMessageInfo {
 
 	public static void main(String[] args) {
@@ -11,17 +9,18 @@ public class TestGetMessageInfo {
 		AppAccount account = AppAccount.loginByAccessToken(
 				"http://127.0.0.1:3000",
 				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
-		 Message m;
+		Message[] msgs;
 		try {
 			account.setFromUserLoginName("oajcs3@js.chinamobile.com");
-			m = account.getMessage(67886L);
-			System.out.println("Get message:" + m);
+			msgs = account.getAllMessagesInThread(63962L);
+			for (int i = 0; i < msgs.length; i++) {
+				System.out.println("Get message:" + msgs[i]);
+			}
 		} catch (ApiErrorException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		 
-		 
+
 	}
 
 }

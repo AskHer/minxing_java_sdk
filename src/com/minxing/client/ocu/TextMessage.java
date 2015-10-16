@@ -1,6 +1,5 @@
 package com.minxing.client.ocu;
 
-import com.minxing.client.json.JSONArray;
 import com.minxing.client.json.JSONException;
 import com.minxing.client.json.JSONObject;
 import com.minxing.client.model.MxException;
@@ -19,10 +18,10 @@ public class TextMessage implements Message {
 		this.id = _id;
 	}
 	
-	public TextMessage(JSONObject data) {
+	public TextMessage(JSONObject message) {
 		try {
-			JSONArray message_item = data.getJSONArray("items");
-			JSONObject message = message_item.getJSONObject(0);
+//			JSONArray message_item = data.getJSONArray("items");
+//			JSONObject message = message_item.getJSONObject(0);
 			this.id = message.getLong("id");
 			JSONObject message_body = message.getJSONObject("body");
 			this.body = message_body.getString("plain");
