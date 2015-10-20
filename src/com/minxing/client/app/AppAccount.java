@@ -370,6 +370,9 @@ public class AppAccount extends Account {
 	public User findUserByLoginname(String loginname) {
 		return findUserByLoginname(null, loginname);
 	}
+	
+	
+	
 
 	/**
 	 * 得到某个部门下的全部用户
@@ -444,6 +447,97 @@ public class AppAccount extends Account {
 		}
 
 	}
+	
+	
+	/**
+	 * 获得全部的部门信息
+	 * @return
+	 */
+	public List<Department> getAllDepartments() {
+		ArrayList<Department> departments = new ArrayList<Department>();
+		try {
+			JSONArray arrs = this.getJSONArray("/api/v1/networks/departments");
+			for (int i = 0; i < arrs.length(); i++) {
+				JSONObject o = (JSONObject) arrs.get(i);
+				Department dept = new Department();
+				dept.setId(o.getLong("id"));
+				dept.setCode(o.getString("code"));
+				dept.setFull_name(o.getString("full_name"));
+				dept.setShortName(o.getString("short_name"));
+				dept.setDisplay_order(o.getString("display_order"));
+				dept.setLevel(o.getInt("level"));
+				dept.setParentDeptId(o.getLong("parent_dept_id"));
+				
+				
+				
+				departments.add(dept);
+			}
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+		return departments;
+	}
+	
+	
+	protected List<User> getAllUsers(int page, int pageSize) {
+		ArrayList<User> users = new ArrayList<User>();
+		try {
+			
+			PostParameter p1 = new PostParameter("size", String.valueOf(pageSize));
+			PostParameter p2 = new PostParameter("page", String.valueOf(page));
+			PostParameter[] params = new PostParameter[] {p1,p2};
+			
+			JSONArray arrs = this.getJSONArray("/api/v1/networks/users",params);
+			for (int i = 0; i < arrs.length(); i++) {
+				JSONObject o = (JSONObject) arrs.get(i);
+				User u = new User();			
+				u.setId(o.getLong("id"));
+				u.setName(o.getString("name"));
+				u.setLoginName(o.getString("login_name"));
+				
+				
+				u.setCellvoice1(o.getString("cellvoice1"));
+				u.setCellvoice2(o.getString("preferred_mobile"));
+
+				u.setEmpCode(o.getString("emp_code"));
+				u.setNetworkId(o.getLong("network_id"));
+				u.setRoleCode(o.getInt("role_code"));
+				u.setSuspended(o.getBoolean("suspended"));
+				u.setAvatarUrl(o.getString("avatar_url"));
+
+				JSONArray depts = o.getJSONArray("departs");
+				Department[] allDept = new Department[depts.length()];
+				for (int j = 0, n = depts.length(); j < n; j++) {
+					JSONObject dobj = depts.getJSONObject(j);
+
+					Department udept = new Department();
+					udept.setCode(dobj.getString("dept_code"));
+					udept.setShortName(dobj.getString("dept_short_name"));
+					udept.setFull_name(dobj.getString("dept_full_name"));
+					udept.setTitle(dobj.getString("title"));
+					udept.setDisplay_order(dobj.getString("display_order"));
+					
+					allDept[j] = udept;
+				}
+				u.setAllDepartments(allDept);
+				
+				users.add(u);
+			}
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+		return users;
+	}
+	
+	/**
+	 * 导出全部的用户，包括了管理员，普通用户，公众号
+	 * @param pageSize 每次循环导出的用户大小，最大100
+	 * @return UserPackage对象。
+	 */
+	public UserPackage exportUsers(int pageSize) {
+		return new UserPackage(this,pageSize);
+	}
+	
 
 	/**
 	 * 给出多个loginName，返回login name 对应的用户列表.
@@ -1488,8 +1582,8 @@ public class AppAccount extends Account {
 			JSONObject dobj = depts.getJSONObject(i);
 
 			Department udept = new Department();
-			udept.setDept_code(dobj.getString("dept_code"));
-			udept.setShort_name(dobj.getString("dept_short_name"));
+			udept.setCode(dobj.getString("dept_code"));
+			udept.setShortName(dobj.getString("dept_short_name"));
 			udept.setFull_name(dobj.getString("dept_full_name"));
 			allDept[i] = udept;
 		}

@@ -54,8 +54,10 @@ public class TestAppSyncAccount {
 		dept.setRoot(true);// 设置是否根机构,true-是根机构
 		dept.setDept_code("iii004");// 必填
 		dept.setDisplay_order("10");
-		dept.setShort_name("部门名称2");// 必填
-		// dept.setNetwork_id("usa");
+
+		dept.setShortName("部门名称2");// 必填
+		//dept.setNetwork_id("usa");
+
 
 		// ret_status.getErrorCode()=0，表明是成功，其他信息表明失败了，失败原因为ret_status.getErrorMessage()。其他接口同理。
 
@@ -77,7 +79,7 @@ public class TestAppSyncAccount {
 			// dept.setParent_dept_code("11");
 			if (all)
 				dept.setNetwork_name(networkName);
-			dept.setShort_name("子公司" + (i + 5));
+			dept.setShortName("子公司" + (i + 5));
 			// ret_status.getErrorCode()=0，表明是成功，其他信息表明失败了，失败原因为ret_status.getErrorMessage()
 
 			try {
@@ -128,7 +130,7 @@ public class TestAppSyncAccount {
 				// dept.setParent_dept_code("11");
 				if (all)
 					dept.setNetwork_name(networkName);
-				dept.setShort_name("子公司" + i);
+				dept.setShortName("子公司" + i);
 
 				account.createDepartment(dept);
 
@@ -148,7 +150,7 @@ public class TestAppSyncAccount {
 				// dept.setParent_dept_code("11");
 				if (all)
 					dept.setNetwork_name(networkName);
-				dept.setShort_name("全资子公司" + i);
+				dept.setShortName("全资子公司" + i);
 
 				account.updateDepartment(dept);
 
@@ -313,7 +315,7 @@ public class TestAppSyncAccount {
 			dept.setDept_code("001002");
 			dept.setDisplay_order("12");
 			// dept.setParent_dept_code("11");
-			dept.setShort_name("微软公司");
+			dept.setShortName("微软公司");
 
 			// dept.setFull_name(full_name);
 			// if (all)
@@ -331,7 +333,7 @@ public class TestAppSyncAccount {
 		dept.setDept_code("001001"); // 该字段用于查询更新
 		// dept.setDisplay_order("14");
 		// dept.setParent_dept_code("10");
-		dept.setShort_name("广东");
+		dept.setShortName("广东");
 		// if (all)
 		// dept.setNetwork_name(networkName);
 		// dept.setFull_name(full_name);
