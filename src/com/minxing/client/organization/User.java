@@ -3,6 +3,12 @@ package com.minxing.client.organization;
 import java.util.HashMap;
 
 public class User extends Organization {
+	final public static int ROLE_ADMIN = 0;
+	final public static int ROLE_USER = 1;
+	final public static int ROLE_NOTIFER = 2;
+	final public static int ROLE_OFFICAL_ACCOUNT_USER = 3;
+	final public static int ROLE_APPLICATION_CONNECT_USER = 4;
+	
 	private Long id; // 用户id
 	private String login_name; // Account's login_name
 	private String password; // 密码
@@ -15,11 +21,12 @@ public class User extends Organization {
 	private String emp_code; // 工号
 	private String dept_code; // 部门标识
 	private String display_order; // 排序
+	private Integer role_code; // 角色代码
 
-	private long network_id;
+	private Long network_id;
 
 	private String hidden; // set user be hidden “true” "false"
-	private String suspended; // 是否禁用 “true” "false"
+	private Boolean suspended; // 是否禁用 “true” "false"
 
 	private String with_account; // if true also delete the user account
 	// 扩展字段
@@ -35,6 +42,7 @@ public class User extends Organization {
 	private String ext10;
 	private String network_name;
 	private Department[] allDepartment = null;
+	private String avatar_url;
 
 	public String getNetworkName() {
 		return network_name;
@@ -52,11 +60,11 @@ public class User extends Organization {
 		this.login_name = login_name;
 	}
 
-	public long getNetworkId() {
+	public Long getNetworkId() {
 		return network_id;
 	}
 
-	public void setNetworkId(long network_id) {
+	public void setNetworkId(Long network_id) {
 		this.network_id = network_id;
 	}
 
@@ -147,6 +155,14 @@ public class User extends Organization {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	public Integer getRoleCode() {
+		return role_code;
+	}
+
+	public void setRoleCode(Integer id) {
+		this.role_code = id;
+	}
 
 	public String getHidden() {
 		return hidden;
@@ -164,11 +180,11 @@ public class User extends Organization {
 		this.with_account = with_account;
 	}
 
-	public String getSuspended() {
+	public Boolean getSuspended() {
 		return suspended;
 	}
 
-	public void setSuspended(String suspended) {
+	public void setSuspended(Boolean suspended) {
 		this.suspended = suspended;
 	}
 
@@ -270,7 +286,7 @@ public class User extends Organization {
 		params.put("display_order", this.getDisplay_order());
 
 		params.put("hidden", this.getHidden());
-		params.put("suspended", this.getSuspended());
+		params.put("suspended", this.getSuspended().toString());
 		params.put("display_order", this.getDisplay_order());
 		params.put("network_name", this.getNetworkName());
 
@@ -280,7 +296,21 @@ public class User extends Organization {
 	@Override
 	public String toString() {
 		return "User<id:" + this.id + ",name:" + this.name + ",login_name:"
+				+ ",cellvoice1:" + this.cellvoice1
+				+ ",emp_code:" + this.emp_code
+				+ ",suspended:" + this.suspended
+				+ ",network_id:" + this.network_id
+				+ ",role_code:" + this.role_code
+				+ ",avatar_url:" + this.avatar_url
 				+ this.login_name + ">";
+	}
+
+	public String getAvatarUrl() {
+		return avatar_url;
+	}
+
+	public void setAvatarUrl(String avatar_url) {
+		this.avatar_url = avatar_url;
 	}
 
 	public void setAllDepartments(Department[] allDept) {

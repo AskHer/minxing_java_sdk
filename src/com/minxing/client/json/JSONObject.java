@@ -616,18 +616,22 @@ public class JSONObject {
      * @throws   JSONException if the key is not found or if the value cannot
      *  be converted to a long.
      */
-    public long getLong(String key) throws JSONException {
+    public Long getLong(String key) throws JSONException {
         Object o = get(key);
         
-        if(o==null)  return 0;
+        if(isNull(key))  return null;
+        
         if(o instanceof String){
         	if(o.toString().length()>0){
         		return Long.valueOf((o.toString()));
         	}else
-        		return 0;
+        		return 0L;
         }
+       
+
+        
         return o instanceof Number ?
-                ((Number)o).longValue() : (long)getDouble(key);
+                ((Number)o).longValue() : (long)getInt(key);
     }
 
 
