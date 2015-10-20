@@ -37,4 +37,10 @@ public class UserSetIterator implements Iterator<UserSet> {
 		return us;
 	}
 
+	@Override
+	public void remove() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
