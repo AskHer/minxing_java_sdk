@@ -11,7 +11,7 @@ public class TestGetMessageInfo {
 				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
 		Message[] msgs;
 		try {
-			account.setFromUserLoginName("oajcs3@js.chinamobile.com");
+//			account.setFromUserLoginName("oajcs3@js.chinamobile.com");
 			msgs = account.getAllMessagesInThread(63962L);
 			for (int i = 0; i < msgs.length; i++) {
 				System.out.println("Get message:" + msgs[i]);

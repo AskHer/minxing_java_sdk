@@ -1,5 +1,7 @@
 import com.minxing.client.app.AppAccount;
 import com.minxing.client.model.ApiErrorException;
+import com.minxing.client.organization.Department;
+import com.minxing.client.organization.User;
 
 public class TestGroupAddAdmin {
 	public static void main(String[] args) {
@@ -27,6 +29,12 @@ public class TestGroupAddAdmin {
 
 			for (int i = 0; i < admins.length; i++) {
 				System.out.println("admin:" + admins[i]);
+				
+				User adminUser = account.findUserByLoginname(admins[i].getLoginName());
+				Department[] depts = adminUser.getAllDepartments();
+				for (int j=0;j<depts.length;j++) {
+					System.out.println("dept:" +depts[j]);
+				}
 			}
 
 		} catch (ApiErrorException e) {
