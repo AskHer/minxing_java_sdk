@@ -908,7 +908,7 @@ public class AppAccount extends Account {
 	 *            公众号的秘钥，校验是否可以发送
 	 * @return
 	 */
-	public int sendOcuMessageToUsers(String[] toUserIds, Message message,
+	public OcuMessageSendResult sendOcuMessageToUsers(String[] toUserIds, Message message,
 			String ocuId, String ocuSecret) {
 		return sendOcuMessageToUsers(null, toUserIds, message, ocuId, ocuSecret);
 
@@ -929,7 +929,7 @@ public class AppAccount extends Account {
 	 *            公众号的秘钥，校验是否可以发送
 	 * @return
 	 */
-	public int sendOcuMessageToUsers(String network_id, String[] toUserIds,
+	public OcuMessageSendResult sendOcuMessageToUsers(String network_id, String[] toUserIds,
 			Message message, String ocuId, String ocuSecret) {
 		String direct_to_user_ids = "";
 		Map<String, String> params = new HashMap<String, String>();
@@ -957,7 +957,17 @@ public class AppAccount extends Account {
 				.asJSONObject();
 
 		try {
-			return result_json.getInt("count");
+			int count = result_json.getInt("count");
+			Long messageId = result_json.getLong("message_id");
+			JSONArray user_ids_json = result_json.getJSONArray("to_user_ids");
+			Long[] user_ids = new Long[user_ids_json.length()];
+			
+			for (int i = 0;i<user_ids.length;i++ ) {
+				user_ids[i] = user_ids_json.getLong(i);
+			}
+			
+			OcuMessageSendResult result = new OcuMessageSendResult(count,messageId,user_ids);
+			return result;
 		} catch (JSONException e) {
 			throw new MxException("解析Json出错.", e);
 		}
