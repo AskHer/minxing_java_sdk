@@ -5,7 +5,7 @@ import com.minxing.client.organization.User;
 
 public class TestGroupAddAdmin {
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		
 		AppAccount account = AppAccount.loginByAccessToken(
 				"http://127.0.0.1:3000",
 				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
