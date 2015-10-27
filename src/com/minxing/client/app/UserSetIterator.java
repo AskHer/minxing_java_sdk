@@ -31,7 +31,7 @@ public class UserSetIterator implements Iterator<UserSet> {
 		User[] users = account.getAllUsers(currentPage,userSize).toArray(new User[]{});
 		UserSet us = new UserSet(users);
 		
-		if (users.length < userSize) {
+		if (users.length == 0) {
 			currentPage = -1;
 		}
 		return us;
