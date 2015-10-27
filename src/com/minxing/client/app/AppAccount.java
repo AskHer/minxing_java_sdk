@@ -949,7 +949,7 @@ public class AppAccount extends Account {
 			}
 
 			departement.setId(json_result.getLong("id"));
-			departement.setNetworkId(json_result.getLong("network_id"));
+			departement.setNetwork_name(json_result.getString("network_name"));
 
 			return departement;
 
