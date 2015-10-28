@@ -334,6 +334,7 @@ public class User extends Organization {
 	@Override
 	public String toString() {
 		return "User<id:" + this.id + ",name:" + this.name + ",login_name:"
+				+ ",email:" + this.email
 				+ ",cellvoice1:" + this.cellvoice1
 				+ ",emp_code:" + this.emp_code
 				+ ",suspended:" + this.suspended
