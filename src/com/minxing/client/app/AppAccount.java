@@ -1029,7 +1029,7 @@ public class AppAccount extends Account {
 		try {
 
 			HashMap<String, String> params = new HashMap<String, String>();
-			params.put("user_ids", user_ids);
+			params.put("to_user_ids", user_ids);
 			params.put("message", message);
 			params.put("alert", alert);
 			params.put("alert_extend", alert_extend);
