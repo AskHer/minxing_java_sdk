@@ -271,7 +271,10 @@ public class User extends Organization {
 	public HashMap<String, String> toHash() {
 		HashMap<String, String> params = new HashMap<String, String>();
 
-		
+
+		params.put("id", String.valueOf(this.getId()));
+
+
 		if (null != this.getLoginName()) {
 			params.put("login_name", this.getLoginName());
 		}
