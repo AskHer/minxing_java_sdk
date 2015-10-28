@@ -3,7 +3,7 @@ import com.minxing.client.model.ApiErrorException;
 import com.minxing.client.organization.Department;
 import com.minxing.client.organization.User;
 
-public class TestGroupAddAdmin {
+public class TestGroupRemoveAdmin {
 	public static void main(String[] args) {
 		
 		AppAccount account = AppAccount.loginByAccessToken(
@@ -20,8 +20,9 @@ public class TestGroupAddAdmin {
 
 		try {
 			account.setFromUserLoginName("oajcs3@js.chinamobile.com");
-			account.addGroupAdmin(54L, new String[] {
-					"oajcs3@js.chinamobile.com",
+
+			account.removeGroupAdmin(54L,new String[] {
+
 					"aijianlin@nt.js.chinamobile.com" });
 
 			com.minxing.client.organization.User[] admins = account

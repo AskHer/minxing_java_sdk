@@ -1791,7 +1791,7 @@ public class AppAccount extends Account {
 	 * @throws ApiErrorException
 	 *             如果执行失败，抛出异常
 	 */
-	public void AddGroupAdmin(Long groupId, String[] loginNames)
+	public void addGroupAdmin(Long groupId, String[] loginNames)
 			throws ApiErrorException {
 
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -1962,6 +1962,11 @@ public class AppAccount extends Account {
 
 			throw new ApiErrorException("返回JSON错误", 500, e);
 		}
+		
+	}
+
+	public void removeGroupAdmin(long l, String[] strings) {
+		// TODO Auto-generated method stub
 		
 	}
 
