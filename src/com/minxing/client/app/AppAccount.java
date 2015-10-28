@@ -485,6 +485,7 @@ public class AppAccount extends Account {
 				u.setRoleCode(o.getInt("role_code"));
 				u.setSuspended(o.getBoolean("suspended"));
 				u.setAvatarUrl(o.getString("avatar_url"));
+				u.setEmpCode(o.getString("emp_code"));
 
 				JSONArray depts = o.getJSONArray("departs");
 				Department[] allDept = new Department[depts.length()];
