@@ -271,7 +271,8 @@ public class User extends Organization {
 	public HashMap<String, String> toHash() {
 		HashMap<String, String> params = new HashMap<String, String>();
 
-		
+		params.put("id", String.valueOf(this.getId()));
+
 		if (null != this.getLoginName()) {
 			params.put("login_name", this.getLoginName());
 		}
@@ -334,6 +335,7 @@ public class User extends Organization {
 	@Override
 	public String toString() {
 		return "User<id:" + this.id + ",name:" + this.name + ",login_name:"
+				+ ",email:" + this.email
 				+ ",cellvoice1:" + this.cellvoice1
 				+ ",emp_code:" + this.emp_code
 				+ ",suspended:" + this.suspended

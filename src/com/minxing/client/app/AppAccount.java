@@ -507,14 +507,15 @@ public class AppAccount extends Account {
 				u.setName(o.getString("name"));
 				u.setLoginName(o.getString("login_name"));
 
-				u.setCellvoice1(o.getString("cellvoice1"));
+				u.setCellvoice1(o.getString("cell_phone"));
 				u.setCellvoice2(o.getString("preferred_mobile"));
-
-				u.setEmpCode(o.getString("emp_code"));
+				u.setEmail(o.getString("email"));
+				u.setEmpCode(o.getString("dept_ref_id"));
 				u.setNetworkId(o.getLong("network_id"));
 				u.setRoleCode(o.getInt("role_code"));
 				u.setSuspended(o.getBoolean("suspended"));
 				u.setAvatarUrl(o.getString("avatar_url"));
+				u.setEmpCode(o.getString("emp_code"));
 
 				JSONArray depts = o.getJSONArray("departs");
 				Department[] allDept = new Department[depts.length()];
@@ -522,7 +523,7 @@ public class AppAccount extends Account {
 					JSONObject dobj = depts.getJSONObject(j);
 
 					Department udept = new Department();
-					udept.setCode(dobj.getString("dept_ref_id"));
+					udept.setCode(dobj.getString("dept_code"));
 					udept.setShortName(dobj.getString("dept_short_name"));
 					udept.setFull_name(dobj.getString("dept_full_name"));
 					udept.setTitle(dobj.getString("title"));
@@ -549,6 +550,7 @@ public class AppAccount extends Account {
 	 */
 	public UserPackage exportUsers(int pageSize) {
 		return new UserPackage(this, pageSize);
+
 	}
 
 	/**
@@ -611,6 +613,7 @@ public class AppAccount extends Account {
 		} catch (JSONException e) {
 			throw new MxException("解析Json出错.", e);
 		}
+
 
 	}
 
@@ -1105,7 +1108,7 @@ public class AppAccount extends Account {
 			}
 
 			departement.setId(json_result.getLong("id"));
-			departement.setNetworkId(json_result.getLong("network_id"));
+			departement.setNetwork_name(json_result.getString("network_name"));
 
 			return departement;
 
