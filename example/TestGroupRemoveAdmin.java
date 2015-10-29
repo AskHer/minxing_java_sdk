@@ -21,12 +21,12 @@ public class TestGroupRemoveAdmin {
 		try {
 			account.setFromUserLoginName("oajcs3@js.chinamobile.com");
 
-			account.removeGroupAdmin(54L,new String[] {
+			account.removeGroupAdmin(51L,new String[] {
 
-					"aijianlin@nt.js.chinamobile.com" });
+					"aihl@js.chinamobile.com","aili@js.chinamobile.com" });
 
 			com.minxing.client.organization.User[] admins = account
-					.getGroupAdmins(54L);
+					.getGroupAdmins(51L);
 
 			for (int i = 0; i < admins.length; i++) {
 				System.out.println("admin:" + admins[i]);

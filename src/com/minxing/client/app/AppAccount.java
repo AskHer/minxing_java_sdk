@@ -1815,6 +1815,32 @@ public class AppAccount extends Account {
 				.asJSONObject();
 
 	}
+	
+	
+	/**
+	 * 
+	 * @param groupId
+	 * @param loginNames
+	 */
+	
+	public void removeGroupAdmin(long groupId, String[] loginNames) {
+		
+		HashMap<String, String> params = new HashMap<String, String>();
+		User[] users = this.findUserByLoginNames(loginNames);
+
+		if (users != null && users.length > 0) {
+			StringBuilder user_ids = new StringBuilder();
+			for (int i = 0; i < users.length; i++) {
+				if (i > 0) {
+					user_ids.append(",");
+				}
+				user_ids.append(users[i].getId());
+				delete("/api/v1/groups/" + groupId + "/admins/" +users[i].getId(), params);
+			}
+			
+		}
+
+	}
 
 	/**
 	 * 列出专家支持组
@@ -1965,9 +1991,6 @@ public class AppAccount extends Account {
 		
 	}
 
-	public void removeGroupAdmin(long l, String[] strings) {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 }
