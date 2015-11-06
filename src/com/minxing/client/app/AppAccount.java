@@ -500,6 +500,7 @@ public class AppAccount extends Account {
 
 			JSONArray arrs = this
 					.getJSONArray("/api/v1/networks/users", params);
+			Map<String,String> deptHash = new HashMap<String, String>();
 			for (int i = 0; i < arrs.length(); i++) {
 				JSONObject o = (JSONObject) arrs.get(i);
 				User u = new User();
@@ -517,7 +518,7 @@ public class AppAccount extends Account {
 				u.setAvatarUrl(o.getString("avatar_url"));
 				u.setEmpCode(o.getString("emp_code"));
 
-				JSONArray depts = o.getJSONArray("departs");
+	 			JSONArray depts = o.getJSONArray("departs");
 				Department[] allDept = new Department[depts.length()];
 				for (int j = 0, n = depts.length(); j < n; j++) {
 					JSONObject dobj = depts.getJSONObject(j);
@@ -528,7 +529,18 @@ public class AppAccount extends Account {
 					udept.setFull_name(dobj.getString("dept_full_name"));
 					udept.setTitle(dobj.getString("title"));
 					udept.setDisplay_order(dobj.getString("display_order"));
-
+					String code = udept.getCode();
+					if(code!=null&&!code.equals("")&&!code.equals("null")){
+						if(deptHash.containsKey(code)){
+							udept.setParent_dept_code(deptHash.get(code));
+						}else{
+							JSONObject r = this.get("/api/v1/departments/"+code+"/by_dept_code");
+							String parent_code = r.getString("parent_dept_code");
+							udept.setParent_dept_code(parent_code);
+							deptHash.put(code, parent_code);
+						}
+					}
+					
 					allDept[j] = udept;
 				}
 				u.setAllDepartments(allDept);
