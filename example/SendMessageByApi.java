@@ -11,9 +11,13 @@ public class SendMessageByApi {
 
 	public static void main(String[] args) throws InterruptedException {
 
-		AppAccount account = AppAccount.loginByAccessToken(
-				"http://test1.dehuinet.com:8031",
-				"vSo3xkp7qS-IMA0Zn_cdhusGfxy84cWcYFQ0W0sFPsFMJO-D");
+
+//		AppAccount account = AppAccount.loginByAccessToken(
+//				"http://localhost:3000",
+//				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
+		AppAccount account = AppAccount.loginByPassword("http://test1.dehuinet.com:8031", "t33", "111111", "2");
+		
+
 
 		sendTextMessageToGroup(account);
 
@@ -21,8 +25,13 @@ public class SendMessageByApi {
 		//
 		// sendSharelinkToGroup(account);
 		// sendTextMessageToUser();
+
 		// createConversation(account);
 		// createConversationWithGraph(account);
+
+		//createConversation(account);
+//		createConversationWithGraph(account);
+
 	}
 
 	private static void sendMessageAndFile(AppAccount account) {

@@ -1,6 +1,8 @@
 package com.minxing.client.app;
 
 import java.io.File;
+import java.net.URL;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,6 +35,7 @@ import com.minxing.client.organization.Department;
 import com.minxing.client.organization.Network;
 import com.minxing.client.organization.User;
 import com.minxing.client.utils.HMACSHA1;
+import com.minxing.client.utils.StringUtil;
 import com.minxing.client.utils.UrlEncoder;
 
 public class AppAccount extends Account {
@@ -61,6 +64,7 @@ public class AppAccount extends Account {
 	private AppAccount(String serverURL, String loginName, String password,
 			String clientId) {
 		this._serverURL = serverURL;
+		this.client_id = clientId;
 		PostParameter grant_type = new PostParameter("grant_type", "password");
 		PostParameter login_name = new PostParameter("login_name", loginName);
 		PostParameter passwd = new PostParameter("password", password);
@@ -68,24 +72,39 @@ public class AppAccount extends Account {
 		PostParameter[] params = new PostParameter[] { grant_type, login_name,
 				passwd, app_id };
 
-		HttpClient _client = new HttpClient();
-		Response return_rsp = _client.post(serverURL + "/oauth2/token", params,
-				new PostParameter[] {}, false);
+		try {
+			URL aURL = new URL(_serverURL);
+			String host = aURL.getHost();
+			MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
+			messageDigest.update((host + ":" + loginName).getBytes());
 
-		if (return_rsp.getStatusCode() == 200) {
+			String cm = StringUtil.bytesToHex(messageDigest.digest());
+			PostParameter checksum = new PostParameter("X-CLIENT-CHECKSUM", cm);
+			PostParameter[] header = new PostParameter[] { checksum };
 
-			JSONObject o = return_rsp.asJSONObject();
-			try {
-				_token = o.getString("access_token");
-				client.setToken(this._token);
-				client.setTokenType("Bearer");
+			
+			HttpClient _client = new HttpClient();
+			Response return_rsp = _client.post(serverURL + "/oauth2/token",
+					params, header, false);
 
-			} catch (JSONException e) {
-				throw new MxException("解析返回值出错", e);
+			if (return_rsp.getStatusCode() == 200) {
+
+				JSONObject o = return_rsp.asJSONObject();
+				try {
+					_token = o.getString("access_token");
+					client.setToken(this._token);
+					client.setTokenType("Bearer");
+
+				} catch (JSONException e) {
+					throw new MxException("解析返回值出错", e);
+				}
+			} else {
+				throw new MxException("HTTP " + return_rsp.getStatusCode()
+						+ ": " + return_rsp.getResponseAsString());
 			}
-		} else {
-			throw new MxException("HTTP " + return_rsp.getStatusCode() + ": "
-					+ return_rsp.getResponseAsString());
+
+		} catch (Exception e) {
+			throw new MxException(e);
 		}
 
 	}
