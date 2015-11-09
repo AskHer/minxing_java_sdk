@@ -51,6 +51,7 @@ public class TestGetAllUser {
 					 System.out.println("接入端");
 					 }
 					
+<<<<<<< HEAD
 					 System.out.println("cell1:" + u.getCellvoice1());
 					
 					 Department[] depts = u.getAllDepartments();
@@ -60,6 +61,17 @@ public class TestGetAllUser {
 					 System.out.println("  dept:" + depts[j].getDept_code());
 					 }
 					 }
+=======
+					System.out.println("cell1:" + u.getCellvoice1());
+					
+					Department[] depts = u.getAllDepartments();
+					
+					for (int j = 0; j < depts.length; j++) {
+						System.out.println("  dept:" + depts[j]);
+						System.out.println("  dept:" + depts[j].getDept_code());
+					}
+				}
+>>>>>>> 5.0.0
 
 				}
 			}

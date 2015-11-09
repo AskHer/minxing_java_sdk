@@ -500,7 +500,10 @@ public class AppAccount extends Account {
 
 			JSONArray arrs = this
 					.getJSONArray("/api/v1/networks/users", params);
+<<<<<<< HEAD
 			Map<String,String> deptHash = new HashMap<String, String>();
+=======
+>>>>>>> 5.0.0
 			for (int i = 0; i < arrs.length(); i++) {
 				JSONObject o = (JSONObject) arrs.get(i);
 				User u = new User();
@@ -529,6 +532,7 @@ public class AppAccount extends Account {
 					udept.setFull_name(dobj.getString("dept_full_name"));
 					udept.setTitle(dobj.getString("title"));
 					udept.setDisplay_order(dobj.getString("display_order"));
+<<<<<<< HEAD
 					String code = udept.getCode();
 					if(code!=null&&!code.equals("")&&!code.equals("null")){
 						if(deptHash.containsKey(code)){
@@ -541,6 +545,9 @@ public class AppAccount extends Account {
 						}
 					}
 					
+=======
+
+>>>>>>> 5.0.0
 					allDept[j] = udept;
 				}
 				u.setAllDepartments(allDept);
@@ -562,6 +569,7 @@ public class AppAccount extends Account {
 	 */
 	public UserPackage exportUsers(int pageSize) {
 		return new UserPackage(this, pageSize);
+<<<<<<< HEAD
 
 	}
 
@@ -627,6 +635,8 @@ public class AppAccount extends Account {
 		}
 
 
+=======
+>>>>>>> 5.0.0
 	}
 
 	// ///////////////////////////////////////////////////////////////////////////////////////////////

@@ -327,14 +327,21 @@ public class User extends Organization {
 		if (null != this.getNetworkName()) {
 			params.put("network_name", this.getNetworkName());
 		}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 5.0.0
 
 		return params;
 	}
 
 	@Override
 	public String toString() {
+<<<<<<< HEAD
 		return "User<id:" + this.id + ",name:" + this.name + ",login_name:"+this.login_name 
+=======
+		return "User<id:" + this.id + ",name:" + this.name + ",login_name:"
+>>>>>>> 5.0.0
 				+ ",email:" + this.email
 				+ ",cellvoice1:" + this.cellvoice1
 				+ ",emp_code:" + this.emp_code
