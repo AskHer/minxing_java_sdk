@@ -1,12 +1,10 @@
 package com.minxing.client.http;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -134,7 +132,7 @@ public class HttpClient implements java.io.Serializable {
 	public Response post(String url, PostParameter[] params,
 			PostParameter[] headers, Boolean WithTokenHeader)
 			throws MxException {
-
+		
 		return post(url, params, WithTokenHeader, headers);
 
 	}
@@ -161,8 +159,10 @@ public class HttpClient implements java.io.Serializable {
 		HttpMethodParams param = postMethod.getParams();
 		param.setContentCharset("UTF-8");
 		if (WithTokenHeader) {
+
 			return httpRequest(postMethod, headers);
 		} else {
+
 			return httpRequest(postMethod, WithTokenHeader, headers, null);
 		}
 	}
@@ -264,12 +264,16 @@ public class HttpClient implements java.io.Serializable {
 							"InetAddress.getLocalHost error,check server's hosts and hostname",
 							e);
 				}
-				client.getHostConfiguration().getParams()
-						.setParameter("http.default-headers", headers);
+
+//				client.getHostConfiguration().getParams()
+//						.setParameter("http.default-headers", headers);
 			}
 
 			method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
 					new DefaultHttpMethodRetryHandler(0, false));
+			for (Header h : headers) {
+				method.setRequestHeader(h);
+			}
 			client.executeMethod(method);
 
 			Header content_type = method.getResponseHeader("Content-Type");
@@ -322,17 +326,18 @@ public class HttpClient implements java.io.Serializable {
 		} while (read_count != -1);
 
 		byte[] read_bytes = out.toByteArray();
-		
-		return new String(read_bytes,"UTF-8");
 
-//		BufferedReader br = new BufferedReader(new InputStreamReader(resStream));
-//		StringBuffer resBuffer = new StringBuffer();
-//		String resTemp = "";
-//		while ((resTemp = br.readLine()) != null) {
-//			resBuffer.append(resTemp);
-//		}
-//		String response = resBuffer.toString();
-//		return response;
+		return new String(read_bytes, "UTF-8");
+
+		// BufferedReader br = new BufferedReader(new
+		// InputStreamReader(resStream));
+		// StringBuffer resBuffer = new StringBuffer();
+		// String resTemp = "";
+		// while ((resTemp = br.readLine()) != null) {
+		// resBuffer.append(resTemp);
+		// }
+		// String response = resBuffer.toString();
+		// return response;
 	}
 
 	public static String encodeParameters(PostParameter[] postParams) {
