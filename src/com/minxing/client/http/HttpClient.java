@@ -99,7 +99,7 @@ public class HttpClient implements java.io.Serializable {
 
 	org.apache.commons.httpclient.HttpClient client = null;
 
-	private MultiThreadedHttpConnectionManager connectionManager;
+	
 
 	public HttpClient() {
 		this(150, 30000, 30000, 1024 * 1024);
@@ -107,7 +107,8 @@ public class HttpClient implements java.io.Serializable {
 
 	public HttpClient(int maxConPerHost, int conTimeOutMs, int soTimeOutMs,
 			int maxSize) {
-		connectionManager = new MultiThreadedHttpConnectionManager();
+		
+		MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
 		HttpConnectionManagerParams params = connectionManager.getParams();
 		params.setDefaultMaxConnectionsPerHost(maxConPerHost);
 		params.setConnectionTimeout(conTimeOutMs);
@@ -120,6 +121,8 @@ public class HttpClient implements java.io.Serializable {
 		Protocol myhttps = new Protocol("https", new MySSLSocketFactory(), 443);
 		Protocol.registerProtocol("https", myhttps);
 	}
+	
+
 
 	public Response get0(String url, PostParameter[] headers)
 			throws MxException {
