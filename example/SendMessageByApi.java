@@ -9,20 +9,29 @@ import com.minxing.client.organization.User;
 
 public class SendMessageByApi {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 
-		AppAccount account = AppAccount.loginByAccessToken(
-				"http://localhost:3000",
-				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
 
-		// sendTextMessageToGroup(account);
+//		AppAccount account = AppAccount.loginByAccessToken(
+//				"http://localhost:3000",
+//				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
+		AppAccount account = AppAccount.loginByPassword("http://test1.dehuinet.com:8031", "t33", "111111", "2");
+		
 
-		//sendMessageAndFile(account);
+
+		sendTextMessageToGroup(account);
+
+		// sendMessageAndFile(account);
 		//
 		// sendSharelinkToGroup(account);
 		// sendTextMessageToUser();
+
+		// createConversation(account);
+		// createConversationWithGraph(account);
+
 		//createConversation(account);
-		createConversationWithGraph(account);
+//		createConversationWithGraph(account);
+
 	}
 
 	private static void sendMessageAndFile(AppAccount account) {
@@ -53,7 +62,7 @@ public class SendMessageByApi {
 		System.out.println(conversation);
 
 	}
-	
+
 	private static void createConversationWithGraph(AppAccount account) {
 
 		account.setFromUserLoginName("oajcs3@js.chinamobile.com");
@@ -63,23 +72,28 @@ public class SendMessageByApi {
 		Graph g = new Graph();
 		g.setURL("http://data.com/graph/1");
 		g.setTitle("这个是一个Graph的测试");
-		//g.setAppURL("lantch_app://oa/001");
+		// g.setAppURL("lantch_app://oa/001");
 		g.setDescription("OA讨论的Graph的描述");
-		
-		
-		Conversation conversation = account.createConversationWithGraph(login_names,
-				"大家在这里讨论吧",g);
+
+		Conversation conversation = account.createConversationWithGraph(
+				login_names, "大家在这里讨论吧", g);
 		System.out.println(conversation);
 
 	}
 
-	private static void sendTextMessageToGroup(AppAccount account) {
+	private static void sendTextMessageToGroup(AppAccount account)
+			throws InterruptedException {
 
-		account.setFromUserId(30766);
-
-		// 发送工作圈消息
-		TextMessage message = account.sendTextMessageToGroup(50, "一条工作圈消息");
-		System.out.println(message);
+		account.setFromUserId(96);
+		for (int i = 0; i < 1000; i++) {
+			Thread.sleep(333);
+			// 发送工作圈消息
+			TextMessage message = account.sendTextMessageToGroup(3,
+					"一条工作圈消息 - " + i);
+			System.out.println(message);
+			message = account.sendConversationMessage("20038545", "发送一条聊天信息 - "+i);
+			System.out.println(message);
+		}
 	}
 
 	private static void sendTextMessageToUser() {

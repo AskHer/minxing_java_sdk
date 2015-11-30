@@ -47,7 +47,7 @@
 	</target>
 
 	<target name="jar" description="创建jar的文件" depends="clean,init,javac">
-		<jar basedir="${classes.home}" jarfile="${ant.project.name}-5.0.0.jar">
+		<jar basedir="${classes.home}" jarfile="${ant.project.name}-5.2.0.jar">
 			<manifest>
 				<attribute name="Built-By" value="minxing" />
 				<attribute name="Manifest-Version" value="1.2" />

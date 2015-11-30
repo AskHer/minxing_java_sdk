@@ -23,8 +23,14 @@ public class TextMessage implements Message {
 //			JSONArray message_item = data.getJSONArray("items");
 //			JSONObject message = message_item.getJSONObject(0);
 			this.id = message.getLong("id");
-			JSONObject message_body = message.getJSONObject("body");
-			this.body = message_body.getString("plain");
+			String group_id = message.getString("group_id");
+			if(group_id == null||"".equals(group_id)){
+				this.body = message.getString("body");
+			}else{
+				JSONObject message_body = message.getJSONObject("body");
+				this.body = message_body.getString("plain");
+			}
+			
 			
 			
 		} catch (JSONException e) {

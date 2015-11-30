@@ -1,6 +1,8 @@
 package com.minxing.client.app;
 
 import java.io.File;
+import java.net.URL;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,6 +35,7 @@ import com.minxing.client.organization.Department;
 import com.minxing.client.organization.Network;
 import com.minxing.client.organization.User;
 import com.minxing.client.utils.HMACSHA1;
+import com.minxing.client.utils.StringUtil;
 import com.minxing.client.utils.UrlEncoder;
 
 public class AppAccount extends Account {
@@ -61,6 +64,7 @@ public class AppAccount extends Account {
 	private AppAccount(String serverURL, String loginName, String password,
 			String clientId) {
 		this._serverURL = serverURL;
+		this.client_id = clientId;
 		PostParameter grant_type = new PostParameter("grant_type", "password");
 		PostParameter login_name = new PostParameter("login_name", loginName);
 		PostParameter passwd = new PostParameter("password", password);
@@ -68,24 +72,39 @@ public class AppAccount extends Account {
 		PostParameter[] params = new PostParameter[] { grant_type, login_name,
 				passwd, app_id };
 
-		HttpClient _client = new HttpClient();
-		Response return_rsp = _client.post(serverURL + "/oauth2/token", params,
-				new PostParameter[] {}, false);
+		try {
+			URL aURL = new URL(_serverURL);
+			String host = aURL.getHost();
+			MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
+			messageDigest.update((host + ":" + loginName).getBytes());
 
-		if (return_rsp.getStatusCode() == 200) {
+			String cm = StringUtil.bytesToHex(messageDigest.digest());
+			PostParameter checksum = new PostParameter("X-CLIENT-CHECKSUM", cm);
+			PostParameter[] header = new PostParameter[] { checksum };
 
-			JSONObject o = return_rsp.asJSONObject();
-			try {
-				_token = o.getString("access_token");
-				client.setToken(this._token);
-				client.setTokenType("Bearer");
+			
+			HttpClient _client = new HttpClient();
+			Response return_rsp = _client.post(serverURL + "/oauth2/token",
+					params, header, false);
 
-			} catch (JSONException e) {
-				throw new MxException("解析返回值出错", e);
+			if (return_rsp.getStatusCode() == 200) {
+
+				JSONObject o = return_rsp.asJSONObject();
+				try {
+					_token = o.getString("access_token");
+					client.setToken(this._token);
+					client.setTokenType("Bearer");
+
+				} catch (JSONException e) {
+					throw new MxException("解析返回值出错", e);
+				}
+			} else {
+				throw new MxException("HTTP " + return_rsp.getStatusCode()
+						+ ": " + return_rsp.getResponseAsString());
 			}
-		} else {
-			throw new MxException("HTTP " + return_rsp.getStatusCode() + ": "
-					+ return_rsp.getResponseAsString());
+
+		} catch (Exception e) {
+			throw new MxException(e);
 		}
 
 	}
@@ -500,6 +519,9 @@ public class AppAccount extends Account {
 
 			JSONArray arrs = this
 					.getJSONArray("/api/v1/networks/users", params);
+
+			Map<String,String> deptHash = new HashMap<String, String>();
+
 			for (int i = 0; i < arrs.length(); i++) {
 				JSONObject o = (JSONObject) arrs.get(i);
 				User u = new User();
@@ -515,19 +537,32 @@ public class AppAccount extends Account {
 				u.setRoleCode(o.getInt("role_code"));
 				u.setSuspended(o.getBoolean("suspended"));
 				u.setAvatarUrl(o.getString("avatar_url"));
+				u.setEmpCode(o.getString("emp_code"));
 
-				JSONArray depts = o.getJSONArray("departs");
+	 			JSONArray depts = o.getJSONArray("departs");
 				Department[] allDept = new Department[depts.length()];
 				for (int j = 0, n = depts.length(); j < n; j++) {
 					JSONObject dobj = depts.getJSONObject(j);
 
 					Department udept = new Department();
-					udept.setCode(dobj.getString("dept_ref_id"));
+					udept.setCode(dobj.getString("dept_code"));
 					udept.setShortName(dobj.getString("dept_short_name"));
 					udept.setFull_name(dobj.getString("dept_full_name"));
 					udept.setTitle(dobj.getString("title"));
 					udept.setDisplay_order(dobj.getString("display_order"));
 
+					String code = udept.getCode();
+					if(code!=null&&!code.equals("")&&!code.equals("null")){
+						if(deptHash.containsKey(code)){
+							udept.setParent_dept_code(deptHash.get(code));
+						}else{
+							JSONObject r = this.get("/api/v1/departments/"+code+"/by_dept_code");
+							String parent_code = r.getString("parent_dept_code");
+							udept.setParent_dept_code(parent_code);
+							deptHash.put(code, parent_code);
+						}
+					}
+					
 					allDept[j] = udept;
 				}
 				u.setAllDepartments(allDept);
@@ -549,7 +584,6 @@ public class AppAccount extends Account {
 	 */
 	public UserPackage exportUsers(int pageSize) {
 		return new UserPackage(this, pageSize);
-
 	}
 
 	/**
@@ -1031,7 +1065,7 @@ public class AppAccount extends Account {
 		try {
 
 			HashMap<String, String> params = new HashMap<String, String>();
-			params.put("user_ids", user_ids);
+			params.put("to_user_ids", user_ids);
 			params.put("message", message);
 			params.put("alert", alert);
 			params.put("alert_extend", alert_extend);
@@ -1793,7 +1827,7 @@ public class AppAccount extends Account {
 	 * @throws ApiErrorException
 	 *             如果执行失败，抛出异常
 	 */
-	public void AddGroupAdmin(Long groupId, String[] loginNames)
+	public void addGroupAdmin(Long groupId, String[] loginNames)
 			throws ApiErrorException {
 
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -1815,6 +1849,32 @@ public class AppAccount extends Account {
 
 		post("/api/v1/groups/" + groupId + "/admins", params, headers)
 				.asJSONObject();
+
+	}
+	
+	
+	/**
+	 * 
+	 * @param groupId
+	 * @param loginNames
+	 */
+	
+	public void removeGroupAdmin(long groupId, String[] loginNames) {
+		
+		HashMap<String, String> params = new HashMap<String, String>();
+		User[] users = this.findUserByLoginNames(loginNames);
+
+		if (users != null && users.length > 0) {
+			StringBuilder user_ids = new StringBuilder();
+			for (int i = 0; i < users.length; i++) {
+				if (i > 0) {
+					user_ids.append(",");
+				}
+				user_ids.append(users[i].getId());
+				delete("/api/v1/groups/" + groupId + "/admins/" +users[i].getId(), params);
+			}
+			
+		}
 
 	}
 
@@ -1969,5 +2029,7 @@ public class AppAccount extends Account {
 		}
 
 	}
+
+
 
 }
