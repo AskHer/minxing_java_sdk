@@ -443,7 +443,7 @@ public class AppAccount extends Account {
 			JSONObject o = this.get("/api/v1/users/by_login_name", params);
 
 			User user = null;
-			if (o.getLong("id") > 0) {
+			if (o!=null && o.length()>0 && o.getLong("id") > 0) {
 				user = new User();
 				user.setId(o.getLong("id"));
 				user.setLoginName(o.getString("login_name"));
@@ -1175,8 +1175,8 @@ public class AppAccount extends Account {
 				throw new ApiErrorException(code, msg);
 
 			}
-			departement.setId(json_result.getLong("id"));
-			departement.setNetworkId(json_result.getLong("network_id"));
+//			departement.setId(json_result.getLong("id"));
+//			departement.setNetworkId(json_result.getLong("network_id"));
 
 			return departement;
 
