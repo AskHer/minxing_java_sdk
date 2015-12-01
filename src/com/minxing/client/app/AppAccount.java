@@ -82,7 +82,6 @@ public class AppAccount extends Account {
 			PostParameter checksum = new PostParameter("X-CLIENT-CHECKSUM", cm);
 			PostParameter[] header = new PostParameter[] { checksum };
 
-			
 			HttpClient _client = new HttpClient();
 			Response return_rsp = _client.post(serverURL + "/oauth2/token",
 					params, header, false);
@@ -443,7 +442,7 @@ public class AppAccount extends Account {
 			JSONObject o = this.get("/api/v1/users/by_login_name", params);
 
 			User user = null;
-			if (o!=null && o.length()>0 && o.getLong("id") > 0) {
+			if (o.getLong("id") > 0) {
 				user = new User();
 				user.setId(o.getLong("id"));
 				user.setLoginName(o.getString("login_name"));
@@ -520,7 +519,7 @@ public class AppAccount extends Account {
 			JSONArray arrs = this
 					.getJSONArray("/api/v1/networks/users", params);
 
-			Map<String,String> deptHash = new HashMap<String, String>();
+			Map<String, String> deptHash = new HashMap<String, String>();
 
 			for (int i = 0; i < arrs.length(); i++) {
 				JSONObject o = (JSONObject) arrs.get(i);
@@ -539,7 +538,7 @@ public class AppAccount extends Account {
 				u.setAvatarUrl(o.getString("avatar_url"));
 				u.setEmpCode(o.getString("emp_code"));
 
-	 			JSONArray depts = o.getJSONArray("departs");
+				JSONArray depts = o.getJSONArray("departs");
 				Department[] allDept = new Department[depts.length()];
 				for (int j = 0, n = depts.length(); j < n; j++) {
 					JSONObject dobj = depts.getJSONObject(j);
@@ -552,17 +551,20 @@ public class AppAccount extends Account {
 					udept.setDisplay_order(dobj.getString("display_order"));
 
 					String code = udept.getCode();
-					if(code!=null&&!code.equals("")&&!code.equals("null")){
-						if(deptHash.containsKey(code)){
+					if (code != null && !code.equals("")
+							&& !code.equals("null")) {
+						if (deptHash.containsKey(code)) {
 							udept.setParent_dept_code(deptHash.get(code));
-						}else{
-							JSONObject r = this.get("/api/v1/departments/"+code+"/by_dept_code");
-							String parent_code = r.getString("parent_dept_code");
+						} else {
+							JSONObject r = this.get("/api/v1/departments/"
+									+ code + "/by_dept_code");
+							String parent_code = r
+									.getString("parent_dept_code");
 							udept.setParent_dept_code(parent_code);
 							deptHash.put(code, parent_code);
 						}
 					}
-					
+
 					allDept[j] = udept;
 				}
 				u.setAllDepartments(allDept);
@@ -943,8 +945,8 @@ public class AppAccount extends Account {
 	 *            公众号的秘钥，校验是否可以发送
 	 * @return
 	 */
-	public OcuMessageSendResult sendOcuMessageToUsers(String[] toUserIds, Message message,
-			String ocuId, String ocuSecret) {
+	public OcuMessageSendResult sendOcuMessageToUsers(String[] toUserIds,
+			Message message, String ocuId, String ocuSecret) {
 		return sendOcuMessageToUsers(null, toUserIds, message, ocuId, ocuSecret);
 
 	}
@@ -964,8 +966,8 @@ public class AppAccount extends Account {
 	 *            公众号的秘钥，校验是否可以发送
 	 * @return
 	 */
-	public OcuMessageSendResult sendOcuMessageToUsers(String network_id, String[] toUserIds,
-			Message message, String ocuId, String ocuSecret) {
+	public OcuMessageSendResult sendOcuMessageToUsers(String network_id,
+			String[] toUserIds, Message message, String ocuId, String ocuSecret) {
 		String direct_to_user_ids = "";
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("body", message.getBody());
@@ -996,12 +998,13 @@ public class AppAccount extends Account {
 			Long messageId = result_json.getLong("message_id");
 			JSONArray user_ids_json = result_json.getJSONArray("to_user_ids");
 			Long[] user_ids = new Long[user_ids_json.length()];
-			
-			for (int i = 0;i<user_ids.length;i++ ) {
+
+			for (int i = 0; i < user_ids.length; i++) {
 				user_ids[i] = user_ids_json.getLong(i);
 			}
-			
-			OcuMessageSendResult result = new OcuMessageSendResult(count,messageId,user_ids);
+
+			OcuMessageSendResult result = new OcuMessageSendResult(count,
+					messageId, user_ids);
 			return result;
 		} catch (JSONException e) {
 			throw new MxException("解析Json出错.", e);
@@ -1175,8 +1178,8 @@ public class AppAccount extends Account {
 				throw new ApiErrorException(code, msg);
 
 			}
-//			departement.setId(json_result.getLong("id"));
-//			departement.setNetworkId(json_result.getLong("network_id"));
+			departement.setId(json_result.getLong("id"));
+			departement.setNetworkId(json_result.getLong("network_id"));
 
 			return departement;
 
@@ -1850,16 +1853,15 @@ public class AppAccount extends Account {
 				.asJSONObject();
 
 	}
-	
-	
+
 	/**
 	 * 
 	 * @param groupId
 	 * @param loginNames
 	 */
-	
+
 	public void removeGroupAdmin(long groupId, String[] loginNames) {
-		
+
 		HashMap<String, String> params = new HashMap<String, String>();
 		User[] users = this.findUserByLoginNames(loginNames);
 
@@ -1870,9 +1872,10 @@ public class AppAccount extends Account {
 					user_ids.append(",");
 				}
 				user_ids.append(users[i].getId());
-				delete("/api/v1/groups/" + groupId + "/admins/" +users[i].getId(), params);
+				delete("/api/v1/groups/" + groupId + "/admins/"
+						+ users[i].getId(), params);
 			}
-			
+
 		}
 
 	}
@@ -1973,11 +1976,14 @@ public class AppAccount extends Account {
 		return userList.toArray(new User[userList.size()]);
 
 	}
-	
+
 	/**
 	 * 删除工作圈
-	 * @param groupId 工作圈的Id
-	 * @throws ApiErrorException 如果阐述产生异常，则扔出该Exception.
+	 * 
+	 * @param groupId
+	 *            工作圈的Id
+	 * @throws ApiErrorException
+	 *             如果阐述产生异常，则扔出该Exception.
 	 */
 
 	public void removeGroup(long groupId) throws ApiErrorException {
@@ -2001,15 +2007,17 @@ public class AppAccount extends Account {
 
 	}
 
-	public void updateGroupInfo(long groupId, String name, String description) throws ApiErrorException {
-		
+	public void updateGroupInfo(long groupId, String name, String description)
+			throws ApiErrorException {
+
 		HashMap<String, String> params = new HashMap<String, String>();
-		
-		params.put("name",name);
-		params.put("description", description);
-		
-		JSONObject json_result = this.put("/api/v1/groups/" + groupId,
-				params);
+
+		params.put("name", name);
+		if (description != null) {
+			params.put("description", description);
+		}
+
+		JSONObject json_result = this.put("/api/v1/groups/" + groupId, params);
 
 		try {
 			int code = json_result.getInt("code");
@@ -2023,9 +2031,7 @@ public class AppAccount extends Account {
 
 			throw new ApiErrorException("返回JSON错误", 500, e);
 		}
-		
+
 	}
-
-
 
 }
