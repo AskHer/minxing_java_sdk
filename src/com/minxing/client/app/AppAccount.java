@@ -82,7 +82,6 @@ public class AppAccount extends Account {
 			PostParameter checksum = new PostParameter("X-CLIENT-CHECKSUM", cm);
 			PostParameter[] header = new PostParameter[] { checksum };
 
-			
 			HttpClient _client = new HttpClient();
 			Response return_rsp = _client.post(serverURL + "/oauth2/token",
 					params, header, false);
@@ -520,7 +519,7 @@ public class AppAccount extends Account {
 			JSONArray arrs = this
 					.getJSONArray("/api/v1/networks/users", params);
 
-			Map<String,String> deptHash = new HashMap<String, String>();
+			Map<String, String> deptHash = new HashMap<String, String>();
 
 			for (int i = 0; i < arrs.length(); i++) {
 				JSONObject o = (JSONObject) arrs.get(i);
@@ -539,7 +538,7 @@ public class AppAccount extends Account {
 				u.setAvatarUrl(o.getString("avatar_url"));
 				u.setEmpCode(o.getString("emp_code"));
 
-	 			JSONArray depts = o.getJSONArray("departs");
+				JSONArray depts = o.getJSONArray("departs");
 				Department[] allDept = new Department[depts.length()];
 				for (int j = 0, n = depts.length(); j < n; j++) {
 					JSONObject dobj = depts.getJSONObject(j);
@@ -552,17 +551,20 @@ public class AppAccount extends Account {
 					udept.setDisplay_order(dobj.getString("display_order"));
 
 					String code = udept.getCode();
-					if(code!=null&&!code.equals("")&&!code.equals("null")){
-						if(deptHash.containsKey(code)){
+					if (code != null && !code.equals("")
+							&& !code.equals("null")) {
+						if (deptHash.containsKey(code)) {
 							udept.setParent_dept_code(deptHash.get(code));
-						}else{
-							JSONObject r = this.get("/api/v1/departments/"+code+"/by_dept_code");
-							String parent_code = r.getString("parent_dept_code");
+						} else {
+							JSONObject r = this.get("/api/v1/departments/"
+									+ code + "/by_dept_code");
+							String parent_code = r
+									.getString("parent_dept_code");
 							udept.setParent_dept_code(parent_code);
 							deptHash.put(code, parent_code);
 						}
 					}
-					
+
 					allDept[j] = udept;
 				}
 				u.setAllDepartments(allDept);
@@ -1851,16 +1853,15 @@ public class AppAccount extends Account {
 				.asJSONObject();
 
 	}
-	
-	
+
 	/**
 	 * 
 	 * @param groupId
 	 * @param loginNames
 	 */
-	
+
 	public void removeGroupAdmin(long groupId, String[] loginNames) {
-		
+
 		HashMap<String, String> params = new HashMap<String, String>();
 		User[] users = this.findUserByLoginNames(loginNames);
 
@@ -1871,9 +1872,10 @@ public class AppAccount extends Account {
 					user_ids.append(",");
 				}
 				user_ids.append(users[i].getId());
-				delete("/api/v1/groups/" + groupId + "/admins/" +users[i].getId(), params);
+				delete("/api/v1/groups/" + groupId + "/admins/"
+						+ users[i].getId(), params);
 			}
-			
+
 		}
 
 	}
@@ -2011,7 +2013,10 @@ public class AppAccount extends Account {
 		HashMap<String, String> params = new HashMap<String, String>();
 
 		params.put("name", name);
-		params.put("description", description);
+
+		if (description != null) {
+			params.put("description", description);
+		}
 
 		JSONObject json_result = this.put("/api/v1/groups/" + groupId, params);
 
@@ -2028,8 +2033,7 @@ public class AppAccount extends Account {
 			throw new ApiErrorException("返回JSON错误", 500, e);
 		}
 
+
 	}
-
-
 
 }

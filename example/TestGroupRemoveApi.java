@@ -13,7 +13,7 @@ public class TestGroupRemoveApi {
 			account.setFromUserLoginName("oajcs3@js.chinamobile.com");
 			
 			//删除组需要耗时很长时间，有可能超时
-			account.removeGroup(127L);
+			account.removeGroup(144L);
 
 		} catch (ApiErrorException e) {
 			e.printStackTrace();
