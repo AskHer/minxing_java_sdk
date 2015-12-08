@@ -432,13 +432,19 @@ public class AppAccount extends Account {
 	public User findUserByLoginname(String network_name, String loginname) {
 
 		try {
-
+			PostParameter[] params = null;
 			PostParameter login_name_p = new PostParameter("login_name",
 					loginname);
-			PostParameter network_name_p = new PostParameter("network_name",
-					network_name);
-			PostParameter[] params = new PostParameter[] { login_name_p,
-					network_name_p };
+			if(network_name!=null){
+				PostParameter network_name_p = new PostParameter("network_name",
+						network_name);
+				params = new PostParameter[] { login_name_p,
+						network_name_p };
+			}else{
+				params = new PostParameter[] { login_name_p};
+			}
+			
+			
 
 			JSONObject o = this.get("/api/v1/users/by_login_name", params);
 
