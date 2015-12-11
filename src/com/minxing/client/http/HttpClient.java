@@ -311,6 +311,7 @@ public class HttpClient implements java.io.Serializable {
 			throw new MxException(ioe.getMessage(), ioe, responseCode);
 		} finally {
 			method.releaseConnection();
+			client.getHttpConnectionManager().closeIdleConnections(0);
 		}
 
 	}
