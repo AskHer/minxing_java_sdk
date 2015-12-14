@@ -7,7 +7,7 @@ import com.minxing.client.app.AppAccount;
 import com.minxing.client.json.JSONObject;
 import com.minxing.client.model.MxException;
 
-public class TestGetDepartmentByApi {
+public class TestDepartmentChangeApi {
 	public static void main(String[] args) {
 		JSONObject root = getDepartmentsUsers(-1,-1,0,20);
 //		JSONObject subdepartment = getDepartmentsUsers(-1,-1,4,20);
