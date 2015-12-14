@@ -64,6 +64,11 @@ public class MxException extends RuntimeException {
 
 	}
 
+	public MxException(String msg, Throwable cause, int statusCode) {
+		super(msg, cause);
+		this.statusCode = statusCode;
+	}
+
 	public int getStatusCode() {
 		return this.statusCode;
 	}
