@@ -15,7 +15,7 @@ public class TestChangeDepartmentByApi {
 		try {
 			Department de = new Department(); 
 			de.setDept_code("001022"); // department eeee
-			de.setParent_dept_code("23570000"); // new department parent 23570000
+			de.setParent_dept_code("23000000"); // new department parent 23570000
 			account.updateDepartment(de);
 			
 		} catch (MxException e) {
