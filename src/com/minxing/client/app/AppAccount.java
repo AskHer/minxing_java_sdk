@@ -487,6 +487,28 @@ public class AppAccount extends Account {
 
 	}
 
+	public Department findDepartmentByDeptCode(String dept_code) {
+
+		Department dept = null;
+
+		try {
+
+			JSONObject o = this.get("/api/v1/departments/" + dept_code
+					+ "/by_dept_code");
+			if (o.getString("dept_code") != null
+					&& !"".equals(o.getString("dept_code"))) {
+				dept = new Department();
+				dept.setDept_code(o.getString("dept_code"));
+				dept.setShortName(o.getString("short_name"));
+				dept.setFull_name(o.getString("full_name"));
+				dept.setDisplay_order(o.getString("display_order"));
+				dept.setParent_dept_code(o.getString("parent_dept_code"));
+			}
+			return dept;
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+	}
 	/**
 	 * 获得全部的部门信息
 	 * 
