@@ -1056,10 +1056,14 @@ public class AppAccount extends Account {
 			int count = result_json.getInt("count");
 			Long messageId = result_json.getLong("message_id");
 			JSONArray user_ids_json = result_json.getJSONArray("to_user_ids");
-			Long[] user_ids = new Long[user_ids_json.length()];
-
-			for (int i = 0; i < user_ids.length; i++) {
-				user_ids[i] = user_ids_json.getLong(i);
+			
+			Long[] user_ids=null;
+			if(user_ids_json!=null){
+				user_ids = new Long[user_ids_json.length()];
+	
+				for (int i = 0; i < user_ids.length; i++) {
+					user_ids[i] = user_ids_json.getLong(i);
+				}
 			}
 
 			OcuMessageSendResult result = new OcuMessageSendResult(count,
