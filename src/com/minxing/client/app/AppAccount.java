@@ -476,7 +476,7 @@ public class AppAccount extends Account {
 			JSONObject o = this.get("/api/v1/users/by_login_name", params);
 
 			User user = null;
-			if (o.getLong("id") > 0) {
+			if (o!=null && o.getLong("id") !=null && o.getLong("id") > 0) {
 				user = new User();
 				user.setId(o.getLong("id"));
 				user.setLoginName(o.getString("login_name"));
