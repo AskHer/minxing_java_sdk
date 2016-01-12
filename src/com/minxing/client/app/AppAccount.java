@@ -363,6 +363,37 @@ public class AppAccount extends Account {
 	}
 
 	/**
+	 * 上传头像
+	 * 
+	 * @param loginName
+	 *            登录名 给这个登录名的用户上传头像
+	 * @param avatarPath
+	 *            头像文件的路径
+	 * @return
+	 */
+	public boolean uploadUserAvatar(String loginName, String avatarPath) {
+		this.setFromUserLoginName(loginName);
+		File file = new File(avatarPath);
+		if (!file.exists()) {
+			throw new MxException("头像文件不存在 avatarPath = " + avatarPath);
+		}
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("auto_save", "true");
+		Map<String, String> headers = new HashMap<String, String>();
+
+		JSONArray arr = null;
+		try {
+			arr = this.post("api/v1/photos", params, headers, file);
+
+			JSONObject o = arr.getJSONObject(0);
+			return Integer.parseInt(o.get("id").toString()) > 0?true:false;
+		} catch (Exception e) {
+			return false;
+		}
+
+	}
+
+	/**
 	 * 获得某个用户的Id.
 	 * 
 	 * @param loginname
@@ -434,16 +465,13 @@ public class AppAccount extends Account {
 			PostParameter[] params = null;
 			PostParameter login_name_p = new PostParameter("login_name",
 					loginname);
-			if(network_name!=null){
-				PostParameter network_name_p = new PostParameter("network_name",
-						network_name);
-				params = new PostParameter[] { login_name_p,
-						network_name_p };
-			}else{
-				params = new PostParameter[] { login_name_p};
+			if (network_name != null) {
+				PostParameter network_name_p = new PostParameter(
+						"network_name", network_name);
+				params = new PostParameter[] { login_name_p, network_name_p };
+			} else {
+				params = new PostParameter[] { login_name_p };
 			}
-			
-			
 
 			JSONObject o = this.get("/api/v1/users/by_login_name", params);
 
@@ -462,18 +490,18 @@ public class AppAccount extends Account {
 				user.setEmpCode(o.getString("emp_code"));
 
 				JSONArray depts = o.getJSONArray("departs");
-				if(depts!=null && depts.length()>0){
+				if (depts != null && depts.length() > 0) {
 					Department[] allDept = new Department[depts.length()];
 					for (int j = 0, n = depts.length(); j < n; j++) {
 						JSONObject dobj = depts.getJSONObject(j);
-	
+
 						Department udept = new Department();
 						udept.setCode(dobj.getString("dept_ref_id"));
 						udept.setShortName(dobj.getString("dept_short_name"));
 						udept.setFull_name(dobj.getString("dept_full_name"));
 						udept.setTitle(dobj.getString("title"));
 						udept.setDisplay_order(dobj.getString("display_order"));
-	
+
 						allDept[j] = udept;
 					}
 					user.setAllDepartments(allDept);
@@ -485,6 +513,29 @@ public class AppAccount extends Account {
 			throw new MxException("解析Json出错.", e);
 		}
 
+	}
+
+	public Department findDepartmentByDeptCode(String dept_code) {
+
+		Department dept = null;
+
+		try {
+
+			JSONObject o = this.get("/api/v1/departments/" + dept_code
+					+ "/by_dept_code");
+			if (o.getString("dept_code") != null
+					&& !"".equals(o.getString("dept_code"))) {
+				dept = new Department();
+				dept.setDept_code(o.getString("dept_code"));
+				dept.setShortName(o.getString("short_name"));
+				dept.setFull_name(o.getString("full_name"));
+				dept.setDisplay_order(o.getString("display_order"));
+				dept.setParent_dept_code(o.getString("parent_dept_code"));
+			}
+			return dept;
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
 	}
 
 	/**
@@ -1005,10 +1056,14 @@ public class AppAccount extends Account {
 			int count = result_json.getInt("count");
 			Long messageId = result_json.getLong("message_id");
 			JSONArray user_ids_json = result_json.getJSONArray("to_user_ids");
-			Long[] user_ids = new Long[user_ids_json.length()];
-
-			for (int i = 0; i < user_ids.length; i++) {
-				user_ids[i] = user_ids_json.getLong(i);
+			
+			Long[] user_ids=null;
+			if(user_ids_json!=null){
+				user_ids = new Long[user_ids_json.length()];
+	
+				for (int i = 0; i < user_ids.length; i++) {
+					user_ids[i] = user_ids_json.getLong(i);
+				}
 			}
 
 			OcuMessageSendResult result = new OcuMessageSendResult(count,

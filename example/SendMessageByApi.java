@@ -15,11 +15,12 @@ public class SendMessageByApi {
 //		AppAccount account = AppAccount.loginByAccessToken(
 //				"http://localhost:3000",
 //				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
-		AppAccount account = AppAccount.loginByPassword("http://test1.dehuinet.com:8031", "t33", "111111", "2");
+		AppAccount account = AppAccount.loginByAccessToken("http://127.0.0.1:3000", "qd37z3o2AuJhjGpaa9kWEyOmixueaJI1ILhnlKQTGe4Ao4bp");
+		account.uploadUserAvatar("90001", "/Users/helhades/Documents/html5_notification/www/img/img_headPic3.png");
 		
 
 
-		sendTextMessageToGroup(account);
+//		sendTextMessageToGroup(account);
 
 		// sendMessageAndFile(account);
 		//

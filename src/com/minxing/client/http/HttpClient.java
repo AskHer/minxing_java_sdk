@@ -14,6 +14,7 @@ import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -108,7 +109,8 @@ public class HttpClient implements java.io.Serializable {
 	public HttpClient(int maxConPerHost, int conTimeOutMs, int soTimeOutMs,
 			int maxSize) {
 		
-		MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+//		MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+		SimpleHttpConnectionManager connectionManager = new SimpleHttpConnectionManager(true);
 		HttpConnectionManagerParams params = connectionManager.getParams();
 		params.setDefaultMaxConnectionsPerHost(maxConPerHost);
 		params.setConnectionTimeout(conTimeOutMs);
@@ -311,7 +313,7 @@ public class HttpClient implements java.io.Serializable {
 			throw new MxException(ioe.getMessage(), ioe, responseCode);
 		} finally {
 			method.releaseConnection();
-			client.getHttpConnectionManager().closeIdleConnections(0);
+//			client.getHttpConnectionManager().closeIdleConnections(0);
 		}
 
 	}
