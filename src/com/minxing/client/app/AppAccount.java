@@ -1605,10 +1605,17 @@ public class AppAccount extends Account {
 			JSONObject o = this.get("/api/v1/oauth/user_info/" + token);
 
 			String by_app_id = o.getString("by_app_id");
+			String by_ocu_id = o.getString("by_ocu_id");
 
 			if (app_id != null && !app_id.equals(by_app_id)) {
-				throw new MxVerifyException("校验Token:" + token
-						+ "错误, token创建的AppId为" + by_app_id + ",但期望的是:" + app_id);
+				if (by_ocu_id != null) {
+					throw new MxVerifyException("校验Token:" + token
+							+ "错误, token是ocu_id:" + by_ocu_id + "创建的,但期望的是app_id:" + app_id);	
+				} else {
+					throw new MxVerifyException("校验Token:" + token
+							+ "错误, token创建的AppId为" + by_app_id + ",但期望的是:" + app_id);	
+				}
+				
 			}
 
 			return getUser(o);
@@ -1651,9 +1658,11 @@ public class AppAccount extends Account {
 					created_id = "ocu_id:" + by_ocu_id;
 				}
 
-				throw new MxVerifyException("Verify token:" + token
-						+ "Failed, token created by " + created_id + ",not:"
+				throw new MxVerifyException("校验Token:" + token
+						+ "错误, token的创建是 " + created_id + ",但期望是ocu_id:"
 						+ ocu_id);
+				
+				
 			}
 			return getUser(o);
 		} catch (JSONException e) {
