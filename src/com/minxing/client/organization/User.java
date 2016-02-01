@@ -40,6 +40,7 @@ public class User extends Organization {
 	private String ext8;
 	private String ext9;
 	private String ext10;
+	private String position;
 	private String network_name;
 	private Department[] allDepartment = null;
 	private String avatar_url;
@@ -327,6 +328,9 @@ public class User extends Organization {
 		if (null != this.getNetworkName()) {
 			params.put("network_name", this.getNetworkName());
 		}
+		if (null != this.getPosition()) {
+			params.put("position", this.getPosition());
+		}
 
 		return params;
 	}
@@ -341,6 +345,7 @@ public class User extends Organization {
 				+ ",network_id:" + this.network_id
 				+ ",role_code:" + this.role_code
 				+ ",avatar_url:" + this.avatar_url
+				+ ",position:" + this.position
 				+ ">";
 	}
 
@@ -363,5 +368,13 @@ public class User extends Organization {
 		}
 		return this.allDepartment;
 
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
 	}
 }
