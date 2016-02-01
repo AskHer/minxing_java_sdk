@@ -332,6 +332,7 @@ public class User extends Organization {
 			params.put("position", this.getPosition());
 		}
 
+
 		return params;
 	}
 
