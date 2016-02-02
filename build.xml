@@ -7,7 +7,9 @@
 
 
 	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
-		base.classpath 设置编译的java的类 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+		base.classpath 设置编译的java的类 
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+	-->
 	<path id="base.classpath">
 		<fileset dir="${lib.home}">
 			<include name="**/*.jar" />
@@ -73,11 +75,6 @@
 			destjar="minxing-java-sdk-5.2.0-jdk14.jar" smart="true" verify="true"
 			failonwarning="false">
 			<fileset dir="${classes.home}" includes="**/*.class" />
-
-			<classpath>
-				<!-- <fileset dir="../j2sdk1.4.2_17/jre/lib" includes="**/*.jar"/> -->
-
-			</classpath>
 			<classpath refid="base.classpath" />
 		</retrotranslator>
 
@@ -94,8 +91,7 @@
 			<format property="current.time" pattern="yyyy-MM-dd HH:mm:ss" />
 		</tstamp>
 		<echo file="version.txt" append="false">Version : ${buildVersion}
-			Date :
-			${current.time}
+Date :${current.time}
 		</echo>
 	</target>
 
