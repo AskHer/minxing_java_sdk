@@ -4,6 +4,7 @@
 	<property name="src.home" value="src" />
 	<property name="classes.home" value="bin" />
 	<property name="dist.home" value="dist" />
+	<property name="version" value="5.2.0" />
 
 
 	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
@@ -34,7 +35,7 @@
 
 
 
-	<target name="all" description="整体的操作" depends="clean,init,javac,jar">
+	<target name="all" description="整体的操作" depends="clean,init,javac,jar,jar14">
 	</target>
 
 
@@ -48,7 +49,7 @@
 	</target>
 
 	<target name="jar" description="创建jar的文件" depends="clean,init,javac">
-		<jar basedir="${classes.home}" jarfile="${ant.project.name}-5.2.0.jar">
+		<jar basedir="${classes.home}" jarfile="${ant.project.name}-${version}.jar">
 			<manifest>
 				<attribute name="Built-By" value="minxing" />
 				<attribute name="Manifest-Version" value="1.2" />
@@ -72,7 +73,7 @@
 	<target name="jar14" depends="clean,init,javac">
 
 		<retrotranslator target="1.4"
-			destjar="minxing-java-sdk-5.2.0-jdk14.jar" smart="true" verify="true"
+			destjar="${ant.project.name}-${version}-jdk14.jar" smart="true" verify="true"
 			failonwarning="false">
 			<fileset dir="${classes.home}" includes="**/*.class" />
 			<classpath refid="base.classpath" />
@@ -82,7 +83,7 @@
 	</target>
 
 
-
+	
 
 
 
