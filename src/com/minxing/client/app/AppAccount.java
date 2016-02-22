@@ -1212,6 +1212,51 @@ public class AppAccount extends Account {
 		}
 
 	}
+	
+	// ///////////////////////////////////////////////////////////////////////////////////////////////
+	//
+	//
+
+	/**
+	 * 向移动设备推送自定义的消息,根据给出来的app id,向下载App的全部用户推送消息。
+	 * 
+	 * @param appId
+	 *            将消息发送给全部app下载用户的appId。
+	 * @param message
+	 *            发送的消息，文本格式，可以自定内容的编码，系统会将内容发送到接受的移动设备上。
+	 * @param alert
+	 *            iOS通知栏消息，对Android无效，走Apple的Apn发送出去。文本格式,例如'您收到一条新消息'
+	 * @param alert_extend
+	 *            iOS apn推送的隐藏字段，放在custom字段,
+	 *            json的字段,例如:"{'a': '1920-10-11 11:20'}"。
+	 * @return 实际发送了多少个用户，user_ids中有无效的用户将被剔除。
+	 * @throws ApiErrorException
+	 *             当调用数据出错时抛出。
+	 */
+	public int pushMessageToAllAppUsers(int appId, String message, String alert,
+			String alert_extend) throws ApiErrorException {
+
+		try {
+
+			HashMap<String, String> params = new HashMap<String, String>();
+			
+			params.put("message", message);
+			params.put("alert", alert);
+			params.put("alert_extend", alert_extend);
+
+			Map<String, String> headers = new HashMap<String, String>();
+
+			JSONObject json_result = post("/api/v1/push/apps/" + appId, params, headers)
+					.asJSONObject();
+			int send_to = json_result.getInt("send_count");
+
+			return send_to;
+
+		} catch (JSONException e) {
+			throw new ApiErrorException("返回JSON错误", 500, e);
+		}
+
+	}
 
 	/**
 	 * 获得一个会话的全部消息消息的消息文本，第一条消息就是主消息。
