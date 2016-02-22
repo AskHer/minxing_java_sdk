@@ -709,6 +709,70 @@ public class AppAccount extends Account {
 		}
 
 	}
+	
+	/**
+	 * 给出多个loginName，返回login name 对应的用户列表.
+	 * 
+	 * @param network_name
+	 * @param loginNames
+	 * @return
+	 */
+	public User[] findUserByIds(Long[] ids) {
+
+		try {
+
+			if (ids == null || ids.length == 0) {
+				return new User[] {};
+			}
+
+			PostParameter ssoKey = new PostParameter("sso_key", "user_id");
+			StringBuilder loginNameString = new StringBuilder();
+			for (int i = 0; i < ids.length; i++) {
+				if (i > 0) {
+					loginNameString.append(",");
+
+				}
+				loginNameString.append(ids[i]);
+			}
+			PostParameter ssoKeyValues = new PostParameter("key_values",
+					loginNameString.toString());
+
+			PostParameter[] params = new PostParameter[] { ssoKey, ssoKeyValues };
+
+			JSONObject o = this.get("/api/v1/networks/about_user", params);
+			JSONArray users = o.getJSONArray("items");
+			ArrayList<User> userList = new ArrayList<User>();
+			for (int i = 0; i < users.length(); i++) {
+				JSONObject u = users.getJSONObject(i);
+				User user = null;
+				if (u.getLong("id") > 0) {
+					user = new User();
+					user.setId(u.getLong("id"));
+					user.setLoginName(u.getString("login_name"));
+
+					user.setEmail(u.getString("email"));
+					user.setName(u.getString("name"));
+					user.setTitle(u.getString("login_name"));
+					user.setCellvoice1(u.getString("cellvoice1"));
+					user.setCellvoice2(u.getString("cellvoice2"));
+					user.setWorkvoice(u.getString("workvoice"));
+					user.setEmpCode(u.getString("emp_code"));
+				}
+
+				if (user != null) {
+					userList.add(user);
+				}
+
+			}
+
+			return userList.toArray(new User[userList.size()]);
+
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+
+	}
+	
 
 	// ///////////////////////////////////////////////////////////////////////////////////////////////
 	// Create Conversation
