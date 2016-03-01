@@ -386,7 +386,7 @@ public class AppAccount extends Account {
 			arr = this.post("api/v1/photos", params, headers, file);
 
 			JSONObject o = arr.getJSONObject(0);
-			return Integer.parseInt(o.get("id").toString()) > 0?true:false;
+			return Integer.parseInt(o.get("id").toString()) > 0 ? true : false;
 		} catch (Exception e) {
 			return false;
 		}
@@ -428,6 +428,8 @@ public class AppAccount extends Account {
 	 * @param networkId
 	 *            网络部门
 	 * @return 用户的列表
+	 * 
+	 * @deprecated
 	 */
 	public List<UserInfo> getAllUsersInDepartment(String networkId,
 			String departmentCode) {
@@ -435,6 +437,34 @@ public class AppAccount extends Account {
 		try {
 			JSONArray arrs = this.getJSONArray("/api/v1/departments/dept/"
 					+ departmentCode + "/" + networkId);
+			for (int i = 0; i < arrs.length(); i++) {
+				JSONObject o = (JSONObject) arrs.get(i);
+				UserInfo u = new UserInfo();
+				u.setAccount_id(o.getInt("account_id"));
+				u.setId(o.getInt("id"));
+				u.setName(o.getString("name"));
+				u.setLogin_name(o.getString("login_name"));
+				users.add(u);
+			}
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+		return users;
+	}
+
+	/**
+	 * 得到某个部门下的全部用户,包括子部门和兼职用户
+	 * 
+	 * @param departmentCode
+	 *            部门代码或者部门引用的Id
+	 * @return 用户的列表
+	 * 
+	 */
+	public List<UserInfo> getAllUsersInDepartment(String departmentCode) {
+		ArrayList<UserInfo> users = new ArrayList<UserInfo>();
+		try {
+			JSONArray arrs = this.getJSONArray("/api/v1/departments/all_users?dept_code="
+					+ departmentCode);
 			for (int i = 0; i < arrs.length(); i++) {
 				JSONObject o = (JSONObject) arrs.get(i);
 				UserInfo u = new UserInfo();
@@ -476,7 +506,7 @@ public class AppAccount extends Account {
 			JSONObject o = this.get("/api/v1/users/by_login_name", params);
 
 			User user = null;
-			if (o!=null && o.getLong("id") !=null && o.getLong("id") > 0) {
+			if (o != null && o.getLong("id") != null && o.getLong("id") > 0) {
 				user = new User();
 				user.setId(o.getLong("id"));
 				user.setLoginName(o.getString("login_name"));
@@ -670,6 +700,69 @@ public class AppAccount extends Account {
 
 				}
 				loginNameString.append(loginNames[i]);
+			}
+			PostParameter ssoKeyValues = new PostParameter("key_values",
+					loginNameString.toString());
+
+			PostParameter[] params = new PostParameter[] { ssoKey, ssoKeyValues };
+
+			JSONObject o = this.get("/api/v1/networks/about_user", params);
+			JSONArray users = o.getJSONArray("items");
+			ArrayList<User> userList = new ArrayList<User>();
+			for (int i = 0; i < users.length(); i++) {
+				JSONObject u = users.getJSONObject(i);
+				User user = null;
+				if (u.getLong("id") > 0) {
+					user = new User();
+					user.setId(u.getLong("id"));
+					user.setLoginName(u.getString("login_name"));
+
+					user.setEmail(u.getString("email"));
+					user.setName(u.getString("name"));
+					user.setTitle(u.getString("login_name"));
+					user.setCellvoice1(u.getString("cellvoice1"));
+					user.setCellvoice2(u.getString("cellvoice2"));
+					user.setWorkvoice(u.getString("workvoice"));
+					user.setEmpCode(u.getString("emp_code"));
+				}
+
+				if (user != null) {
+					userList.add(user);
+				}
+
+			}
+
+			return userList.toArray(new User[userList.size()]);
+
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+
+	}
+
+	/**
+	 * 给出多个loginName，返回login name 对应的用户列表.
+	 * 
+	 * @param network_name
+	 * @param loginNames
+	 * @return
+	 */
+	public User[] findUserByIds(Long[] ids) {
+
+		try {
+
+			if (ids == null || ids.length == 0) {
+				return new User[] {};
+			}
+
+			PostParameter ssoKey = new PostParameter("sso_key", "user_id");
+			StringBuilder loginNameString = new StringBuilder();
+			for (int i = 0; i < ids.length; i++) {
+				if (i > 0) {
+					loginNameString.append(",");
+
+				}
+				loginNameString.append(ids[i]);
 			}
 			PostParameter ssoKeyValues = new PostParameter("key_values",
 					loginNameString.toString());
@@ -1056,11 +1149,11 @@ public class AppAccount extends Account {
 			int count = result_json.getInt("count");
 			Long messageId = result_json.getLong("message_id");
 			JSONArray user_ids_json = result_json.getJSONArray("to_user_ids");
-			
-			Long[] user_ids=null;
-			if(user_ids_json!=null){
+
+			Long[] user_ids = null;
+			if (user_ids_json != null) {
 				user_ids = new Long[user_ids_json.length()];
-	
+
 				for (int i = 0; i < user_ids.length; i++) {
 					user_ids[i] = user_ids_json.getLong(i);
 				}
@@ -1139,6 +1232,92 @@ public class AppAccount extends Account {
 
 			JSONObject json_result = post("/api/v1/push", params, headers)
 					.asJSONObject();
+			int send_to = json_result.getInt("send_count");
+
+			return send_to;
+
+		} catch (JSONException e) {
+			throw new ApiErrorException("返回JSON错误", 500, e);
+		}
+
+	}
+
+	// ///////////////////////////////////////////////////////////////////////////////////////////////
+	//
+	//
+
+	/**
+	 * 向移动设备推送自定义的消息,根据给出来的app id,向下载App的全部用户推送消息。
+	 * 
+	 * @param appId
+	 *            将消息发送给全部app下载用户的appId。
+	 * @param message
+	 *            发送的消息，文本格式，可以自定内容的编码，系统会将内容发送到接受的移动设备上。
+	 * @param alert
+	 *            iOS通知栏消息，对Android无效，走Apple的Apn发送出去。文本格式,例如'您收到一条新消息'
+	 * @param alert_extend
+	 *            iOS apn推送的隐藏字段，放在custom字段,
+	 *            json的字段,例如:"{'a': '1920-10-11 11:20'}"。
+	 * @return 实际发送了多少个用户，user_ids中有无效的用户将被剔除。
+	 * @throws ApiErrorException
+	 *             当调用数据出错时抛出。
+	 */
+	public int pushMessageToAllAppUsers(int appId, String message,
+			String alert, String alert_extend) throws ApiErrorException {
+
+		try {
+
+			HashMap<String, String> params = new HashMap<String, String>();
+
+			params.put("message", message);
+			params.put("alert", alert);
+			params.put("alert_extend", alert_extend);
+
+			Map<String, String> headers = new HashMap<String, String>();
+
+			JSONObject json_result = post("/api/v1/push/apps/" + appId, params,
+					headers).asJSONObject();
+			int send_to = json_result.getInt("send_count");
+
+			return send_to;
+
+		} catch (JSONException e) {
+			throw new ApiErrorException("返回JSON错误", 500, e);
+		}
+
+	}
+	
+	/**
+	 * 向移动设备推送自定义的消息,根据给出来的app id,向下载App的全部用户推送消息。
+	 * 
+	 * @param appId
+	 *            将消息发送给全部app下载用户的appId。
+	 * @param message
+	 *            发送的消息，文本格式，可以自定内容的编码，系统会将内容发送到接受的移动设备上。
+	 * @param alert
+	 *            iOS通知栏消息，对Android无效，走Apple的Apn发送出去。文本格式,例如'您收到一条新消息'
+	 * @param alert_extend
+	 *            iOS apn推送的隐藏字段，放在custom字段,
+	 *            json的字段,例如:"{'a': '1920-10-11 11:20'}"。
+	 * @return 实际发送了多少个用户，user_ids中有无效的用户将被剔除。
+	 * @throws ApiErrorException
+	 *             当调用数据出错时抛出。
+	 */
+	public int pushMessageToAllDepartmentUsers(String departmentCode, String message,
+			String alert, String alert_extend) throws ApiErrorException {
+
+		try {
+
+			HashMap<String, String> params = new HashMap<String, String>();
+
+			params.put("message", message);
+			params.put("alert", alert);
+			params.put("alert_extend", alert_extend);
+
+			Map<String, String> headers = new HashMap<String, String>();
+
+			JSONObject json_result = post("/api/v1/push/department/" + departmentCode, params,
+					headers).asJSONObject();
 			int send_to = json_result.getInt("send_count");
 
 			return send_to;
@@ -1610,12 +1789,14 @@ public class AppAccount extends Account {
 			if (app_id != null && !app_id.equals(by_app_id)) {
 				if (by_ocu_id != null) {
 					throw new MxVerifyException("校验Token:" + token
-							+ "错误, token是ocu_id:" + by_ocu_id + "创建的,但期望的是app_id:" + app_id);	
+							+ "错误, token是ocu_id:" + by_ocu_id
+							+ "创建的,但期望的是app_id:" + app_id);
 				} else {
 					throw new MxVerifyException("校验Token:" + token
-							+ "错误, token创建的AppId为" + by_app_id + ",但期望的是:" + app_id);	
+							+ "错误, token创建的AppId为" + by_app_id + ",但期望的是:"
+							+ app_id);
 				}
-				
+
 			}
 
 			return getUser(o);
@@ -1642,28 +1823,25 @@ public class AppAccount extends Account {
 
 	public User verifyOcuSSOToken(String token, String ocu_id)
 			throws MxVerifyException {
-		
 
 		try {
 			JSONObject o = this.get("/api/v1/oauth/user_info/" + token);
-			
 
 			String by_ocu_id = o.getString("by_ocu_id");
 			String by_app_id = o.getString("by_app_id");
 
-
 			if (ocu_id != null && !ocu_id.equals(by_ocu_id)) {
 
-				
 				if (by_app_id != null) {
 					throw new MxVerifyException("校验Token:" + token
-							+ "错误, token是app_id:" + by_app_id + "创建的,但期望的是ocu_id:" + ocu_id);	
+							+ "错误, token是app_id:" + by_app_id
+							+ "创建的,但期望的是ocu_id:" + ocu_id);
 				} else {
 					throw new MxVerifyException("校验Token:" + token
-							+ "错误, token创建的ocu_id为" + by_ocu_id + ",但期望的是ocu_id:" + ocu_id);	
+							+ "错误, token创建的ocu_id为" + by_ocu_id
+							+ ",但期望的是ocu_id:" + ocu_id);
 				}
-				
-				
+
 			}
 			return getUser(o);
 		} catch (JSONException e) {
@@ -2105,7 +2283,6 @@ public class AppAccount extends Account {
 
 			throw new ApiErrorException("返回JSON错误", 500, e);
 		}
-
 
 	}
 
