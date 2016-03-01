@@ -27,6 +27,7 @@ public class User extends Organization {
 
 	private String hidden; // set user be hidden “true” "false"
 	private Boolean suspended; // 是否禁用 “true” "false"
+	private Boolean hidden_dials;//是否隐藏电话
 
 	private String with_account; // if true also delete the user account
 	// 扩展字段
@@ -319,6 +320,9 @@ public class User extends Organization {
 		if (null != this.getHidden()) {
 			params.put("hidden", this.getHidden());
 		}
+		if (null != this.getHidden_dials()) {
+			params.put("hidden_dials", this.getHidden_dials().toString());
+		}
 		if (null != this.getSuspended()) {
 			params.put("suspended", this.getSuspended().toString());
 		}
@@ -377,5 +381,13 @@ public class User extends Organization {
 
 	public void setPosition(String position) {
 		this.position = position;
+	}
+
+	public Boolean getHidden_dials() {
+		return hidden_dials;
+	}
+
+	public void setHidden_dials(Boolean hidden_dials) {
+		this.hidden_dials = hidden_dials;
 	}
 }
