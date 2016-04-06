@@ -15,11 +15,11 @@ public class TestOcuAccount {
 			am.addArticle(pt);
 
 			AppAccount account = AppAccount.loginByAccessToken(
-					"http://test1.dehuinet.com:8031",
-					"vSo3xkp7qS-IMA0Zn_cdhusGfxy84cWcYFQ0W0sFPsFMJO-D");
+					"http://localhost:3000",
+					"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
 
-			String ocuId = "e8965c3a4db9bd429cd40686ce6a0fff";
-			String ocuSecret = "fdd0cb6429ef8b2d3b4bfd9829c22652";
+			String ocuId = "40dbd78cc10e32d7a36f2a518460f7f7";
+			String ocuSecret = "88cb9f89de14332abc787486a4249b30";
 
 			OcuMessageSendResult send_to = account.sendOcuMessageToUsers(
 					new String[] {}, am, ocuId, ocuSecret);

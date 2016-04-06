@@ -2104,6 +2104,42 @@ public class AppAccount extends Account {
 				.asJSONObject();
 
 	}
+	
+	/**
+	 * 为群组增加管理人员
+	 * 
+	 * @param groupId
+	 *            群组的Id
+	 * @param loginNames
+	 *            人员的登录名
+	 * @throws ApiErrorException
+	 *             如果执行失败，抛出异常
+	 */
+	public void addGroupMember(Long groupId, String[] loginNames)
+			throws ApiErrorException {
+
+		HashMap<String, String> params = new HashMap<String, String>();
+		User[] users = this.findUserByLoginNames(loginNames);
+
+		if (users != null && users.length > 0) {
+			StringBuilder user_ids = new StringBuilder();
+			for (int i = 0; i < users.length; i++) {
+				if (i > 0) {
+					user_ids.append(",");
+				}
+				user_ids.append(users[i].getId());
+
+			}
+			params.put("user_ids", user_ids.toString());
+		}
+
+		Map<String, String> headers = new HashMap<String, String>();
+
+		post("/api/v1/groups/" + groupId + "/members", params, headers)
+				.asJSONObject();
+
+	}
+	
 
 	/**
 	 * 
