@@ -8,6 +8,7 @@ public interface Message {
 	final public static int SYSTEM_MESSAGE = 3;
 	final public static int HTML_MESSAGE = 4;
 	final public static int PLUGIN_MESSAGE = 5;
+	final public static int APP_MESSAGE = 6;
 
 	int messageType();
 

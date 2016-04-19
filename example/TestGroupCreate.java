@@ -3,7 +3,7 @@ import com.minxing.client.model.ApiErrorException;
 import com.minxing.client.model.Group;
 
 
-public class CreateWorkGroup {
+public class TestGroupCreate {
 
 	public static void main(String[] args) {
 		AppAccount account = AppAccount.loginByAccessToken("http://localhost:3000",

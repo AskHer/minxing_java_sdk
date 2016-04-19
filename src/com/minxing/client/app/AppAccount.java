@@ -28,6 +28,7 @@ import com.minxing.client.model.MxException;
 import com.minxing.client.model.MxVerifyException;
 import com.minxing.client.model.PostParameter;
 import com.minxing.client.model.ShareLink;
+import com.minxing.client.ocu.AppMessage;
 import com.minxing.client.ocu.Message;
 import com.minxing.client.ocu.TextMessage;
 import com.minxing.client.ocu.UserInfo;
@@ -1235,6 +1236,36 @@ public class AppAccount extends Account {
 			int send_to = json_result.getInt("send_count");
 
 			return send_to;
+
+		} catch (JSONException e) {
+			throw new ApiErrorException("返回JSON错误", 500, e);
+		}
+
+	}
+	
+	/**
+	 * 
+	 * @param loginName
+	 * @param message
+	 * @return 产生的消息id。可以用来追踪消息
+	 * @throws ApiErrorException
+	 */
+	public int pushAppMessage(String appId,String loginName, AppMessage message) throws ApiErrorException {
+
+		try {
+
+			HashMap<String, String> params = new HashMap<String, String>();
+			params.put("login_name", loginName);
+			params.put("message", message.getBody());
+			
+			Map<String, String> headers = new HashMap<String, String>();
+			StringBuilder sb = new StringBuilder("/api/v1/push/apps/");
+
+			JSONObject json_result = post(sb.append(appId).append("/messages").toString(), params, headers)
+					.asJSONObject();
+			int mid = json_result.getInt("message_id");
+
+			return mid;
 
 		} catch (JSONException e) {
 			throw new ApiErrorException("返回JSON错误", 500, e);
