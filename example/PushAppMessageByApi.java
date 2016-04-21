@@ -8,7 +8,7 @@ public class PushAppMessageByApi {
 
 
 
-		AppAccount account = AppAccount.loginByAccessToken("http://127.0.0.1:3000", "iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
+		AppAccount account = AppAccount.loginByAccessToken("http://dev3.dehuinet.com:8013", "aq6QB5O6TQR3RbHBl_oMOOCdjOYZyeZjI-bUmpKDhUh6U6zy");
 		
 		
 		testPushAppMessage(account);
@@ -18,16 +18,16 @@ public class PushAppMessageByApi {
 	private static void testPushAppMessage(AppAccount account) {
 
 		
-		AppMessage appMsg = new AppMessage(1,"test from message","{\"param1\": 1,\"param2\": 2}");
+		AppMessage appMsg = new AppMessage(5,"test from message","{\"param1\": 1,\"param2\": 2}",false);
 		try {
-			int mid = account.pushAppMessage("ddod", "oajcs3@js.chinamobile.com",appMsg );
+			int mid = account.pushAppMessage("OA", "t66",appMsg );
 			System.out.println("message send out with id:" + mid);
 		} catch (ApiErrorException e) {
 			e.printStackTrace();
 		}
 
 		
-
+ 
 	}
 
 
