@@ -5,13 +5,13 @@ public class AppMessage implements Message {
 	private String title;
 	private int badge;
 	private String custom;
-	private boolean disable_badge_in_app_store = false;
+	private boolean enable_badge_in_app_store = false;
 
 	public AppMessage(int badge, String title, String custom,
 			boolean disable_badge_in_app_store) {
 		this.title = title;
 		this.badge = badge;
-		this.disable_badge_in_app_store = disable_badge_in_app_store;
+		this.enable_badge_in_app_store = disable_badge_in_app_store;
 		this.custom = custom;
 	}
 
@@ -27,9 +27,9 @@ public class AppMessage implements Message {
 		sb.append("{");
 		sb.append("\"badge\":").append(badge).append(",");
 		
-//		if (disable_badge_in_app_store == true) {
-			sb.append("\"disable_badge_in_app_store\":").append(disable_badge_in_app_store).append(",");
-//		}
+		if (enable_badge_in_app_store == true) {
+			sb.append("\"enable_badge_in_app_store\":").append(enable_badge_in_app_store).append(",");
+		}
 
 		sb.append("\"title\":\"").append(title).append("\"");
 
