@@ -33,7 +33,7 @@ public class AppMessage implements Message {
 
 		sb.append("\"title\":\"").append(title).append("\"");
 
-		if (custom != null) {
+		if (custom != null && custom.length() > 0) {
 			sb.append(",");
 			sb.append("\"custom\":").append(custom);
 		}

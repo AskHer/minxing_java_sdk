@@ -8,7 +8,7 @@ public class PushAppMessageByApi {
 
 
 
-		AppAccount account = AppAccount.loginByAccessToken("http://dev3.dehuinet.com:8013", "aq6QB5O6TQR3RbHBl_oMOOCdjOYZyeZjI-bUmpKDhUh6U6zy");
+		AppAccount account = AppAccount.loginByAccessToken("http://test.dehuinet.com:8030", "U5uP-vayHp1jFTOb2twDloGkZEGdTgmEggaeYfWGbsvneVZc");
 		
 		
 		testPushAppMessage(account);
@@ -18,9 +18,9 @@ public class PushAppMessageByApi {
 	private static void testPushAppMessage(AppAccount account) {
 
 		
-		AppMessage appMsg = new AppMessage(5,"test from message","{\"param1\": 1,\"param2\": 2}",false);
+		AppMessage appMsg = new AppMessage(3,"test from message","{\"param1\": 1,\"param2\": 2}",false);
 		try {
-			int mid = account.pushAppMessage("OA", "t66",appMsg );
+			int mid = account.pushAppMessage("QQmail2", "t66",appMsg );
 			System.out.println("message send out with id:" + mid);
 		} catch (ApiErrorException e) {
 			e.printStackTrace();
