@@ -70,7 +70,7 @@ public class Article {
 		}
 
 		public String getResourceId() {
-			return resourceId;
+			return this.resource.getId().toString();
 		}
 
 		public String getType() {
