@@ -514,7 +514,7 @@ public class AppAccount extends Account {
 
 				user.setEmail(o.getString("email"));
 				user.setName(o.getString("name"));
-				user.setTitle(o.getString("login_name"));
+				user.setTitle(o.getString("title"));
 				user.setCellvoice1(o.getString("cellvoice1"));
 				user.setCellvoice2(o.getString("cellvoice2"));
 				user.setWorkvoice(o.getString("workvoice"));
@@ -532,7 +532,9 @@ public class AppAccount extends Account {
 						udept.setFull_name(dobj.getString("dept_full_name"));
 						udept.setTitle(dobj.getString("title"));
 						udept.setDisplay_order(dobj.getString("display_order"));
-
+						if(j==0){
+							user.setDisplay_order(dobj.getString("display_order"));
+						}
 						allDept[j] = udept;
 					}
 					user.setAllDepartments(allDept);
