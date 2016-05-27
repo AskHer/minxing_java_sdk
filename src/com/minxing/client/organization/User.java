@@ -30,6 +30,7 @@ public class User extends Organization {
 	private Boolean hidden_dials;//是否隐藏电话
 
 	private String with_account; // if true also delete the user account
+	private String area_code;
 	// 扩展字段
 	private String ext1;
 	private String ext2;
@@ -389,5 +390,13 @@ public class User extends Organization {
 
 	public void setHidden_dials(Boolean hidden_dials) {
 		this.hidden_dials = hidden_dials;
+	}
+
+	public String getArea_code() {
+		return area_code;
+	}
+
+	public void setArea_code(String area_code) {
+		this.area_code = area_code;
 	}
 }

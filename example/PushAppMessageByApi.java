@@ -7,8 +7,8 @@ public class PushAppMessageByApi {
 	public static void main(String[] args) throws InterruptedException {
 
 
+ AppAccount account = AppAccount.loginByAccessToken("http://test.dehuinet.com:8030", "U5uP-vayHp1jFTOb2twDloGkZEGdTgmEggaeYfWGbsvneVZc");
 
-		AppAccount account = AppAccount.loginByAccessToken("http://test.dehuinet.com:8030", "U5uP-vayHp1jFTOb2twDloGkZEGdTgmEggaeYfWGbsvneVZc");
 		
 		
 		testPushAppMessage(account);
@@ -20,7 +20,9 @@ public class PushAppMessageByApi {
 		
 		AppMessage appMsg = new AppMessage(3,"test from message","{\"param1\": 1,\"param2\": 2}",false);
 		try {
-			int mid = account.pushAppMessage("QQmail2", "t66",appMsg );
+
+			int mid = account.pushAppMessage("hot", "t66",appMsg );
+
 			System.out.println("message send out with id:" + mid);
 		} catch (ApiErrorException e) {
 			e.printStackTrace();
