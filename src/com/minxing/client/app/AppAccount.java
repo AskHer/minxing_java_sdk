@@ -1094,8 +1094,7 @@ public class AppAccount extends Account {
 	public Long createOcuResource(String title, String sub_title,
 			String author, String create_time, String pic_url, String content,
 			String ocuId, String ocuSecret) {
-		
-		
+
 		Map<String, String> params = new HashMap<String, String>();
 
 		params.put("title", title);
@@ -1113,9 +1112,9 @@ public class AppAccount extends Account {
 				.asJSONObject();
 
 		try {
-			
+
 			Long resource_id = result_json.getLong("resource_id");
-			
+
 			return resource_id;
 		} catch (JSONException e) {
 			throw new MxException("解析Json出错.", e);
@@ -1137,7 +1136,7 @@ public class AppAccount extends Account {
 	 * @return
 	 */
 	public OcuMessageSendResult sendOcuMessageToUsers(String[] toUserIds,
-			ArticleMessage message, String ocuId, String ocuSecret) {
+			Message message, String ocuId, String ocuSecret) {
 		return sendOcuMessageToUsers(null, toUserIds, message, ocuId, ocuSecret);
 
 	}
@@ -1158,19 +1157,22 @@ public class AppAccount extends Account {
 	 * @return
 	 */
 	public OcuMessageSendResult sendOcuMessageToUsers(String network_id,
-			String[] toUserIds, ArticleMessage message, String ocuId, String ocuSecret) {
+			String[] toUserIds, Message message, String ocuId, String ocuSecret) {
 		String direct_to_user_ids = "";
-		
-		
-		Resource res = message.getMessageResource();
-		if (res != null && res.getId() == null) {
-			Long res_id = createOcuResource(res.getTitle(),res.getSubTitle(),res.getAuthor(),res.getCreateTime(),res.getPicUrl(),res.getContent(),ocuId,ocuSecret);
-			res.setId(res_id);
+
+		if (message instanceof ArticleMessage) {
+			Resource res = ((ArticleMessage)message).getMessageResource();
+			if (res != null && res.getId() == null) {
+				Long res_id = createOcuResource(res.getTitle(),
+						res.getSubTitle(), res.getAuthor(),
+						res.getCreateTime(), res.getPicUrl(), res.getContent(),
+						ocuId, ocuSecret);
+				res.setId(res_id);
+			}
 		}
-		
-		
+
 		Map<String, String> params = new HashMap<String, String>();
-		
+
 		params.put("body", message.getBody());
 		params.put("content_type", String.valueOf(message.messageType()));
 
