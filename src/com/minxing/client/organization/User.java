@@ -345,6 +345,7 @@ public class User extends Organization {
 		return "User<id:" + this.id + ",name:" + this.name + ",login_name:"+this.login_name 
 				+ ",email:" + this.email
 				+ ",cellvoice1:" + this.cellvoice1
+				+ ",cellvoice2:" + this.cellvoice2
 				+ ",emp_code:" + this.emp_code
 				+ ",suspended:" + this.suspended
 				+ ",network_id:" + this.network_id
