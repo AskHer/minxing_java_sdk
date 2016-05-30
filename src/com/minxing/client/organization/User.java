@@ -1,5 +1,7 @@
 package com.minxing.client.organization;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 
 public class User extends Organization {
@@ -8,7 +10,7 @@ public class User extends Organization {
 	final public static int ROLE_NOTIFER = 2;
 	final public static int ROLE_OFFICAL_ACCOUNT_USER = 3;
 	final public static int ROLE_APPLICATION_CONNECT_USER = 4;
-	
+
 	private Long id; // 用户id
 	private String login_name = null; // Account's login_name
 	private String password; // 密码
@@ -27,7 +29,7 @@ public class User extends Organization {
 
 	private String hidden; // set user be hidden “true” "false"
 	private Boolean suspended; // 是否禁用 “true” "false"
-	private Boolean hidden_dials;//是否隐藏电话
+	private Boolean hidden_dials;// 是否隐藏电话
 
 	private String with_account; // if true also delete the user account
 	private String area_code;
@@ -158,7 +160,7 @@ public class User extends Organization {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public Integer getRoleCode() {
 		return role_code;
 	}
@@ -300,7 +302,7 @@ public class User extends Organization {
 			params.put("cellvoice1", this.getCellvoice1());
 		}
 		if (null != this.getCellvoice2()) {
-			System.out.println("params11:" + params);
+//			System.out.println("params11:" + params);
 			params.put("cellvoice2", this.getCellvoice2());
 		}
 
@@ -336,23 +338,52 @@ public class User extends Organization {
 		if (null != this.getPosition()) {
 			params.put("position", this.getPosition());
 		}
-
+		if (null != this.getArea_code()) {
+			params.put("area_code", this.getArea_code());
+		}
+		
+		 
+		for(int i = 1;i<=10;i++){
+			Method m;
+			try {
+				m = this.getClass().getMethod("getExt"+i, new Class[]{});
+				String ext = (String)m.invoke(this, new Object[]{});
+				if(null != ext){
+					params.put("ext"+i, ext);
+				}
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
+		
 
 		return params;
 	}
 
 	@Override
 	public String toString() {
-		return "User<id:" + this.id + ",name:" + this.name + ",login_name:"+this.login_name 
-				+ ",email:" + this.email
-				+ ",cellvoice1:" + this.cellvoice1
-				+ ",emp_code:" + this.emp_code
-				+ ",suspended:" + this.suspended
-				+ ",network_id:" + this.network_id
-				+ ",role_code:" + this.role_code
-				+ ",avatar_url:" + this.avatar_url
-				+ ",position:" + this.position
-				+ ">";
+		return "User<id:" + this.id + ",name:" + this.name + ",login_name:"
+				+ this.login_name + ",email:" + this.email + ",cellvoice1:"
+				+ this.cellvoice1 + ",emp_code:" + this.emp_code
+				+ ",suspended:" + this.suspended + ",network_id:"
+				+ this.network_id + ",role_code:" + this.role_code
+				+ ",avatar_url:" + this.avatar_url + ",position:"
+				+ this.position + ">";
 	}
 
 	public String getAvatarUrl() {
