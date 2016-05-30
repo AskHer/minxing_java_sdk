@@ -431,7 +431,7 @@ public class AppAccount extends Account {
 	 *            网络部门
 	 * @return 用户的列表
 	 * 
-	 * @deprecated
+	 * @deprecated use getAllUsersInDepartment instead.
 	 */
 	public List<UserInfo> getAllUsersInDepartment(String networkId,
 			String departmentCode) {
