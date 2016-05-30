@@ -1,5 +1,7 @@
 package com.minxing.client.app;
 
+import java.util.Arrays;
+
 public class OcuMessageSendResult {
 
 	private int count = 0;
@@ -35,5 +37,14 @@ public class OcuMessageSendResult {
 	public Long getMessageId() {
 		return message_id;
 	}
+
+	@Override
+	public String toString() {
+		return "OcuMessageSendResult [count=" + count + ", user_ids="
+				+ Arrays.toString(user_ids) + ", message_id=" + message_id
+				+ "]";
+	}
+	
+	
 
 }
