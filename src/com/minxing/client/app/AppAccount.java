@@ -810,6 +810,71 @@ public class AppAccount extends Account {
 
 	}
 
+
+	/**
+	 * 根据用户给的查询条件，查询用户.
+	 * 
+	 * @param q 查询条件，用户姓名，pinyin，或者电话(至少5字符)
+	 * @param limit 限制返回的数目。
+	 * @return 查询到的用户列表
+	 */
+	public User[] searchUser(String q, int limit) {
+
+		try {
+			
+			PostParameter query = new PostParameter("q", q);
+
+			int _limit = 20;
+			if (limit > 0) {
+				_limit = limit;
+			}
+			PostParameter ret_limit = new PostParameter("limit",
+					String.valueOf(_limit));
+
+			PostParameter[] params = new PostParameter[] { query, ret_limit };
+
+			JSONObject o = this.get("/api/v1/departments/search", params);
+			JSONArray users = o.getJSONArray("items");
+			ArrayList<User> userList = new ArrayList<User>();
+			for (int i = 0; i < users.length(); i++) {
+				JSONObject u = users.getJSONObject(i);
+				User user = null;
+				if (u.getLong("id") > 0) {
+					user = new User();
+					user.setId(u.getLong("id"));
+					user.setLoginName(u.getString("login_name"));
+
+					user.setEmail(u.getString("email"));
+					user.setName(u.getString("name"));
+					user.setTitle(u.getString("login_name"));
+					user.setCellvoice1(u.getString("cellvoice1"));
+					user.setCellvoice2(u.getString("cellvoice2"));
+					user.setWorkvoice(u.getString("workvoice"));
+					user.setEmpCode(u.getString("emp_code"));
+					
+					Department udept = new Department();
+					udept.setCode(u.getString("dept_code"));
+					udept.setId(u.getLong("dept_id"));
+					udept.setFull_name(u.getString("dept_name"));
+					user.setAllDepartments(new Department[] {udept});
+					
+				}
+
+				if (user != null) {
+					userList.add(user);
+				}
+
+			}
+
+			return userList.toArray(new User[userList.size()]);
+
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+
+	}
+
+
 	// ///////////////////////////////////////////////////////////////////////////////////////////////
 	// Create Conversation
 	//
