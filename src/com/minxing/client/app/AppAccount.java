@@ -819,8 +819,8 @@ public class AppAccount extends Account {
 	public User[] searchUser(String q, int limit) {
 
 		try {
+			
 			PostParameter query = new PostParameter("q", q);
-
 
 			int _limit = 20;
 			if (limit > 0) {
