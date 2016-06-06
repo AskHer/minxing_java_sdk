@@ -302,7 +302,7 @@ public class User extends Organization {
 			params.put("cellvoice1", this.getCellvoice1());
 		}
 		if (null != this.getCellvoice2()) {
-//			System.out.println("params11:" + params);
+			// System.out.println("params11:" + params);
 			params.put("cellvoice2", this.getCellvoice2());
 		}
 
@@ -341,15 +341,14 @@ public class User extends Organization {
 		if (null != this.getArea_code()) {
 			params.put("area_code", this.getArea_code());
 		}
-		
-		 
-		for(int i = 1;i<=10;i++){
+
+		for (int i = 1; i <= 10; i++) {
 			Method m;
 			try {
-				m = this.getClass().getMethod("getExt"+i, new Class[]{});
-				String ext = (String)m.invoke(this, new Object[]{});
-				if(null != ext){
-					params.put("ext"+i, ext);
+				m = this.getClass().getMethod("getExt" + i, new Class[] {});
+				String ext = (String) m.invoke(this, new Object[] {});
+				if (null != ext) {
+					params.put("ext" + i, ext);
 				}
 			} catch (SecurityException e) {
 				// TODO Auto-generated catch block
@@ -367,16 +366,15 @@ public class User extends Organization {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
-		
-		
 
 		return params;
 	}
 
 	@Override
 	public String toString() {
+
 		return "User<id:" + this.id + ",name:" + this.name + ",login_name:"
 				+ this.login_name + ",email:" + this.email + ",cellvoice1:"
 				+ this.cellvoice1 + ",emp_code:" + this.emp_code
@@ -384,6 +382,7 @@ public class User extends Organization {
 				+ this.network_id + ",role_code:" + this.role_code
 				+ ",avatar_url:" + this.avatar_url + ",position:"
 				+ this.position + ">";
+
 	}
 
 	public String getAvatarUrl() {
