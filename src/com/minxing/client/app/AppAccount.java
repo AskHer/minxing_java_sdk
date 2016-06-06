@@ -1955,7 +1955,34 @@ public class AppAccount extends Account {
 		}
 
 	}
+	
 
+
+	/**
+	 * 
+	 * @param login_name
+	 * @param password
+	 * @return
+	 * @throws MxVerifyException
+	 */
+	public boolean verifyPassword(String login_name,String password) throws MxVerifyException {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("login_name", login_name);
+		params.put("password", password);
+		Map<String, String> headers = new HashMap<String, String>();
+		try {
+			Response o = this.post("/api/v1/oauth/verify_password",params,headers);
+			JSONObject json = o.asJSONObject();
+			if ("success".equals(json.getString("status"))) {
+				return true;
+			}
+			return false;
+		} catch (JSONException e) {
+			throw new MxVerifyException("Verify password failed!", e);
+		}
+
+	}
+	
 	private User getUser(JSONObject o) throws JSONException {
 		User user = new User();
 		user.setId(o.getLong("user_id"));
