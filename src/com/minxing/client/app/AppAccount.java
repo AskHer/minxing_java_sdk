@@ -562,6 +562,7 @@ public class AppAccount extends Account {
 			if (o.getString("dept_code") != null
 					&& !"".equals(o.getString("dept_code"))) {
 				dept = new Department();
+				dept.setId(o.getLong("id"));
 				dept.setDept_code(o.getString("dept_code"));
 				dept.setShortName(o.getString("short_name"));
 				dept.setFull_name(o.getString("full_name"));
@@ -2246,6 +2247,43 @@ public class AppAccount extends Account {
 
 			}
 			params.put("user_ids", user_ids.toString());
+		}
+
+		Map<String, String> headers = new HashMap<String, String>();
+
+		post("/api/v1/groups/" + groupId + "/members", params, headers)
+				.asJSONObject();
+
+	}
+	
+	
+	/**
+	 * 将部门放入群组中
+	 * @param groupId 群组Id.
+	 * @param department_codes 部门代码,每个部门的唯一编码，创建部门时候提供的
+	 * @throws ApiErrorException 如果执行失败，抛出该错误。
+	 */
+	public void addGroupDepartmentMember(Long groupId, String[] department_codes)
+			throws ApiErrorException {
+		
+		
+		
+
+		HashMap<String, String> params = new HashMap<String, String>();
+		
+
+		if (department_codes != null && department_codes.length > 0) {
+			StringBuilder dept_ids = new StringBuilder();
+			for (int i = 0; i < department_codes.length; i++) {
+				if (i > 0) {
+					dept_ids.append(",");
+				}
+				
+				Department dept = findDepartmentByDeptCode(department_codes[i]);
+				dept_ids.append(dept.getId());
+
+			}
+			params.put("dept_ids", dept_ids.toString());
 		}
 
 		Map<String, String> headers = new HashMap<String, String>();
