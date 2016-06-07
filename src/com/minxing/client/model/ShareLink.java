@@ -54,6 +54,11 @@ public class ShareLink {
 		if (this.description != null) {
 			link.put("description", this.description);
 		}
+		
+		if (this.app_url != null) {
+			link.put("app_url", this.app_url);
+		}
+		
 		link.put("type", "link");
 		
 

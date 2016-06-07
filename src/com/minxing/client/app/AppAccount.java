@@ -28,7 +28,9 @@ import com.minxing.client.model.MxException;
 import com.minxing.client.model.MxVerifyException;
 import com.minxing.client.model.PostParameter;
 import com.minxing.client.model.ShareLink;
+import com.minxing.client.ocu.ArticleMessage;
 import com.minxing.client.ocu.Message;
+import com.minxing.client.ocu.Resource;
 import com.minxing.client.ocu.TextMessage;
 import com.minxing.client.ocu.UserInfo;
 import com.minxing.client.organization.Department;
@@ -429,7 +431,7 @@ public class AppAccount extends Account {
 	 *            网络部门
 	 * @return 用户的列表
 	 * 
-	 * @deprecated
+	 * @deprecated use getAllUsersInDepartment instead.
 	 */
 	public List<UserInfo> getAllUsersInDepartment(String networkId,
 			String departmentCode) {
@@ -463,8 +465,9 @@ public class AppAccount extends Account {
 	public List<UserInfo> getAllUsersInDepartment(String departmentCode) {
 		ArrayList<UserInfo> users = new ArrayList<UserInfo>();
 		try {
-			JSONArray arrs = this.getJSONArray("/api/v1/departments/all_users?dept_code="
-					+ departmentCode);
+			JSONArray arrs = this
+					.getJSONArray("/api/v1/departments/all_users?dept_code="
+							+ departmentCode);
 			for (int i = 0; i < arrs.length(); i++) {
 				JSONObject o = (JSONObject) arrs.get(i);
 				UserInfo u = new UserInfo();
@@ -513,7 +516,7 @@ public class AppAccount extends Account {
 
 				user.setEmail(o.getString("email"));
 				user.setName(o.getString("name"));
-				user.setTitle(o.getString("login_name"));
+				user.setTitle(o.getString("title"));
 				user.setCellvoice1(o.getString("cellvoice1"));
 				user.setCellvoice2(o.getString("cellvoice2"));
 				user.setWorkvoice(o.getString("workvoice"));
@@ -531,7 +534,10 @@ public class AppAccount extends Account {
 						udept.setFull_name(dobj.getString("dept_full_name"));
 						udept.setTitle(dobj.getString("title"));
 						udept.setDisplay_order(dobj.getString("display_order"));
-
+						if (j == 0) {
+							user.setDisplay_order(dobj
+									.getString("display_order"));
+						}
 						allDept[j] = udept;
 					}
 					user.setAllDepartments(allDept);
@@ -787,6 +793,69 @@ public class AppAccount extends Account {
 					user.setCellvoice2(u.getString("cellvoice2"));
 					user.setWorkvoice(u.getString("workvoice"));
 					user.setEmpCode(u.getString("emp_code"));
+				}
+
+				if (user != null) {
+					userList.add(user);
+				}
+
+			}
+
+			return userList.toArray(new User[userList.size()]);
+
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+
+	}
+
+	/**
+	 * 根据用户给的查询条件，查询用户.
+	 * 
+	 * @param q 查询条件，用户姓名，pinyin，或者电话(至少5字符)
+	 * @param limit 限制返回的数目。
+	 * @return 查询到的用户列表
+	 */
+	public User[] searchUser(String q, int limit) {
+
+		try {
+			
+			PostParameter query = new PostParameter("q", q);
+
+			int _limit = 20;
+			if (limit > 0) {
+				_limit = limit;
+			}
+			PostParameter ret_limit = new PostParameter("limit",
+					String.valueOf(_limit));
+
+			PostParameter[] params = new PostParameter[] { query, ret_limit };
+
+			JSONObject o = this.get("/api/v1/departments/search", params);
+			JSONArray users = o.getJSONArray("items");
+			ArrayList<User> userList = new ArrayList<User>();
+			for (int i = 0; i < users.length(); i++) {
+				JSONObject u = users.getJSONObject(i);
+				User user = null;
+				if (u.getLong("id") > 0) {
+					user = new User();
+					user.setId(u.getLong("id"));
+					user.setLoginName(u.getString("login_name"));
+
+					user.setEmail(u.getString("email"));
+					user.setName(u.getString("name"));
+					user.setTitle(u.getString("login_name"));
+					user.setCellvoice1(u.getString("cellvoice1"));
+					user.setCellvoice2(u.getString("cellvoice2"));
+					user.setWorkvoice(u.getString("workvoice"));
+					user.setEmpCode(u.getString("emp_code"));
+					
+					Department udept = new Department();
+					udept.setCode(u.getString("dept_code"));
+					udept.setId(u.getLong("dept_id"));
+					udept.setFull_name(u.getString("dept_name"));
+					user.setAllDepartments(new Department[] {udept});
+					
 				}
 
 				if (user != null) {
@@ -1084,6 +1153,37 @@ public class AppAccount extends Account {
 		}
 	}
 
+	public Long createOcuResource(String title, String sub_title,
+			String author, String create_time, String pic_url, String content,
+			String ocuId, String ocuSecret) {
+
+		Map<String, String> params = new HashMap<String, String>();
+
+		params.put("title", title);
+		params.put("sub_title", sub_title);
+		params.put("author", author);
+		params.put("create_time", create_time);
+		params.put("pic_url", pic_url);
+		params.put("content", content);
+		params.put("ocu_id", ocuId);
+		params.put("ocu_secret", ocuSecret);
+		Map<String, String> headers = new HashMap<String, String>();
+
+		JSONObject result_json = this.post(
+				"/api/v1/conversations/ocu_resources", params, headers)
+				.asJSONObject();
+
+		try {
+
+			Long resource_id = result_json.getLong("resource_id");
+
+			return resource_id;
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+
+	}
+
 	/**
 	 * 发送公众号消息
 	 * 
@@ -1121,7 +1221,20 @@ public class AppAccount extends Account {
 	public OcuMessageSendResult sendOcuMessageToUsers(String network_id,
 			String[] toUserIds, Message message, String ocuId, String ocuSecret) {
 		String direct_to_user_ids = "";
+
+		if (message instanceof ArticleMessage) {
+			Resource res = ((ArticleMessage) message).getMessageResource();
+			if (res != null && res.getId() == null) {
+				Long res_id = createOcuResource(res.getTitle(),
+						res.getSubTitle(), res.getAuthor(),
+						res.getCreateTime(), res.getPicUrl(), res.getContent(),
+						ocuId, ocuSecret);
+				res.setId(res_id);
+			}
+		}
+
 		Map<String, String> params = new HashMap<String, String>();
+
 		params.put("body", message.getBody());
 		params.put("content_type", String.valueOf(message.messageType()));
 
@@ -1286,7 +1399,7 @@ public class AppAccount extends Account {
 		}
 
 	}
-	
+
 	/**
 	 * 向移动设备推送自定义的消息,根据给出来的app id,向下载App的全部用户推送消息。
 	 * 
@@ -1303,8 +1416,9 @@ public class AppAccount extends Account {
 	 * @throws ApiErrorException
 	 *             当调用数据出错时抛出。
 	 */
-	public int pushMessageToAllDepartmentUsers(String departmentCode, String message,
-			String alert, String alert_extend) throws ApiErrorException {
+	public int pushMessageToAllDepartmentUsers(String departmentCode,
+			String message, String alert, String alert_extend)
+			throws ApiErrorException {
 
 		try {
 
@@ -1316,7 +1430,8 @@ public class AppAccount extends Account {
 
 			Map<String, String> headers = new HashMap<String, String>();
 
-			JSONObject json_result = post("/api/v1/push/department/" + departmentCode, params,
+			JSONObject json_result = post(
+					"/api/v1/push/department/" + departmentCode, params,
 					headers).asJSONObject();
 			int send_to = json_result.getInt("send_count");
 
