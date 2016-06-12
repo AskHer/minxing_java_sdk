@@ -2474,5 +2474,16 @@ public class AppAccount extends Account {
 		}
 
 	}
+	
+	
+	public long ping() throws ApiErrorException {
+		try {
+			return get("/api/v1/ping").getLong("user_id");
+		
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			throw new ApiErrorException("Error return", 500, e);
+		}
+	}
 
 }
