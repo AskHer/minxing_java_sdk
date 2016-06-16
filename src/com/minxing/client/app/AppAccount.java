@@ -198,6 +198,8 @@ public class AppAccount extends Account {
 					this._loginName);
 			headersList.add(as_user);
 		}
+		
+		headersList.add(new PostParameter("User-Agent", "MySuperUserAgent"));
 
 		String _url = "";
 
