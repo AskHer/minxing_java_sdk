@@ -15,6 +15,10 @@ public class TestGroupAddMember {
 			
 			account.addGroupMember(49L, new String[] {
 					"liuxsgs@js.chinamobile.com" }); //添加人员
+			
+			
+			// 添加部门,参数为部门编码。
+			account.addGroupDepartmentMember(49L,new String[] {"23570000"});
 
 			System.out.println("success processed.");
 
