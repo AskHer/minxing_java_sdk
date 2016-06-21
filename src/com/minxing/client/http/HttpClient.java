@@ -1,5 +1,6 @@
 package com.minxing.client.http;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,7 +14,6 @@ import java.util.List;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.DeleteMethod;
@@ -100,17 +100,17 @@ public class HttpClient implements java.io.Serializable {
 
 	org.apache.commons.httpclient.HttpClient client = null;
 
-	
-
 	public HttpClient() {
 		this(150, 30000, 30000, 1024 * 1024);
 	}
 
 	public HttpClient(int maxConPerHost, int conTimeOutMs, int soTimeOutMs,
 			int maxSize) {
-		
-//		MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-		SimpleHttpConnectionManager connectionManager = new SimpleHttpConnectionManager(true);
+
+		// MultiThreadedHttpConnectionManager connectionManager = new
+		// MultiThreadedHttpConnectionManager();
+		SimpleHttpConnectionManager connectionManager = new SimpleHttpConnectionManager(
+				true);
 		HttpConnectionManagerParams params = connectionManager.getParams();
 		params.setDefaultMaxConnectionsPerHost(maxConPerHost);
 		params.setConnectionTimeout(conTimeOutMs);
@@ -123,8 +123,6 @@ public class HttpClient implements java.io.Serializable {
 		Protocol myhttps = new Protocol("https", new MySSLSocketFactory(), 443);
 		Protocol.registerProtocol("https", myhttps);
 	}
-	
-
 
 	public Response get0(String url, PostParameter[] headers)
 			throws MxException {
@@ -134,10 +132,91 @@ public class HttpClient implements java.io.Serializable {
 
 	}
 
+	public InputStream get1(String url, PostParameter[] headerParameters)
+			throws MxException {
+
+		GetMethod method = new GetMethod(url);
+		InetAddress ipaddr;
+		int responseCode = -1;
+		try {
+
+			List<Header> headers = new ArrayList<Header>();
+
+			if (headerParameters != null) {
+				for (int i = 0; i < headerParameters.length; i++) {
+					headers.add(new Header(headerParameters[i].getName(),
+							headerParameters[i].getValue()));
+				}
+			}
+
+			if (tokenType == null || tokenType.trim().equals("")) {
+				tokenType = "Bearer";
+			}
+			if (token == null) {
+				throw new IllegalStateException("Oauth2 token is not set!");
+			}
+			headers.add(new Header("Authorization", tokenType + " " + token));
+			try {
+				ipaddr = InetAddress.getLocalHost();
+				headers.add(new Header("API-RemoteIP", ipaddr.getHostAddress()));
+			} catch (Exception e) {
+				throw new MxException(
+						"InetAddress.getLocalHost error,check server's hosts and hostname",
+						e);
+			}
+
+			method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
+					new DefaultHttpMethodRetryHandler(0, false));
+			for (Header h : headers) {
+				method.setRequestHeader(h);
+			}
+			client.executeMethod(method);
+
+			
+			responseCode = method.getStatusCode();
+
+			// response.setResponseAsString(this.getResponseBodyAsString(method));
+			// response.setStatusCode(responseCode);
+
+			if (responseCode >= 400) {
+
+				if (responseCode == 405) {
+					throw new MxException("HTTP " + method.getStatusCode()
+							+ ": Method Not Allowed", method.getStatusCode());
+				}
+
+				throw new MxException("HTTP " + method.getStatusCode() + ": "
+						+ this.getResponseBodyAsString(method),
+						method.getStatusCode());
+
+			}
+
+			ByteArrayOutputStream bos = 
+					new ByteArrayOutputStream();
+
+			InputStream in = method.getResponseBodyAsStream();
+			byte[] buf = new byte[1204 * 96];
+			int read = 0;
+			while ((read = in.read(buf)) != -1) {
+				bos.write(buf,0,read);
+			}
+			return new ByteArrayInputStream(bos.toByteArray());
+
+			
+
+		} catch (Throwable ioe) {
+			throw new MxException(ioe.getMessage(), ioe, responseCode);
+		} finally {
+			method.releaseConnection();
+			// client.getHttpConnectionManager().closeIdleConnections(0);
+		}
+
+	}
+
 	public Response post(String url, PostParameter[] params,
 			PostParameter[] headers, Boolean WithTokenHeader)
 			throws MxException {
-		
+
 		return post(url, params, WithTokenHeader, headers);
 
 	}
@@ -270,8 +349,8 @@ public class HttpClient implements java.io.Serializable {
 							e);
 				}
 
-//				client.getHostConfiguration().getParams()
-//						.setParameter("http.default-headers", headers);
+				// client.getHostConfiguration().getParams()
+				// .setParameter("http.default-headers", headers);
 			}
 
 			method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER,
@@ -313,7 +392,7 @@ public class HttpClient implements java.io.Serializable {
 			throw new MxException(ioe.getMessage(), ioe, responseCode);
 		} finally {
 			method.releaseConnection();
-//			client.getHttpConnectionManager().closeIdleConnections(0);
+			// client.getHttpConnectionManager().closeIdleConnections(0);
 		}
 
 	}

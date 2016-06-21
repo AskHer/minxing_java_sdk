@@ -1,6 +1,8 @@
 package com.minxing.client.app;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -365,6 +367,29 @@ public class AppAccount extends Account {
 		}
 
 		return filesArray;
+	}
+	
+	/**
+	 * 发送文件到会话聊天中
+	 * 
+	 * @param conversation_id
+	 * @param file
+	 * @return
+	 */
+	public InputStream downloadFile(Long fileId) {
+		
+		Map<String, String> params = new HashMap<String, String>();
+		PostParameter[] pps = createParams(params);
+		
+		try {
+			InputStream response = this.getForStream("/uploaded_file_versions/" + fileId, pps,pps,true);			
+			return response;
+
+		} catch (Exception e) {
+			throw new MxException(e);
+		}
+
+		
 	}
 
 	/**

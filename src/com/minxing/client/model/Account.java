@@ -1,6 +1,7 @@
 package com.minxing.client.model;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -107,6 +108,45 @@ public abstract class Account {
 			PostParameter[] headers, Boolean WithTokenHeader)
 			throws MxException {
 		return apiForResponse(url, "get", params, headers, WithTokenHeader);
+	}
+	
+	protected InputStream getForStream(String url, PostParameter[] params,
+			PostParameter[] headers, Boolean WithTokenHeader)
+			throws MxException {
+		return apiGetForStream(url, "get", params, headers, WithTokenHeader);
+	}
+
+	private InputStream apiGetForStream(String url, String string,
+			PostParameter[] params, PostParameter[] headers,
+			Boolean withTokenHeader) {
+		StringBuilder sb = new StringBuilder(url);
+		if (null != params && params.length > 0) {
+			String encodedParams = HttpClient.encodeParameters(params);
+			if (-1 == url.indexOf("?")) {
+
+				sb.append("?").append(encodedParams);
+			} else {
+				sb.append("&").append(encodedParams);
+
+			}
+		}
+
+		List<PostParameter> paramsList = new ArrayList<PostParameter>(
+				Arrays.asList(params));
+		List<PostParameter> headersList = new ArrayList<PostParameter>(
+				Arrays.asList(headers));
+
+		String tempUrl = beforeRequest(sb.toString(), paramsList,
+				headersList);
+
+		params = paramsList.toArray(new PostParameter[0]);
+		headers = headersList.toArray(new PostParameter[0]);
+
+		if (tempUrl != null && !tempUrl.trim().equals("")) {
+			url = tempUrl;
+		}
+
+		return client.get1(tempUrl, headers);
 	}
 
 	private Response apiForResponse(String url, String method,
