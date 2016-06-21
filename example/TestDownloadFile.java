@@ -17,7 +17,7 @@ public class TestDownloadFile {
 			
 			account.setFromUserLoginName("oajcs3@js.chinamobile.com");
 
-			InputStream finput = account.downloadFile(33442L);
+			InputStream finput = account.downloadFile(422L);
 			File f = new File("/tmp/download_file");
 			FileOutputStream out = new FileOutputStream(f);
 			byte[] buf = new byte[1024*128];

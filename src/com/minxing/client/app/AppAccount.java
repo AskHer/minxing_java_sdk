@@ -382,7 +382,7 @@ public class AppAccount extends Account {
 		PostParameter[] pps = createParams(params);
 		
 		try {
-			InputStream response = this.getForStream("/uploaded_file_versions/" + fileId, pps,pps,true);			
+			InputStream response = this.getForStream("/files/" + fileId, pps,pps,true);			
 			return response;
 
 		} catch (Exception e) {
