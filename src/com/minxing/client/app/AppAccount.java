@@ -200,7 +200,7 @@ public class AppAccount extends Account {
 					this._loginName);
 			headersList.add(as_user);
 		}
-		
+
 		headersList.add(new PostParameter("User-Agent", "MySuperUserAgent"));
 
 		String _url = "";
@@ -368,7 +368,7 @@ public class AppAccount extends Account {
 
 		return filesArray;
 	}
-	
+
 	/**
 	 * 发送文件到会话聊天中
 	 * 
@@ -377,19 +377,19 @@ public class AppAccount extends Account {
 	 * @return
 	 */
 	public InputStream downloadFile(Long fileId) {
-		
+
 		Map<String, String> params = new HashMap<String, String>();
 		PostParameter[] pps = createParams(params);
-		
+
 		try {
-			InputStream response = this.getForStream("/files/" + fileId, pps,pps,true);			
+			InputStream response = this.getForStream("/files/" + fileId, pps,
+					pps, true);
 			return response;
 
 		} catch (Exception e) {
 			throw new MxException(e);
 		}
 
-		
 	}
 
 	/**
@@ -450,37 +450,37 @@ public class AppAccount extends Account {
 		return findUserByLoginname(null, loginname);
 	}
 
-	/**
-	 * 得到某个部门下的全部用户
-	 * 
-	 * @param departmentCode
-	 *            部门代码
-	 * @param networkId
-	 *            网络部门
-	 * @return 用户的列表
-	 * 
-	 * @deprecated use getAllUsersInDepartment instead.
-	 */
-	public List<UserInfo> getAllUsersInDepartment(String networkId,
-			String departmentCode) {
-		ArrayList<UserInfo> users = new ArrayList<UserInfo>();
-		try {
-			JSONArray arrs = this.getJSONArray("/api/v1/departments/dept/"
-					+ departmentCode + "/" + networkId);
-			for (int i = 0; i < arrs.length(); i++) {
-				JSONObject o = (JSONObject) arrs.get(i);
-				UserInfo u = new UserInfo();
-				u.setAccount_id(o.getInt("account_id"));
-				u.setId(o.getInt("id"));
-				u.setName(o.getString("name"));
-				u.setLogin_name(o.getString("login_name"));
-				users.add(u);
-			}
-		} catch (JSONException e) {
-			throw new MxException("解析Json出错.", e);
-		}
-		return users;
-	}
+//	/**
+//	 * 得到某个部门下的全部用户
+//	 * 
+//	 * @param departmentCode
+//	 *            部门代码
+//	 * @param networkId
+//	 *            网络部门
+//	 * @return 用户的列表
+//	 * 
+//	 * @deprecated use getAllUsersInDepartment instead.
+//	 */
+//	public List<UserInfo> getAllUsersInDepartment(String networkId,
+//			String departmentCode) {
+//		ArrayList<UserInfo> users = new ArrayList<UserInfo>();
+//		try {
+//			JSONArray arrs = this.getJSONArray("/api/v1/departments/dept/"
+//					+ departmentCode + "/" + networkId);
+//			for (int i = 0; i < arrs.length(); i++) {
+//				JSONObject o = (JSONObject) arrs.get(i);
+//				UserInfo u = new UserInfo();
+//				u.setAccount_id(o.getInt("account_id"));
+//				u.setId(o.getInt("id"));
+//				u.setName(o.getString("name"));
+//				u.setLogin_name(o.getString("login_name"));
+//				users.add(u);
+//			}
+//		} catch (JSONException e) {
+//			throw new MxException("解析Json出错.", e);
+//		}
+//		return users;
+//	}
 
 	/**
 	 * 得到某个部门下的全部用户,包括子部门和兼职用户
@@ -490,12 +490,12 @@ public class AppAccount extends Account {
 	 * @return 用户的列表
 	 * 
 	 */
-	public List<UserInfo> getAllUsersInDepartment(String departmentCode) {
+	public List<UserInfo> getAllUsersInDepartment(String departmentCode,boolean includeSubDevision) {
 		ArrayList<UserInfo> users = new ArrayList<UserInfo>();
 		try {
 			JSONArray arrs = this
 					.getJSONArray("/api/v1/departments/all_users?dept_code="
-							+ departmentCode);
+							+ departmentCode+ "&include_subdivision=" + includeSubDevision);
 			for (int i = 0; i < arrs.length(); i++) {
 				JSONObject o = (JSONObject) arrs.get(i);
 				UserInfo u = new UserInfo();
@@ -838,18 +838,19 @@ public class AppAccount extends Account {
 
 	}
 
-
 	/**
 	 * 根据用户给的查询条件，查询用户.
 	 * 
-	 * @param q 查询条件，用户姓名，pinyin，或者电话(至少5字符)
-	 * @param limit 限制返回的数目。
+	 * @param q
+	 *            查询条件，用户姓名，pinyin，或者电话(至少5字符)
+	 * @param limit
+	 *            限制返回的数目。
 	 * @return 查询到的用户列表
 	 */
 	public User[] searchUser(String q, int limit) {
 
 		try {
-			
+
 			PostParameter query = new PostParameter("q", q);
 
 			int _limit = 20;
@@ -879,13 +880,13 @@ public class AppAccount extends Account {
 					user.setCellvoice2(u.getString("cellvoice2"));
 					user.setWorkvoice(u.getString("workvoice"));
 					user.setEmpCode(u.getString("emp_code"));
-					
+
 					Department udept = new Department();
 					udept.setCode(u.getString("dept_code"));
 					udept.setId(u.getLong("dept_id"));
 					udept.setFull_name(u.getString("dept_name"));
-					user.setAllDepartments(new Department[] {udept});
-					
+					user.setAllDepartments(new Department[] { udept });
+
 				}
 
 				if (user != null) {
@@ -902,6 +903,30 @@ public class AppAccount extends Account {
 
 	}
 
+	
+	/**
+	 * 添加用户的联系人，请先使用setFromUserLoginName设置被添加人账户
+	 * @param loginNames 增加的联系人登录名列表
+	 */
+	public void addUserContract(String[] loginNames) {
+
+	}
+
+	/**
+	 * 删除用户的联系人，请先使用setFromUserLoginName设置被添加人账户
+	 * @param loginNames 移除的联系人列表
+	 */
+	public void removeUserContract(String[] loginNames) {
+
+	}
+
+	/**
+	 * 列出用户的常用联系人
+	 * @return
+	 */
+	public User[] listUserContract() {
+		return null;
+	}
 
 	// ///////////////////////////////////////////////////////////////////////////////////////////////
 	// Create Conversation
@@ -1254,7 +1279,7 @@ public class AppAccount extends Account {
 		String direct_to_user_ids = "";
 
 		if (message instanceof ArticleMessage) {
-			Resource res = ((ArticleMessage)message).getMessageResource();
+			Resource res = ((ArticleMessage) message).getMessageResource();
 			if (res != null && res.getId() == null) {
 				Long res_id = createOcuResource(res.getTitle(),
 						res.getSubTitle(), res.getAuthor(),
@@ -1385,7 +1410,7 @@ public class AppAccount extends Account {
 		}
 
 	}
-	
+
 	/**
 	 * 
 	 * @param loginName
@@ -1393,19 +1418,21 @@ public class AppAccount extends Account {
 	 * @return 产生的消息id。可以用来追踪消息
 	 * @throws ApiErrorException
 	 */
-	public int pushAppMessage(String appId,String loginName, AppMessage message) throws ApiErrorException {
+	public int pushAppMessage(String appId, String loginName, AppMessage message)
+			throws ApiErrorException {
 
 		try {
 
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put("login_name", loginName);
 			params.put("message", message.getBody());
-			
+
 			Map<String, String> headers = new HashMap<String, String>();
 			StringBuilder sb = new StringBuilder("/api/v1/push/apps/");
 
-			JSONObject json_result = post(sb.append(appId).append("/messages").toString(), params, headers)
-					.asJSONObject();
+			JSONObject json_result = post(
+					sb.append(appId).append("/messages").toString(), params,
+					headers).asJSONObject();
 			int mid = json_result.getInt("message_id");
 
 			return mid;
@@ -2048,8 +2075,6 @@ public class AppAccount extends Account {
 		}
 
 	}
-	
-
 
 	/**
 	 * 
@@ -2058,13 +2083,15 @@ public class AppAccount extends Account {
 	 * @return
 	 * @throws MxVerifyException
 	 */
-	public boolean verifyPassword(String login_name,String password) throws MxVerifyException {
+	public boolean verifyPassword(String login_name, String password)
+			throws MxVerifyException {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("login_name", login_name);
 		params.put("password", password);
 		Map<String, String> headers = new HashMap<String, String>();
 		try {
-			Response o = this.post("/api/v1/oauth/verify_password",params,headers);
+			Response o = this.post("/api/v1/oauth/verify_password", params,
+					headers);
 			JSONObject json = o.asJSONObject();
 			if ("success".equals(json.getString("status"))) {
 				return true;
@@ -2075,7 +2102,7 @@ public class AppAccount extends Account {
 		}
 
 	}
-	
+
 	private User getUser(JSONObject o) throws JSONException {
 		User user = new User();
 		user.setId(o.getLong("user_id"));
@@ -2307,7 +2334,7 @@ public class AppAccount extends Account {
 				.asJSONObject();
 
 	}
-	
+
 	/**
 	 * 为群组增加管理人员
 	 * 
@@ -2342,22 +2369,21 @@ public class AppAccount extends Account {
 				.asJSONObject();
 
 	}
-	
-	
+
 	/**
 	 * 将部门放入群组中
-	 * @param groupId 群组Id.
-	 * @param department_codes 部门代码,每个部门的唯一编码，创建部门时候提供的
-	 * @throws ApiErrorException 如果执行失败，抛出该错误。
+	 * 
+	 * @param groupId
+	 *            群组Id.
+	 * @param department_codes
+	 *            部门代码,每个部门的唯一编码，创建部门时候提供的
+	 * @throws ApiErrorException
+	 *             如果执行失败，抛出该错误。
 	 */
 	public void addGroupDepartmentMember(Long groupId, String[] department_codes)
 			throws ApiErrorException {
-		
-		
-		
 
 		HashMap<String, String> params = new HashMap<String, String>();
-		
 
 		if (department_codes != null && department_codes.length > 0) {
 			StringBuilder dept_ids = new StringBuilder();
@@ -2365,7 +2391,7 @@ public class AppAccount extends Account {
 				if (i > 0) {
 					dept_ids.append(",");
 				}
-				
+
 				Department dept = findDepartmentByDeptCode(department_codes[i]);
 				dept_ids.append(dept.getId());
 
@@ -2379,7 +2405,6 @@ public class AppAccount extends Account {
 				.asJSONObject();
 
 	}
-	
 
 	/**
 	 * 
@@ -2561,12 +2586,11 @@ public class AppAccount extends Account {
 		}
 
 	}
-	
-	
+
 	public long ping() throws ApiErrorException {
 		try {
 			return get("/api/v1/ping").getLong("user_id");
-		
+
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			throw new ApiErrorException("Error return", 500, e);
