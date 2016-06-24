@@ -13,7 +13,10 @@ public class TestGetAllDepartment {
 
 		List<Department> result;
 		try {
-			result = account.getAllDepartments();
+			
+			
+			result = account.getAllDepartments();	
+//			result = account.getDepartmentsByParentDeptCode("23000000"); 仅查询一级部门，不包含子部门。
 			for (int i = 0; i < result.size(); i++) {
 				System.out.println("department:" + result.get(i));
 			}

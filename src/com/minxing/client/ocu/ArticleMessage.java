@@ -129,4 +129,11 @@ public class ArticleMessage implements Message {
 		// TODO Auto-generated method stub
 		return RICH_TEXT_MESSAGE;
 	}
+	
+//	public static void main(String[] args) {
+//		ArticleMessage am = new ArticleMessage();
+//		Article pt = new Article("标题\r\n", "内容\r详细内容", "", "", "");
+//		am.addArticle(pt);
+//		System.out.println("am:" + am.getBody());
+//	}
 }

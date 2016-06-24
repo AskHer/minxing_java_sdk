@@ -630,6 +630,40 @@ public class AppAccount extends Account {
 		}
 		return departments;
 	}
+	
+
+	/**
+	 * 获得全部的部门信息
+	 * @param paraentDepartmentCode 只获取该部门下的部门信息，否则返回全部的部门数据
+	 * @return
+	 */
+	public List<Department> getDepartmentsByParentDeptCode(String paraentDepartmentCode) {
+		ArrayList<Department> departments = new ArrayList<Department>();
+		try {
+			String apiURL = "/api/v1/networks/departments";
+			if (paraentDepartmentCode != null) {
+				apiURL = apiURL + "?parent_dept_code=" + paraentDepartmentCode;
+			}
+			
+			JSONArray arrs = this.getJSONArray(apiURL);
+			for (int i = 0; i < arrs.length(); i++) {
+				JSONObject o = (JSONObject) arrs.get(i);
+				Department dept = new Department();
+				dept.setId(o.getLong("id"));
+				dept.setCode(o.getString("code"));
+				dept.setFull_name(o.getString("full_name"));
+				dept.setShortName(o.getString("short_name"));
+				dept.setDisplay_order(o.getString("display_order"));
+				dept.setLevel(o.getInt("level"));
+				dept.setParentDeptId(o.getLong("parent_dept_id"));
+
+				departments.add(dept);
+			}
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+		return departments;
+	}
 
 	protected List<User> getAllUsers(int page, int pageSize) {
 		ArrayList<User> users = new ArrayList<User>();

@@ -24,7 +24,7 @@ public class TestMultiPoll {
 				"14tcrJ_1ZOyRnXlvXROzP8CTWyemge0TU5dj2fk35XeQzPcf");
 
 		acc.setFromUserLoginName("admin@dehuinet");
-		List<UserInfo> users = acc.getAllUsersInDepartment("001");
+		List<UserInfo> users = acc.getAllUsersInDepartment("001",true);
 		System.out.print(users.size());
 		// Map<String, String> params = new HashMap<String, String>();
 		// params.put("app_name", "poll");
@@ -55,7 +55,7 @@ public class TestMultiPoll {
 				"qd37z3o2AuJhjGpaa9kWEyOmixueaJI1ILhnlKQTGe4Ao4bp");
 
 		acc.setFromUserLoginName("admin@thread.dev");
-		List<UserInfo> users = acc.getAllUsersInDepartment("001");
+		List<UserInfo> users = acc.getAllUsersInDepartment("001",true);
 		System.out.print(users.size());
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("app_name", "poll");
