@@ -450,37 +450,37 @@ public class AppAccount extends Account {
 		return findUserByLoginname(null, loginname);
 	}
 
-//	/**
-//	 * 得到某个部门下的全部用户
-//	 * 
-//	 * @param departmentCode
-//	 *            部门代码
-//	 * @param networkId
-//	 *            网络部门
-//	 * @return 用户的列表
-//	 * 
-//	 * @deprecated use getAllUsersInDepartment instead.
-//	 */
-//	public List<UserInfo> getAllUsersInDepartment(String networkId,
-//			String departmentCode) {
-//		ArrayList<UserInfo> users = new ArrayList<UserInfo>();
-//		try {
-//			JSONArray arrs = this.getJSONArray("/api/v1/departments/dept/"
-//					+ departmentCode + "/" + networkId);
-//			for (int i = 0; i < arrs.length(); i++) {
-//				JSONObject o = (JSONObject) arrs.get(i);
-//				UserInfo u = new UserInfo();
-//				u.setAccount_id(o.getInt("account_id"));
-//				u.setId(o.getInt("id"));
-//				u.setName(o.getString("name"));
-//				u.setLogin_name(o.getString("login_name"));
-//				users.add(u);
-//			}
-//		} catch (JSONException e) {
-//			throw new MxException("解析Json出错.", e);
-//		}
-//		return users;
-//	}
+	// /**
+	// * 得到某个部门下的全部用户
+	// *
+	// * @param departmentCode
+	// * 部门代码
+	// * @param networkId
+	// * 网络部门
+	// * @return 用户的列表
+	// *
+	// * @deprecated use getAllUsersInDepartment instead.
+	// */
+	// public List<UserInfo> getAllUsersInDepartment(String networkId,
+	// String departmentCode) {
+	// ArrayList<UserInfo> users = new ArrayList<UserInfo>();
+	// try {
+	// JSONArray arrs = this.getJSONArray("/api/v1/departments/dept/"
+	// + departmentCode + "/" + networkId);
+	// for (int i = 0; i < arrs.length(); i++) {
+	// JSONObject o = (JSONObject) arrs.get(i);
+	// UserInfo u = new UserInfo();
+	// u.setAccount_id(o.getInt("account_id"));
+	// u.setId(o.getInt("id"));
+	// u.setName(o.getString("name"));
+	// u.setLogin_name(o.getString("login_name"));
+	// users.add(u);
+	// }
+	// } catch (JSONException e) {
+	// throw new MxException("解析Json出错.", e);
+	// }
+	// return users;
+	// }
 
 	/**
 	 * 得到某个部门下的全部用户,包括子部门和兼职用户
@@ -490,12 +490,14 @@ public class AppAccount extends Account {
 	 * @return 用户的列表
 	 * 
 	 */
-	public List<UserInfo> getAllUsersInDepartment(String departmentCode,boolean includeSubDevision) {
+	public List<UserInfo> getAllUsersInDepartment(String departmentCode,
+			boolean includeSubDevision) {
 		ArrayList<UserInfo> users = new ArrayList<UserInfo>();
 		try {
 			JSONArray arrs = this
 					.getJSONArray("/api/v1/departments/all_users?dept_code="
-							+ departmentCode+ "&include_subdivision=" + includeSubDevision);
+							+ departmentCode + "&include_subdivision="
+							+ includeSubDevision);
 			for (int i = 0; i < arrs.length(); i++) {
 				JSONObject o = (JSONObject) arrs.get(i);
 				UserInfo u = new UserInfo();
@@ -630,21 +632,23 @@ public class AppAccount extends Account {
 		}
 		return departments;
 	}
-	
 
 	/**
 	 * 获得全部的部门信息
-	 * @param paraentDepartmentCode 只获取该部门下的部门信息，否则返回全部的部门数据
+	 * 
+	 * @param paraentDepartmentCode
+	 *            只获取该部门下的部门信息，否则返回全部的部门数据
 	 * @return
 	 */
-	public List<Department> getDepartmentsByParentDeptCode(String paraentDepartmentCode) {
+	public List<Department> getDepartmentsByParentDeptCode(
+			String paraentDepartmentCode) {
 		ArrayList<Department> departments = new ArrayList<Department>();
 		try {
 			String apiURL = "/api/v1/networks/departments";
 			if (paraentDepartmentCode != null) {
 				apiURL = apiURL + "?parent_dept_code=" + paraentDepartmentCode;
 			}
-			
+
 			JSONArray arrs = this.getJSONArray(apiURL);
 			for (int i = 0; i < arrs.length(); i++) {
 				JSONObject o = (JSONObject) arrs.get(i);
@@ -697,6 +701,7 @@ public class AppAccount extends Account {
 				u.setEmpCode(o.getString("emp_code"));
 
 				JSONArray depts = o.getJSONArray("departs");
+
 				Department[] allDept = new Department[depts.length()];
 				for (int j = 0, n = depts.length(); j < n; j++) {
 					JSONObject dobj = depts.getJSONObject(j);
@@ -937,29 +942,116 @@ public class AppAccount extends Account {
 
 	}
 
-	
 	/**
 	 * 添加用户的联系人，请先使用setFromUserLoginName设置被添加人账户
-	 * @param loginNames 增加的联系人登录名列表
+	 * 
+	 * @param loginNames
+	 *            增加的联系人登录名列表
 	 */
 	public void addUserContract(String[] loginNames) {
+		for (int i = 0; i < loginNames.length; i++) {
+			User u = this.findUserByLoginname(loginNames[i]);
+			Map<String, String> params = new HashMap<String, String>();
+
+			Map<String, String> headers = new HashMap<String, String>();
+
+			JSONArray return_json = this
+					.post("/api/v1/subscriptions/users/" + u.getId(), params,
+							headers).asJSONArray();
+			try {
+				Long userId = return_json.getJSONObject(0).getLong("id");
+
+				if (userId != null && userId.equals(u.getId())) {
+					continue;
+				} else {
+					throw new MxException("无法得到返回的用户 id:" + userId);
+				}
+
+			} catch (JSONException e) {
+				throw new MxException("解析Json出错.", e);
+			}
+
+		}
 
 	}
 
 	/**
 	 * 删除用户的联系人，请先使用setFromUserLoginName设置被添加人账户
-	 * @param loginNames 移除的联系人列表
+	 * 
+	 * @param loginNames
+	 *            移除的联系人列表
 	 */
 	public void removeUserContract(String[] loginNames) {
+		for (int i = 0; i < loginNames.length; i++) {
+			User u = this.findUserByLoginname(loginNames[i]);
 
+			Response response = this.deleteForResponse(
+					"/api/v1/subscriptions/users/" + u.getId(),
+					new PostParameter[] {});
+			JSONArray return_json = response.asJSONArray();
+			try {
+				Long userId = return_json.getJSONObject(0).getLong("id");
+				if (userId != null && userId.equals(u.getId())) {
+					continue;
+				} else {
+					throw new MxException("无法得到返回的用户 id:" + userId);
+				}
+
+			} catch (JSONException e) {
+				throw new MxException("解析Json出错.", e);
+			}
+
+		}
 	}
 
 	/**
 	 * 列出用户的常用联系人
+	 * 
 	 * @return
 	 */
 	public User[] listUserContract() {
-		return null;
+		try {
+
+			PostParameter[] params = new PostParameter[] {};
+
+			JSONObject o = this.get("/api/v1/subscriptions/users", params);
+			JSONArray users = o.getJSONArray("items");
+			ArrayList<User> userList = new ArrayList<User>();
+			for (int i = 0; i < users.length(); i++) {
+				JSONObject u = users.getJSONObject(i);
+				User user = null;
+				if (u.getLong("id") > 0) {
+					user = new User();
+					user.setId(u.getLong("id"));
+					user.setLoginName(u.getString("login_name"));
+
+					user.setEmail(u.getString("email"));
+					user.setName(u.getString("name"));
+					user.setTitle(u.getString("login_name"));
+					user.setCellvoice1(u.getString("cellvoice1"));
+					user.setCellvoice2(u.getString("cellvoice2"));
+					user.setWorkvoice(u.getString("workvoice"));
+					user.setEmpCode(u.getString("emp_code"));
+
+					// Department udept = new Department();
+					// udept.setCode(u.getString("dept_code"));
+					// udept.setId(u.getLong("dept_id"));
+					// udept.setFull_name(u.getString("dept_name"));
+					// user.setAllDepartments(new Department[] { udept });
+
+				}
+
+				if (user != null) {
+					userList.add(user);
+				}
+
+			}
+
+			return userList.toArray(new User[userList.size()]);
+
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
 	}
 
 	// ///////////////////////////////////////////////////////////////////////////////////////////////

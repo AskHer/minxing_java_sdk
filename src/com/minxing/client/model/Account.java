@@ -82,6 +82,11 @@ public abstract class Account {
 		return api(url, "delete", new PostParameter[0], new PostParameter[0],
 				true);
 	}
+	
+	protected Response deleteForResponse(String url, PostParameter[] params)
+			throws MxException {
+		return apiForResponse(url, "post", params,  new PostParameter[0], true);
+	}
 
 	protected JSONObject api(String url, String method, PostParameter[] params,
 			PostParameter[] headers, Boolean WithTokenHeader)
