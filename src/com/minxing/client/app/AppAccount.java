@@ -505,6 +505,9 @@ public class AppAccount extends Account {
 				u.setId(o.getInt("id"));
 				u.setName(o.getString("name"));
 				u.setLogin_name(o.getString("login_name"));
+				u.setHidden(o.getBoolean("hidden"));
+				u.setSuppended(o.getBoolean("suspended"));
+				
 				users.add(u);
 			}
 		} catch (JSONException e) {
