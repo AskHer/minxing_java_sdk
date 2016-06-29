@@ -5,6 +5,9 @@ public class UserInfo {
 	private String login_name;
 	private int account_id;
 	private String name;
+	
+	private boolean suppended;
+	private boolean hidden;
 
 	public int getId() {
 		return id;
@@ -36,6 +39,22 @@ public class UserInfo {
 
 	public void setLogin_name(String login_name) {
 		this.login_name = login_name;
+	}
+	
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+	
+	public boolean isHidden() {
+		return this.hidden;
+	}
+	
+	public void setSuppended(boolean suppended) {
+		this.suppended = suppended;
+	}
+	
+	public boolean isSuppended() {
+		return this.suppended;
 	}
 
 }
