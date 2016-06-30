@@ -640,7 +640,10 @@ public class AppAccount extends Account {
 					JSONObject dobj = depts.getJSONObject(j);
 
 					Department udept = new Department();
+					udept.setId(dobj.getLong("id"));
 					udept.setCode(dobj.getString("dept_code"));
+					udept.setNetworkId(u.getNetworkId());
+					udept.setParentDeptId(dobj.getLong("parent_dept_id"));
 					udept.setShortName(dobj.getString("dept_short_name"));
 					udept.setFull_name(dobj.getString("dept_full_name"));
 					udept.setTitle(dobj.getString("title"));
