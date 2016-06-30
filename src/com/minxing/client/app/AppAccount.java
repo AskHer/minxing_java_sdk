@@ -391,6 +391,27 @@ public class AppAccount extends Account {
 		}
 
 	}
+	
+	/**
+	 * 下载文件的缩略图,5.3.3版本支持。
+	 * @param fileId 文件的Id
+	 * @return 缩略图的流
+	 */
+	public InputStream downloadThumbnail(Long fileId) {
+
+		Map<String, String> params = new HashMap<String, String>();
+		PostParameter[] pps = createParams(params);
+
+		try {
+			InputStream response = this.getForStream("/files/" + fileId, pps,
+					pps, true);
+			return response;
+
+		} catch (Exception e) {
+			throw new MxException(e);
+		}
+
+	}
 
 	/**
 	 * 上传头像
