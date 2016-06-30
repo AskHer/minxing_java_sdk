@@ -471,37 +471,37 @@ public class AppAccount extends Account {
 		return findUserByLoginname(null, loginname);
 	}
 
-	// /**
-	// * 得到某个部门下的全部用户
-	// *
-	// * @param departmentCode
-	// * 部门代码
-	// * @param networkId
-	// * 网络部门
-	// * @return 用户的列表
-	// *
-	// * @deprecated use getAllUsersInDepartment instead.
-	// */
-	// public List<UserInfo> getAllUsersInDepartment(String networkId,
-	// String departmentCode) {
-	// ArrayList<UserInfo> users = new ArrayList<UserInfo>();
-	// try {
-	// JSONArray arrs = this.getJSONArray("/api/v1/departments/dept/"
-	// + departmentCode + "/" + networkId);
-	// for (int i = 0; i < arrs.length(); i++) {
-	// JSONObject o = (JSONObject) arrs.get(i);
-	// UserInfo u = new UserInfo();
-	// u.setAccount_id(o.getInt("account_id"));
-	// u.setId(o.getInt("id"));
-	// u.setName(o.getString("name"));
-	// u.setLogin_name(o.getString("login_name"));
-	// users.add(u);
-	// }
-	// } catch (JSONException e) {
-	// throw new MxException("解析Json出错.", e);
-	// }
-	// return users;
-	// }
+	/**
+	 * 得到某个部门下的全部用户
+	 *
+	 * @param departmentCode
+	 *            部门代码
+	 * @param networkId
+	 *            网络部门
+	 * @return 用户的列表
+	 *
+	 * 
+	 */
+	public List<UserInfo> getAllUsersInDepartment(String networkId,
+			String departmentCode) {
+		ArrayList<UserInfo> users = new ArrayList<UserInfo>();
+		try {
+			JSONArray arrs = this.getJSONArray("/api/v1/departments/dept/"
+					+ departmentCode + "/" + networkId);
+			for (int i = 0; i < arrs.length(); i++) {
+				JSONObject o = (JSONObject) arrs.get(i);
+				UserInfo u = new UserInfo();
+				u.setAccount_id(o.getInt("account_id"));
+				u.setId(o.getInt("id"));
+				u.setName(o.getString("name"));
+				u.setLogin_name(o.getString("login_name"));
+				users.add(u);
+			}
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+		return users;
+ }
 
 	/**
 	 * 得到某个部门下的全部用户,包括子部门和兼职用户
