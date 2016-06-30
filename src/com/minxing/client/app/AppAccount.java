@@ -403,7 +403,7 @@ public class AppAccount extends Account {
 		PostParameter[] pps = createParams(params);
 
 		try {
-			InputStream response = this.getForStream("/files/" + fileId, pps,
+			InputStream response = this.getForStream("/thumbnails/" + fileId, pps,
 					pps, true);
 			return response;
 
