@@ -408,7 +408,8 @@ public class AppAccount extends Account {
 		PostParameter[] pps = createParams(params);
 
 		try {
-			InputStream response = this.getForStream("/thumbnails/" + fileId,
+			InputStream response = this.getForStream("/thumbnails/" + fileId+ "/"
+					+ fileFingerPrint,
 					pps, pps, true);
 			return response;
 
