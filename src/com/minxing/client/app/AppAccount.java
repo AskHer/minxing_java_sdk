@@ -373,17 +373,18 @@ public class AppAccount extends Account {
 	 * 发送文件到会话聊天中
 	 * 
 	 * @param conversation_id
+	 * @param fileFingerPrint 文件的MD5校验码
 	 * @param file
 	 * @return
 	 */
-	public InputStream downloadFile(Long fileId) {
+	public InputStream downloadFile(Long file_id, String fileFingerPrint) {
 
 		Map<String, String> params = new HashMap<String, String>();
 		PostParameter[] pps = createParams(params);
 
 		try {
-			InputStream response = this.getForStream("/files/" + fileId, pps,
-					pps, true);
+			InputStream response = this.getForStream("/files/" + file_id + "/"
+					+ fileFingerPrint, pps, pps, true);
 			return response;
 
 		} catch (Exception e) {
@@ -391,20 +392,24 @@ public class AppAccount extends Account {
 		}
 
 	}
-	
+
 	/**
 	 * 下载文件的缩略图,5.3.3版本支持。
-	 * @param fileId 文件的Id
+	 * 
+	 * @param fileId
+	 *            文件的Id
+	 *            
+	 * @param fileFingerPrint 文件的md5校验码
 	 * @return 缩略图的流
 	 */
-	public InputStream downloadThumbnail(Long fileId) {
+	public InputStream downloadThumbnail(Long fileId,String fileFingerPrint) {
 
 		Map<String, String> params = new HashMap<String, String>();
 		PostParameter[] pps = createParams(params);
 
 		try {
-			InputStream response = this.getForStream("/thumbnails/" + fileId, pps,
-					pps, true);
+			InputStream response = this.getForStream("/thumbnails/" + fileId,
+					pps, pps, true);
 			return response;
 
 		} catch (Exception e) {
@@ -501,7 +506,7 @@ public class AppAccount extends Account {
 			throw new MxException("解析Json出错.", e);
 		}
 		return users;
- }
+	}
 
 	/**
 	 * 得到某个部门下的全部用户,包括子部门和兼职用户
@@ -528,7 +533,7 @@ public class AppAccount extends Account {
 				u.setLogin_name(o.getString("login_name"));
 				u.setHidden(o.getBoolean("hidden"));
 				u.setSuppended(o.getBoolean("suspended"));
-				
+
 				users.add(u);
 			}
 		} catch (JSONException e) {

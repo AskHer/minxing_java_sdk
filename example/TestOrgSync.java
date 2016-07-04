@@ -9,18 +9,14 @@ public class TestOrgSync {
 	static String network_name = "t.cn";
 
 	public static void main(String[] args) {
-		AppAccount account = AppAccount.loginByPassword(
-				"http://192.168.88.103:3000", "admin", "111111", "4");
-
-		// addNetwork(account);
-
-		account = AppAccount.loginByPassword("http://192.168.88.103:3000",
-				"admin@t.cn", "111111", "4");
+		AppAccount account = AppAccount.loginByAccessToken(
+				"http://127.0.0.1:3000",
+				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
 
 		// addDepart(account);
-		// addUser(account);
+		 addUser(account);
 		//updateUser(account);
-		deleteUser(account);
+//		deleteUser(account);
 	}
 
 	private static void addNetwork(AppAccount account) {
@@ -61,13 +57,13 @@ public class TestOrgSync {
 
 		User u = new User();
 		// u.setNetwork_name(network_name);
-		u.setLoginName("java");
+		u.setLoginName("testwork5");
 		u.setName("(（test）)");
 		u.setEmail("java@t.cn");
 		u.setPassword("123456");
 		u.setTitle("经理");
 		u.setCellvoice1("13145678912");
-		u.setDeptCode("001004");
+		u.setDeptCode("23225202");
 
 		try {
 			User user = account.addNewUser(u);
