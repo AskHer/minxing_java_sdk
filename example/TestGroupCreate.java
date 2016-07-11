@@ -13,7 +13,8 @@ public class TestGroupCreate {
 			
 			String groupType = Group.SUPPORT; //专家支持类型 还可以是 公开组Group.PUBLIC 私有组 Group.PRIVATE
 			boolean isPublic = true; // 公开的工作圈
-			Group g = account.createGroup("test_Supp212","desc of supp",isPublic,groupType);
+			int display_order = 0;
+			Group g = account.createGroup("test_Supp212","desc of supp",isPublic,groupType,display_order);
 			System.out.println("Create group:" + g);
 			
 		} catch (ApiErrorException e) {

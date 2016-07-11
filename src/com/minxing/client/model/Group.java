@@ -13,13 +13,14 @@ public class Group {
 	private boolean publicGroup;
 	private boolean supportType;
 	private boolean hidden;
+	private int displayOrder = 0;
 
 	public Group(Long _id) {
 		id = _id;
 	}
 
 	public Group(Long _id, String _name, String _description,
-			boolean _publicGroup, boolean _supportType, boolean _hidden) {
+			boolean _publicGroup, boolean _supportType, boolean _hidden,int _displayOrder) {
 
 		id = _id;
 		name = _name;
@@ -27,6 +28,7 @@ public class Group {
 		publicGroup = _publicGroup;
 		supportType = _supportType;
 		hidden = _hidden;
+		displayOrder = _displayOrder;
 
 	}
 
@@ -58,6 +60,10 @@ public class Group {
 
 	public boolean isHidden() {
 		return hidden;
+	}
+	
+	public int getDisplayOrder() {
+		return displayOrder;
 	}
 
 }

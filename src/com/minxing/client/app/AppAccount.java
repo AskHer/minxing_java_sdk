@@ -2375,8 +2375,8 @@ public class AppAccount extends Account {
 	 * @throws ApiErrorException
 	 */
 	public Group createGroup(String name, String description, boolean isPublic,
-			String groupType) throws ApiErrorException {
-		return createGroup(name, description, isPublic, groupType, false, 0);
+			String groupType,int displayOrder) throws ApiErrorException {
+		return createGroup(name, description, isPublic, groupType, false, 0,displayOrder);
 	}
 
 	/**
@@ -2398,7 +2398,7 @@ public class AppAccount extends Account {
 	 * @throws ApiErrorException
 	 */
 	public Group createGroup(String name, String description, boolean isPublic,
-			String groupType, boolean hidden, int limteSize)
+			String groupType, boolean hidden, int limteSize,int displayOrder)
 			throws ApiErrorException {
 		try {
 
@@ -2424,6 +2424,8 @@ public class AppAccount extends Account {
 				params.put("group_type", "support");
 				isSupportGroup = true;
 			}
+			
+			params.put("disaply_order", String.valueOf(displayOrder));
 
 			params.put("limit_size", String.valueOf(limteSize));
 			Map<String, String> headers = new HashMap<String, String>();
@@ -2439,7 +2441,7 @@ public class AppAccount extends Account {
 			JSONArray json_result = respone.asJSONArray(); // 设计有问题，应该返回一个对象
 			Long groupId = json_result.getJSONObject(0).getLong("id");
 			Group g = new Group(groupId, name, description, isPublic,
-					isSupportGroup, isHidden);
+					isSupportGroup, isHidden,displayOrder);
 			return g;
 		} catch (JSONException e) {
 			throw new ApiErrorException("返回JSON错误", 500, e);
@@ -2620,7 +2622,7 @@ public class AppAccount extends Account {
 					user = new Group(g.getLong("id"), g.getString("name"),
 							g.getString("description"),
 							g.getBoolean("public_group"), "support".equals(g
-									.getString("group_type")), false);
+									.getString("group_type")), false,g.getInt("display_order"));
 
 				}
 
