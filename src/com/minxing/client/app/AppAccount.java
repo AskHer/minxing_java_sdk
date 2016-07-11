@@ -737,6 +737,7 @@ public class AppAccount extends Account {
 
 					Department udept = new Department();
 					udept.setCode(dobj.getString("dept_code"));
+					udept.setId(dobj.getInt("id"));
 					udept.setShortName(dobj.getString("dept_short_name"));
 					udept.setFull_name(dobj.getString("dept_full_name"));
 					udept.setTitle(dobj.getString("title"));
