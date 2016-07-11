@@ -8,7 +8,7 @@ public class Department extends Organization {
 	private String full_name; // 部门全名
 	private String display_order; // 部门排序
 	private String title; // 部门职务
-	private String dept_code; // 部门编码
+	private String dept_code = "0"; // 部门编码
 	private String parent_dept_code; // 父部门编码
 	private Boolean root = false;
 
@@ -120,6 +120,7 @@ public class Department extends Organization {
 		params.put("dept_code", this.getCode());
 		params.put("parent_dept_code", this.getParent_dept_code());
 		params.put("root", this.getRoot().toString().toLowerCase());
+		params.put("dept_id", String.valueOf(this.getId()));
 		return params;
 	}
 
