@@ -2365,7 +2365,7 @@ public class AppAccount extends Account {
 	}
 
 	/**
-	 * 创建工作圈。
+	 * 创建工作圈，默认不是hidden的。
 	 * 
 	 * @param name
 	 *            工作圈的名字
@@ -2375,6 +2375,8 @@ public class AppAccount extends Account {
 	 *            公开的还是私有的工作圈，true创建公开的工作圈，false：创建私有的工作圈
 	 * @param groupType
 	 *            工作圈的类型，Group.SUPPORT， Group.NORMAL,表示咨询组，普通类型的组
+	 * @param displayOrder 排序号
+	 * 
 	 * @return 如果创建成功，则返回创建成功的组信息。如果失败抛出 ApiErrorException。
 	 * @throws ApiErrorException
 	 */

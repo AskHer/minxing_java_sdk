@@ -15,6 +15,11 @@ public class TestGroupCreate {
 			boolean isPublic = true; // 公开的工作圈
 			int display_order = 0;
 			Group g = account.createGroup("test_Supp212","desc of supp",isPublic,groupType,display_order);
+			/*
+			boolean hidden = true; //是否隐藏，仅对私有圈有效。
+			int limit_size = 0; //工作圈人数限定。
+			Group g2 = account.createGroup("test_Supp212","desc of supp",isPublic,groupType,hidden,limit_size,display_order);
+			*/
 			System.out.println("Create group:" + g);
 			
 		} catch (ApiErrorException e) {
