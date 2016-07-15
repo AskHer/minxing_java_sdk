@@ -2135,15 +2135,23 @@ public class AppAccount extends Account {
 	 *            3.第三方系统可以从HttpServletRequest的header中获取mx_sso_token
 	 * @param app_id
 	 *            校验客户端提供的Token是不是来自这个app_id产生的，如果不是，则校验失败。
+	 *            
+	 * @param expires_in_seconds token是否在给定的时间内过期，单位为秒，如果为0，表示不验证过期。
 	 * @return 如果校验成功，返回token对应的用户信息
 	 * @throws MxVerifyException
 	 *             校验失败，则抛出这个异常.
 	 */
-	public User verifyAppSSOToken(String token, String app_id)
+	public User verifyAppSSOToken(String token, String app_id,int expires_in_seconds)
 			throws MxVerifyException {
 
 		try {
-			JSONObject o = this.get("/api/v1/oauth/user_info/" + token);
+			
+			StringBuilder getURL = new StringBuilder("/api/v1/oauth/user_info/");
+			getURL.append(token);
+			if(expires_in_seconds != 0) {
+				getURL.append("?expires_in=").append(expires_in_seconds);
+			}
+			JSONObject o = this.get(getURL.toString());
 
 			String by_app_id = o.getString("by_app_id");
 			String by_ocu_id = o.getString("by_ocu_id");
@@ -2167,6 +2175,12 @@ public class AppAccount extends Account {
 		}
 
 	}
+	
+	public User verifyAppSSOToken(String token, String app_id)
+			throws MxVerifyException {
+		return verifyAppSSOToken(token,app_id, 0);
+	}
+	
 
 	/**
 	 * 校验公众号消息打开时携带的 SSOTOken，通过连接minxing服务器，检查token代表的敏行用户的身份。
@@ -2178,16 +2192,23 @@ public class AppAccount extends Account {
 	 *            3.第三方系统可以从HttpServletRequest的header中获取mx_sso_token
 	 * @param app_id
 	 *            校验客户端提供的Token是不是来自这个app_id产生的，如果不是，则校验失败。
+	 * @param expires_in_seconds token在给定的时间内是否过期，单位为秒。0 表示校验
 	 * @return 如果校验成功，返回token对应的用户信息
 	 * @throws MxVerifyException
 	 *             校验失败，则抛出这个异常.
 	 */
 
-	public User verifyOcuSSOToken(String token, String ocu_id)
+	public User verifyOcuSSOToken(String token, String ocu_id,int expires_in_seconds)
 			throws MxVerifyException {
 
 		try {
-			JSONObject o = this.get("/api/v1/oauth/user_info/" + token);
+			StringBuilder getURL = new StringBuilder("/api/v1/oauth/user_info/");
+			getURL.append(token);
+			if(expires_in_seconds != 0) {
+				getURL.append("?expires_in=").append(expires_in_seconds);
+			}
+			
+			JSONObject o = this.get(getURL.toString());
 
 			String by_ocu_id = o.getString("by_ocu_id");
 			String by_app_id = o.getString("by_app_id");
@@ -2210,6 +2231,11 @@ public class AppAccount extends Account {
 			throw new MxVerifyException("JSON parse error", e);
 		}
 
+	}
+	
+	public User verifyOcuSSOToken(String token, String ocu_id)
+			throws MxVerifyException {
+		return verifyOcuSSOToken(token,ocu_id,0);
 	}
 
 	/**
