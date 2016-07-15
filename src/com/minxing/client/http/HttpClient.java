@@ -98,15 +98,22 @@ public class HttpClient implements java.io.Serializable {
 
 	private final static boolean DEBUG = true;
 
-	org.apache.commons.httpclient.HttpClient client = null;
+//	org.apache.commons.httpclient.HttpClient client = null;
 
 	public HttpClient() {
-		this(150, 30000, 30000, 1024 * 1024);
+//		this(150, 30000, 30000, 1024 * 1024);
 	}
 
 	public HttpClient(int maxConPerHost, int conTimeOutMs, int soTimeOutMs,
 			int maxSize) {
+// httpclient 以后是每次请求都创建一个 为了防止并发问题 效率是低了 但是不会出问题了
+//		org.apache.commons.httpclient.HttpClient client = createHttpClient(maxConPerHost, conTimeOutMs, soTimeOutMs,
+//				maxSize);
 
+	}
+
+	private org.apache.commons.httpclient.HttpClient createHttpClient(
+			int maxConPerHost, int conTimeOutMs, int soTimeOutMs, int maxSize) {
 		// MultiThreadedHttpConnectionManager connectionManager = new
 		// MultiThreadedHttpConnectionManager();
 		SimpleHttpConnectionManager connectionManager = new SimpleHttpConnectionManager(
@@ -118,10 +125,11 @@ public class HttpClient implements java.io.Serializable {
 
 		HttpClientParams clientParams = new HttpClientParams();
 		clientParams.setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
-		client = new org.apache.commons.httpclient.HttpClient(clientParams,
-				connectionManager);
+		org.apache.commons.httpclient.HttpClient client = new org.apache.commons.httpclient.HttpClient(
+				clientParams, connectionManager);
 		Protocol myhttps = new Protocol("https", new MySSLSocketFactory(), 443);
 		Protocol.registerProtocol("https", myhttps);
+		return client;
 	}
 
 	public Response get0(String url, PostParameter[] headers)
@@ -170,9 +178,9 @@ public class HttpClient implements java.io.Serializable {
 			for (Header h : headers) {
 				method.setRequestHeader(h);
 			}
+			org.apache.commons.httpclient.HttpClient client = this.createHttpClient( 150, 30000, 30000, 1024 * 1024);
 			client.executeMethod(method);
 
-			
 			responseCode = method.getStatusCode();
 
 			// response.setResponseAsString(this.getResponseBodyAsString(method));
@@ -191,18 +199,15 @@ public class HttpClient implements java.io.Serializable {
 
 			}
 
-			ByteArrayOutputStream bos = 
-					new ByteArrayOutputStream();
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 			InputStream in = method.getResponseBodyAsStream();
 			byte[] buf = new byte[1204 * 96];
 			int read = 0;
 			while ((read = in.read(buf)) != -1) {
-				bos.write(buf,0,read);
+				bos.write(buf, 0, read);
 			}
 			return new ByteArrayInputStream(bos.toByteArray());
-
-			
 
 		} catch (Throwable ioe) {
 			throw new MxException(ioe.getMessage(), ioe, responseCode);
@@ -358,6 +363,7 @@ public class HttpClient implements java.io.Serializable {
 			for (Header h : headers) {
 				method.setRequestHeader(h);
 			}
+			org.apache.commons.httpclient.HttpClient client = this.createHttpClient( 150, 30000, 30000, 1024 * 1024);
 			client.executeMethod(method);
 
 			Header content_type = method.getResponseHeader("Content-Type");
