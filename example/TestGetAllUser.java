@@ -10,12 +10,12 @@ import com.minxing.client.organization.User;
 public class TestGetAllUser {
 
 	public static void main(String[] args) {
-		AppAccount account = AppAccount.loginByAccessToken(
-				"http://test1.dehuinet.com:8031/",
-				"vSo3xkp7qS-IMA0Zn_cdhusGfxy84cWcYFQ0W0sFPsFMJO-D");
 //		AppAccount account = AppAccount.loginByAccessToken(
-//				"http://localhost:3000",
-//				"qd37z3o2AuJhjGpaa9kWEyOmixueaJI1ILhnlKQTGe4Ao4bp");
+//				"http://test1.dehuinet.com:8031/",
+//				"vSo3xkp7qS-IMA0Zn_cdhusGfxy84cWcYFQ0W0sFPsFMJO-D");
+		AppAccount account = AppAccount.loginByAccessToken(
+				"http://localhost:3000",
+				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
 
 		UserPackage result;
 		try {

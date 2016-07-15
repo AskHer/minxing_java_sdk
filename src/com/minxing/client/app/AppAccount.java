@@ -737,7 +737,10 @@ public class AppAccount extends Account {
 					JSONObject dobj = depts.getJSONObject(j);
 
 					Department udept = new Department();
+					udept.setId(dobj.getLong("id"));
 					udept.setCode(dobj.getString("dept_code"));
+					udept.setNetworkId(u.getNetworkId());
+					udept.setParentDeptId(dobj.getLong("parent_dept_id"));
 					udept.setShortName(dobj.getString("dept_short_name"));
 					udept.setFull_name(dobj.getString("dept_full_name"));
 					udept.setTitle(dobj.getString("title"));
@@ -2362,7 +2365,7 @@ public class AppAccount extends Account {
 	}
 
 	/**
-	 * 创建工作圈。
+	 * 创建工作圈，默认不是hidden的。
 	 * 
 	 * @param name
 	 *            工作圈的名字
@@ -2372,12 +2375,14 @@ public class AppAccount extends Account {
 	 *            公开的还是私有的工作圈，true创建公开的工作圈，false：创建私有的工作圈
 	 * @param groupType
 	 *            工作圈的类型，Group.SUPPORT， Group.NORMAL,表示咨询组，普通类型的组
+	 * @param displayOrder 排序号
+	 * 
 	 * @return 如果创建成功，则返回创建成功的组信息。如果失败抛出 ApiErrorException。
 	 * @throws ApiErrorException
 	 */
 	public Group createGroup(String name, String description, boolean isPublic,
-			String groupType) throws ApiErrorException {
-		return createGroup(name, description, isPublic, groupType, false, 0);
+			String groupType,int displayOrder) throws ApiErrorException {
+		return createGroup(name, description, isPublic, groupType, false, 0,displayOrder);
 	}
 
 	/**
@@ -2399,7 +2404,7 @@ public class AppAccount extends Account {
 	 * @throws ApiErrorException
 	 */
 	public Group createGroup(String name, String description, boolean isPublic,
-			String groupType, boolean hidden, int limteSize)
+			String groupType, boolean hidden, int limteSize,int displayOrder)
 			throws ApiErrorException {
 		try {
 
@@ -2425,6 +2430,8 @@ public class AppAccount extends Account {
 				params.put("group_type", "support");
 				isSupportGroup = true;
 			}
+			
+			params.put("disaply_order", String.valueOf(displayOrder));
 
 			params.put("limit_size", String.valueOf(limteSize));
 			Map<String, String> headers = new HashMap<String, String>();
@@ -2440,7 +2447,7 @@ public class AppAccount extends Account {
 			JSONArray json_result = respone.asJSONArray(); // 设计有问题，应该返回一个对象
 			Long groupId = json_result.getJSONObject(0).getLong("id");
 			Group g = new Group(groupId, name, description, isPublic,
-					isSupportGroup, isHidden);
+					isSupportGroup, isHidden,displayOrder);
 			return g;
 		} catch (JSONException e) {
 			throw new ApiErrorException("返回JSON错误", 500, e);
@@ -2621,7 +2628,7 @@ public class AppAccount extends Account {
 					user = new Group(g.getLong("id"), g.getString("name"),
 							g.getString("description"),
 							g.getBoolean("public_group"), "support".equals(g
-									.getString("group_type")), false);
+									.getString("group_type")), false,g.getInt("display_order"));
 
 				}
 

@@ -22,6 +22,7 @@ public class User extends Organization {
 	private String workvoice = null; // 固定电话
 	private String emp_code; // 工号
 	private String dept_code; // 部门标识
+	private Long dept_id = null; // 部门标识
 	private String display_order; // 排序
 	private Integer role_code; // 角色代码
 
@@ -272,6 +273,14 @@ public class User extends Organization {
 	public void setExt10(String ext10) {
 		this.ext10 = ext10;
 	}
+	
+	public Long getDeptId() {
+		return dept_id;
+	}
+	
+	public void setDeptId(Long dept_id) {
+		this.dept_id = dept_id;
+	}
 
 	public HashMap<String, String> toHash() {
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -317,6 +326,11 @@ public class User extends Organization {
 		if (null != this.getDeptCode()) {
 			params.put("dept_code", this.getDeptCode());
 		}
+		
+		if (null != this.getDeptId()) {
+			params.put("dept_id", String.valueOf(this.getDeptId()));
+		}
+		
 		if (null != this.getDisplay_order()) {
 			params.put("display_order", this.getDisplay_order());
 		}
