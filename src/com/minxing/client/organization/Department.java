@@ -16,6 +16,7 @@ public class Department extends Organization {
 	private long id;
 	private Integer level;
 	private Long parent_dept_id = null;
+	private String path;
 
 	public String getNetwork_name() {
 		return network_name;
@@ -147,6 +148,14 @@ public class Department extends Organization {
 	public void setParentDeptId(Long deptId) {
 		this.parent_dept_id = deptId;
 
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 }

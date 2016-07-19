@@ -2285,6 +2285,7 @@ public class AppAccount extends Account {
 			udept.setCode(dobj.getString("dept_ref_id"));
 			udept.setShortName(dobj.getString("dept_short_name"));
 			udept.setFull_name(dobj.getString("dept_full_name"));
+			udept.setPath(dobj.getString("dept_code"));
 			allDept[i] = udept;
 		}
 		user.setAllDepartments(allDept);
