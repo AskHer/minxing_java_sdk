@@ -179,8 +179,9 @@ public class HttpClient implements java.io.Serializable {
 				method.setRequestHeader(h);
 			}
 			org.apache.commons.httpclient.HttpClient client = this.createHttpClient( 150, 30000, 30000, 1024 * 1024);
+//			long t0 = System.currentTimeMillis();
 			client.executeMethod(method);
-
+//			long t1 = System.currentTimeMillis();
 			responseCode = method.getStatusCode();
 
 			// response.setResponseAsString(this.getResponseBodyAsString(method));
@@ -198,16 +199,25 @@ public class HttpClient implements java.io.Serializable {
 						method.getStatusCode());
 
 			}
-
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			
+//			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 			InputStream in = method.getResponseBodyAsStream();
-			byte[] buf = new byte[1204 * 96];
-			int read = 0;
-			while ((read = in.read(buf)) != -1) {
-				bos.write(buf, 0, read);
-			}
-			return new ByteArrayInputStream(bos.toByteArray());
+			byte[] b = new byte[in.available()];
+			in.read(b);
+//			bos.w
+//			long t2 = System.currentTimeMillis();
+//			byte[] buf = new byte[1204 * 96];
+//			int read = 0;
+//			
+//			while ((read = in.read(buf)) != -1) {
+//				bos.write(buf, 0, read);
+//			}
+//			long t3 = System.currentTimeMillis();
+//			System.out.println("===== 执行 耗时="+(t1-t0));
+//			System.out.println("===== 执行getResponseBodyAsStream 耗时="+(t2-t1));
+//			System.out.println("===== 执行read 耗时="+(t3-t2));
+			return new ByteArrayInputStream(b);
 
 		} catch (Throwable ioe) {
 			throw new MxException(ioe.getMessage(), ioe, responseCode);
@@ -487,6 +497,12 @@ public class HttpClient implements java.io.Serializable {
 			cause = "";
 		}
 		return statusCode + ":" + cause;
+	}
+	
+	public static void main(String[] s){
+		HttpClient c = new HttpClient();
+		PostParameter[] p = new PostParameter[0];
+		InputStream in = c.get1("http://192.168.100.230:8030/files/3587/ace6d35d40d5cbd623913c09fdd4fdf2", p);
 	}
 
 }
