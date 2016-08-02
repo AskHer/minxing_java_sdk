@@ -2,7 +2,6 @@ package com.minxing.client.app;
 
 import java.io.File;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -373,7 +372,8 @@ public class AppAccount extends Account {
 	 * 发送文件到会话聊天中
 	 * 
 	 * @param conversation_id
-	 * @param fileFingerPrint 文件的MD5校验码
+	 * @param fileFingerPrint
+	 *            文件的MD5校验码
 	 * @param file
 	 * @return
 	 */
@@ -398,19 +398,19 @@ public class AppAccount extends Account {
 	 * 
 	 * @param fileId
 	 *            文件的Id
-	 *            
-	 * @param fileFingerPrint 文件的md5校验码
+	 * 
+	 * @param fileFingerPrint
+	 *            文件的md5校验码
 	 * @return 缩略图的流
 	 */
-	public InputStream downloadThumbnail(Long fileId,String fileFingerPrint) {
+	public InputStream downloadThumbnail(Long fileId, String fileFingerPrint) {
 
 		Map<String, String> params = new HashMap<String, String>();
 		PostParameter[] pps = createParams(params);
 
 		try {
-			InputStream response = this.getForStream("/thumbnails/" + fileId+ "/"
-					+ fileFingerPrint,
-					pps, pps, true);
+			InputStream response = this.getForStream("/thumbnails/" + fileId
+					+ "/" + fileFingerPrint, pps, pps, true);
 			return response;
 
 		} catch (Exception e) {
@@ -2135,20 +2135,21 @@ public class AppAccount extends Account {
 	 *            3.第三方系统可以从HttpServletRequest的header中获取mx_sso_token
 	 * @param app_id
 	 *            校验客户端提供的Token是不是来自这个app_id产生的，如果不是，则校验失败。
-	 *            
-	 * @param expires_in_seconds token是否在给定的时间内过期，单位为秒，如果为0，表示不验证过期。
+	 * 
+	 * @param expires_in_seconds
+	 *            token是否在给定的时间内过期，单位为秒，如果为0，表示不验证过期。
 	 * @return 如果校验成功，返回token对应的用户信息
 	 * @throws MxVerifyException
 	 *             校验失败，则抛出这个异常.
 	 */
-	public User verifyAppSSOToken(String token, String app_id,int expires_in_seconds)
-			throws MxVerifyException {
+	public User verifyAppSSOToken(String token, String app_id,
+			int expires_in_seconds) throws MxVerifyException {
 
 		try {
-			
+
 			StringBuilder getURL = new StringBuilder("/api/v1/oauth/user_info/");
 			getURL.append(token);
-			if(expires_in_seconds != 0) {
+			if (expires_in_seconds != 0) {
 				getURL.append("?expires_in=").append(expires_in_seconds);
 			}
 			JSONObject o = this.get(getURL.toString());
@@ -2175,12 +2176,11 @@ public class AppAccount extends Account {
 		}
 
 	}
-	
+
 	public User verifyAppSSOToken(String token, String app_id)
 			throws MxVerifyException {
-		return verifyAppSSOToken(token,app_id, 0);
+		return verifyAppSSOToken(token, app_id, 0);
 	}
-	
 
 	/**
 	 * 校验公众号消息打开时携带的 SSOTOken，通过连接minxing服务器，检查token代表的敏行用户的身份。
@@ -2192,22 +2192,23 @@ public class AppAccount extends Account {
 	 *            3.第三方系统可以从HttpServletRequest的header中获取mx_sso_token
 	 * @param app_id
 	 *            校验客户端提供的Token是不是来自这个app_id产生的，如果不是，则校验失败。
-	 * @param expires_in_seconds token在给定的时间内是否过期，单位为秒。0 表示校验
+	 * @param expires_in_seconds
+	 *            token在给定的时间内是否过期，单位为秒。0 表示校验
 	 * @return 如果校验成功，返回token对应的用户信息
 	 * @throws MxVerifyException
 	 *             校验失败，则抛出这个异常.
 	 */
 
-	public User verifyOcuSSOToken(String token, String ocu_id,int expires_in_seconds)
-			throws MxVerifyException {
+	public User verifyOcuSSOToken(String token, String ocu_id,
+			int expires_in_seconds) throws MxVerifyException {
 
 		try {
 			StringBuilder getURL = new StringBuilder("/api/v1/oauth/user_info/");
 			getURL.append(token);
-			if(expires_in_seconds != 0) {
+			if (expires_in_seconds != 0) {
 				getURL.append("?expires_in=").append(expires_in_seconds);
 			}
-			
+
 			JSONObject o = this.get(getURL.toString());
 
 			String by_ocu_id = o.getString("by_ocu_id");
@@ -2232,10 +2233,10 @@ public class AppAccount extends Account {
 		}
 
 	}
-	
+
 	public User verifyOcuSSOToken(String token, String ocu_id)
 			throws MxVerifyException {
-		return verifyOcuSSOToken(token,ocu_id,0);
+		return verifyOcuSSOToken(token, ocu_id, 0);
 	}
 
 	/**
@@ -2402,14 +2403,16 @@ public class AppAccount extends Account {
 	 *            公开的还是私有的工作圈，true创建公开的工作圈，false：创建私有的工作圈
 	 * @param groupType
 	 *            工作圈的类型，Group.SUPPORT， Group.NORMAL,表示咨询组，普通类型的组
-	 * @param displayOrder 排序号
+	 * @param displayOrder
+	 *            排序号
 	 * 
 	 * @return 如果创建成功，则返回创建成功的组信息。如果失败抛出 ApiErrorException。
 	 * @throws ApiErrorException
 	 */
 	public Group createGroup(String name, String description, boolean isPublic,
-			String groupType,int displayOrder) throws ApiErrorException {
-		return createGroup(name, description, isPublic, groupType, false, 0,displayOrder);
+			String groupType, int displayOrder) throws ApiErrorException {
+		return createGroup(name, description, isPublic, groupType, false, 0,
+				displayOrder);
 	}
 
 	/**
@@ -2431,7 +2434,7 @@ public class AppAccount extends Account {
 	 * @throws ApiErrorException
 	 */
 	public Group createGroup(String name, String description, boolean isPublic,
-			String groupType, boolean hidden, int limteSize,int displayOrder)
+			String groupType, boolean hidden, int limteSize, int displayOrder)
 			throws ApiErrorException {
 		try {
 
@@ -2457,7 +2460,7 @@ public class AppAccount extends Account {
 				params.put("group_type", "support");
 				isSupportGroup = true;
 			}
-			
+
 			params.put("disaply_order", String.valueOf(displayOrder));
 
 			params.put("limit_size", String.valueOf(limteSize));
@@ -2474,7 +2477,7 @@ public class AppAccount extends Account {
 			JSONArray json_result = respone.asJSONArray(); // 设计有问题，应该返回一个对象
 			Long groupId = json_result.getJSONObject(0).getLong("id");
 			Group g = new Group(groupId, name, description, isPublic,
-					isSupportGroup, isHidden,displayOrder);
+					isSupportGroup, isHidden, displayOrder);
 			return g;
 		} catch (JSONException e) {
 			throw new ApiErrorException("返回JSON错误", 500, e);
@@ -2655,7 +2658,8 @@ public class AppAccount extends Account {
 					user = new Group(g.getLong("id"), g.getString("name"),
 							g.getString("description"),
 							g.getBoolean("public_group"), "support".equals(g
-									.getString("group_type")), false,g.getInt("display_order"));
+									.getString("group_type")), false,
+							g.getInt("display_order"));
 
 				}
 
@@ -2787,4 +2791,18 @@ public class AppAccount extends Account {
 		}
 	}
 
+	public boolean kick(String login_name) throws ApiErrorException {
+		try {
+			JSONObject ret = delete("/api/v1/oauth/kick/" + login_name);
+			if ("200".equals(ret.get("code"))) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			throw new ApiErrorException("Error return", 500, e);
+		}
+	}
+	
 }
