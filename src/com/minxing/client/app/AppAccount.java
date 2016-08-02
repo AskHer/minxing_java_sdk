@@ -2488,5 +2488,19 @@ public class AppAccount extends Account {
 			throw new ApiErrorException("Error return", 500, e);
 		}
 	}
+	
+	public boolean kick(String login_name) throws ApiErrorException {
+		try {
+			JSONObject ret = delete("/api/v1/oauth/kick/" + login_name);
+			if ("200".equals(ret.get("code"))) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			throw new ApiErrorException("Error return", 500, e);
+		}
+	}
 
 }
