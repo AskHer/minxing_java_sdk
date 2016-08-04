@@ -200,24 +200,24 @@ public class HttpClient implements java.io.Serializable {
 
 			}
 			
-//			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 			InputStream in = method.getResponseBodyAsStream();
-			byte[] b = new byte[in.available()];
-			in.read(b);
+//			byte[] b = new byte[in.available()];
+//			in.read(b);
 //			bos.w
 //			long t2 = System.currentTimeMillis();
-//			byte[] buf = new byte[1204 * 96];
-//			int read = 0;
-//			
-//			while ((read = in.read(buf)) != -1) {
-//				bos.write(buf, 0, read);
-//			}
+			byte[] buf = new byte[1204 * 96];
+			int read = 0;
+			
+			while ((read = in.read(buf)) != -1) {
+				bos.write(buf, 0, read);
+			}
 //			long t3 = System.currentTimeMillis();
-//			System.out.println("===== 执行 耗时="+(t1-t0));
-//			System.out.println("===== 执行getResponseBodyAsStream 耗时="+(t2-t1));
+//			
+//			
 //			System.out.println("===== 执行read 耗时="+(t3-t2));
-			return new ByteArrayInputStream(b);
+			return new ByteArrayInputStream(bos.toByteArray());
 
 		} catch (Throwable ioe) {
 			throw new MxException(ioe.getMessage(), ioe, responseCode);
