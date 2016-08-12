@@ -116,17 +116,17 @@ public class HttpClient implements java.io.Serializable {
 			int maxConPerHost, int conTimeOutMs, int soTimeOutMs, int maxSize) {
 		// MultiThreadedHttpConnectionManager connectionManager = new
 		// MultiThreadedHttpConnectionManager();
-		SimpleHttpConnectionManager connectionManager = new SimpleHttpConnectionManager(
-				true);
-		HttpConnectionManagerParams params = connectionManager.getParams();
-		params.setDefaultMaxConnectionsPerHost(maxConPerHost);
-		params.setConnectionTimeout(conTimeOutMs);
-		params.setSoTimeout(soTimeOutMs);
+//		SimpleHttpConnectionManager connectionManager = new SimpleHttpConnectionManager(
+//				true);
+//		HttpConnectionManagerParams params = connectionManager.getParams();
+//		params.setDefaultMaxConnectionsPerHost(maxConPerHost);
+//		params.setConnectionTimeout(conTimeOutMs);
+//		params.setSoTimeout(soTimeOutMs);
 
 		HttpClientParams clientParams = new HttpClientParams();
 		clientParams.setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
 		org.apache.commons.httpclient.HttpClient client = new org.apache.commons.httpclient.HttpClient(
-				clientParams, connectionManager);
+				clientParams);
 		Protocol myhttps = new Protocol("https", new MySSLSocketFactory(), 443);
 		Protocol.registerProtocol("https", myhttps);
 		return client;
