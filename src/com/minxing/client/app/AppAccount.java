@@ -2461,7 +2461,7 @@ public class AppAccount extends Account {
 				isSupportGroup = true;
 			}
 
-			params.put("disaply_order", String.valueOf(displayOrder));
+			params.put("display_order", String.valueOf(displayOrder));
 
 			params.put("limit_size", String.valueOf(limteSize));
 			Map<String, String> headers = new HashMap<String, String>();
