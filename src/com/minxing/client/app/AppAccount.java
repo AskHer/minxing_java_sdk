@@ -44,28 +44,28 @@ import com.minxing.client.utils.UrlEncoder;
 
 public class AppAccount extends Account {
 
-	private String _token = null;
-	private String _loginName;
-	private String _serverURL;
-	private long _currentUserId = 0;
-	private String client_id;
-	private String secret;
+	protected String _token = null;
+	protected String _loginName;
+	protected String _serverURL;
+	protected long _currentUserId = 0;
+	protected String client_id;
+	protected String secret;
 
-	private AppAccount(String serverURL, String token) {
+	protected AppAccount(String serverURL, String token) {
 		this._serverURL = serverURL;
 		this._token = token;
 		client.setToken(this._token);
 		client.setTokenType("Bearer");
 	}
 
-	private AppAccount(String serverURL, String app_id, String secret) {
+	protected AppAccount(String serverURL, String app_id, String secret) {
 		this._serverURL = serverURL;
 		this.client_id = app_id;
 		this.secret = secret;
 		client.setTokenType("MAC");
 	}
 
-	private AppAccount(String serverURL, String loginName, String password,
+	protected AppAccount(String serverURL, String loginName, String password,
 			String clientId) {
 		this._serverURL = serverURL;
 		this.client_id = clientId;
@@ -392,6 +392,36 @@ public class AppAccount extends Account {
 		}
 
 	}
+	
+	/**
+	 * 发送文件到会话聊天中
+	 * 
+	 * @param conversation_id
+	 * @param fileFingerPrint
+	 *            文件的MD5校验码
+	 * @param file 要把文件存进这个file
+	 * @return
+	 */
+	public boolean downloadFileAndSave(int file_id, String fileFingerPrint, File f) {
+		Map<String, String> params = new HashMap<String, String>();
+		PostParameter[] pps = createParams(params);
+
+		try {
+			return this.getForStreamAndSave("/files/" + file_id + "/"
+					+ fileFingerPrint, pps, pps, true,f);
+		} catch (Exception e) {
+			throw new MxException(e);
+		}
+	}
+
+	
+
+	private boolean getForStreamAndSave(String url, PostParameter[] params,
+			PostParameter[] headers, boolean WithTokenHeader, File f) {
+		return apiGetForStreamAndSave(url, "get", params, headers, WithTokenHeader,f);
+	}
+
+	
 
 	/**
 	 * 下载文件的缩略图,5.3.3版本支持。
@@ -2804,5 +2834,9 @@ public class AppAccount extends Account {
 			throw new ApiErrorException("Error return", 500, e);
 		}
 	}
+
+	
+
+	
 	
 }

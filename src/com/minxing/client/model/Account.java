@@ -120,10 +120,23 @@ public abstract class Account {
 			throws MxException {
 		return apiGetForStream(url, "get", params, headers, WithTokenHeader);
 	}
+	
+	protected boolean apiGetForStreamAndSave(String url, String string,
+			PostParameter[] params, PostParameter[] headers,
+			boolean withTokenHeader, File f) {
+		String tempUrl = createUrl( url, params,  headers);
+		return client.get2(tempUrl, headers,f);
+	}
 
 	private InputStream apiGetForStream(String url, String string,
 			PostParameter[] params, PostParameter[] headers,
 			Boolean withTokenHeader) {
+		
+		String tempUrl = createUrl( url, params,  headers);
+		return client.get1(tempUrl, headers,null);
+	}
+	
+	private String createUrl(String url,PostParameter[] params, PostParameter[] headers){
 		StringBuilder sb = new StringBuilder(url);
 		if (null != params && params.length > 0) {
 			String encodedParams = HttpClient.encodeParameters(params);
@@ -150,8 +163,7 @@ public abstract class Account {
 		if (tempUrl != null && !tempUrl.trim().equals("")) {
 			url = tempUrl;
 		}
-
-		return client.get1(tempUrl, headers);
+		return tempUrl;
 	}
 
 	private Response apiForResponse(String url, String method,

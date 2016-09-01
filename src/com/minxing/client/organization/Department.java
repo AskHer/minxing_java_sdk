@@ -142,7 +142,7 @@ public class Department extends Organization {
 				+ ", dept_code:" + dept_code + ", level:" + level
 				+ ", parent_dept_code:" + parent_dept_code + ",parent_dept_id:"
 				+ parent_dept_id + ", root=" + root + ", network_name:"
-				+ network_name + ", id=" + id + ">";
+				+ network_name + ", id=" + id + ",path="+path+">";
 	}
 
 	public void setParentDeptId(Long deptId) {

@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -14,7 +15,6 @@ import java.util.List;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -24,7 +24,6 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 
@@ -98,17 +97,18 @@ public class HttpClient implements java.io.Serializable {
 
 	private final static boolean DEBUG = true;
 
-//	org.apache.commons.httpclient.HttpClient client = null;
+	// org.apache.commons.httpclient.HttpClient client = null;
 
 	public HttpClient() {
-//		this(150, 30000, 30000, 1024 * 1024);
+		// this(150, 30000, 30000, 1024 * 1024);
 	}
 
 	public HttpClient(int maxConPerHost, int conTimeOutMs, int soTimeOutMs,
 			int maxSize) {
-// httpclient 以后是每次请求都创建一个 为了防止并发问题 效率是低了 但是不会出问题了
-//		org.apache.commons.httpclient.HttpClient client = createHttpClient(maxConPerHost, conTimeOutMs, soTimeOutMs,
-//				maxSize);
+		// httpclient 以后是每次请求都创建一个 为了防止并发问题 效率是低了 但是不会出问题了
+		// org.apache.commons.httpclient.HttpClient client =
+		// createHttpClient(maxConPerHost, conTimeOutMs, soTimeOutMs,
+		// maxSize);
 
 	}
 
@@ -116,12 +116,13 @@ public class HttpClient implements java.io.Serializable {
 			int maxConPerHost, int conTimeOutMs, int soTimeOutMs, int maxSize) {
 		// MultiThreadedHttpConnectionManager connectionManager = new
 		// MultiThreadedHttpConnectionManager();
-//		SimpleHttpConnectionManager connectionManager = new SimpleHttpConnectionManager(
-//				true);
-//		HttpConnectionManagerParams params = connectionManager.getParams();
-//		params.setDefaultMaxConnectionsPerHost(maxConPerHost);
-//		params.setConnectionTimeout(conTimeOutMs);
-//		params.setSoTimeout(soTimeOutMs);
+		// SimpleHttpConnectionManager connectionManager = new
+		// SimpleHttpConnectionManager(
+		// true);
+		// HttpConnectionManagerParams params = connectionManager.getParams();
+		// params.setDefaultMaxConnectionsPerHost(maxConPerHost);
+		// params.setConnectionTimeout(conTimeOutMs);
+		// params.setSoTimeout(soTimeOutMs);
 
 		HttpClientParams clientParams = new HttpClientParams();
 		clientParams.setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
@@ -140,10 +141,13 @@ public class HttpClient implements java.io.Serializable {
 
 	}
 
-	public InputStream get1(String url, PostParameter[] headerParameters)
-			throws MxException {
-
-		GetMethod method = new GetMethod(url);
+	public InputStream get1(String url, PostParameter[] headerParameters,
+			GetMethod method) throws MxException {
+		boolean getIsNUll = false;
+		if (method == null) {
+			method = new GetMethod(url);
+			getIsNUll = true;
+		}
 		InetAddress ipaddr;
 		int responseCode = -1;
 		try {
@@ -178,10 +182,11 @@ public class HttpClient implements java.io.Serializable {
 			for (Header h : headers) {
 				method.setRequestHeader(h);
 			}
-			org.apache.commons.httpclient.HttpClient client = this.createHttpClient( 150, 30000, 30000, 1024 * 1024);
-//			long t0 = System.currentTimeMillis();
+			org.apache.commons.httpclient.HttpClient client = this
+					.createHttpClient(150, 30000, 30000, 1024 * 1024);
+			// long t0 = System.currentTimeMillis();
 			client.executeMethod(method);
-//			long t1 = System.currentTimeMillis();
+			// long t1 = System.currentTimeMillis();
 			responseCode = method.getStatusCode();
 
 			// response.setResponseAsString(this.getResponseBodyAsString(method));
@@ -199,32 +204,62 @@ public class HttpClient implements java.io.Serializable {
 						method.getStatusCode());
 
 			}
-			
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 			InputStream in = method.getResponseBodyAsStream();
-//			byte[] b = new byte[in.available()];
-//			in.read(b);
-//			bos.w
-//			long t2 = System.currentTimeMillis();
-			byte[] buf = new byte[1204 * 96];
-			int read = 0;
-			
-			while ((read = in.read(buf)) != -1) {
-				bos.write(buf, 0, read);
+			if (getIsNUll == true) {
+				ByteArrayOutputStream bos = new ByteArrayOutputStream();
+				byte[] buf = new byte[1204 * 96];
+				int read = 0;
+
+				while ((read = in.read(buf)) != -1) {
+					bos.write(buf, 0, read);
+				}
+				return new ByteArrayInputStream(bos.toByteArray());
+			} else {
+				return in;
 			}
-//			long t3 = System.currentTimeMillis();
-//			
-//			
-//			System.out.println("===== 执行read 耗时="+(t3-t2));
-			return new ByteArrayInputStream(bos.toByteArray());
 
 		} catch (Throwable ioe) {
 			throw new MxException(ioe.getMessage(), ioe, responseCode);
 		} finally {
-			method.releaseConnection();
+			if (getIsNUll) {
+				method.releaseConnection();
+			}
 			// client.getHttpConnectionManager().closeIdleConnections(0);
 		}
+
+	}
+
+	public boolean get2(String url, PostParameter[] headerParameters, File f)
+			throws MxException {
+		GetMethod method = new GetMethod(url);
+		InputStream in = get1(url, headerParameters, method);
+		FileOutputStream out = null;
+		try {
+			out = new FileOutputStream(f);
+			byte[] buf = new byte[1024*512];
+			int read = 0;
+
+			while ((read = in.read(buf)) != -1) {
+				out.write(buf, 0, read);
+				out.flush();
+			}
+			return true;
+		} catch (FileNotFoundException e) {
+			throw new MxException(e.getMessage(), e);
+		} catch (IOException e) {
+			throw new MxException(e.getMessage(), e);
+		} finally {
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e) {
+					throw new MxException(e.getMessage(), e);
+				}
+			}
+			method.releaseConnection();
+		}
+		// return false;
 
 	}
 
@@ -373,7 +408,8 @@ public class HttpClient implements java.io.Serializable {
 			for (Header h : headers) {
 				method.setRequestHeader(h);
 			}
-			org.apache.commons.httpclient.HttpClient client = this.createHttpClient( 150, 30000, 30000, 1024 * 1024);
+			org.apache.commons.httpclient.HttpClient client = this
+					.createHttpClient(150, 30000, 30000, 1024 * 1024);
 			client.executeMethod(method);
 
 			Header content_type = method.getResponseHeader("Content-Type");
@@ -498,11 +534,13 @@ public class HttpClient implements java.io.Serializable {
 		}
 		return statusCode + ":" + cause;
 	}
-	
-	public static void main(String[] s){
+
+	public static void main(String[] s) {
 		HttpClient c = new HttpClient();
 		PostParameter[] p = new PostParameter[0];
-		InputStream in = c.get1("http://192.168.100.230:8030/files/3587/ace6d35d40d5cbd623913c09fdd4fdf2", p);
+		InputStream in = c
+				.get1("http://192.168.100.230:8030/files/3587/ace6d35d40d5cbd623913c09fdd4fdf2",
+						p,null);
 	}
 
 }
