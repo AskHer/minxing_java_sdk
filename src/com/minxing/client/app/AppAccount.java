@@ -50,6 +50,7 @@ public class AppAccount extends Account {
 	protected long _currentUserId = 0;
 	protected String client_id;
 	protected String secret;
+	private String user_agent = null;
 
 	protected AppAccount(String serverURL, String token) {
 		this._serverURL = serverURL;
@@ -121,6 +122,10 @@ public class AppAccount extends Account {
 	public void setFromUserLoginName(String loginName) {
 		this._loginName = loginName;
 
+	}
+	
+	public void setUserAgent(String _user_agent) {
+		this.user_agent  = _user_agent;
 	}
 
 	/**
@@ -199,8 +204,13 @@ public class AppAccount extends Account {
 					this._loginName);
 			headersList.add(as_user);
 		}
+		
+		String ua = "Minxing-SDK-5.3.0";
+		if (user_agent != null) {
+			ua = user_agent;
+		}
 
-		headersList.add(new PostParameter("User-Agent", "MySuperUserAgent"));
+		headersList.add(new PostParameter("User-Agent", ua));
 
 		String _url = "";
 
