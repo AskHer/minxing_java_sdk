@@ -1272,6 +1272,39 @@ public class AppAccount extends Account {
 		}
 
 	}
+	
+	/**
+	 * 发送消息到会话中。需要调用setFromUserLoginname()设置发送者身份
+	 * 
+	 * @param sender_login_name
+	 *            发送用户的账户名字，该账户做为消息的发送人
+	 * @param conversation_id
+	 *            会话的Id
+	 * @param message
+	 *            消息内容
+	 * @return
+	 */
+	public TextMessage sendConversationSystemMessage(String conversation_id,
+			String message) {
+		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
+
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("body", message);
+		params.put("message_type", "system");
+		Map<String, String> headers = new HashMap<String, String>();
+
+		JSONObject return_json = this.post(
+				"/api/v1/conversations/" + conversation_id + "/messages",
+				params, headers).asJSONObject();
+
+		try {
+			return TextMessage.fromJSON(return_json.getJSONArray("items")
+					.getJSONObject(0));
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+
+	}
 
 	/**
 	 * 发送文件到会话中。需要调用setFromUserLoginname()设置发送者身份
