@@ -50,6 +50,7 @@ public class AppAccount extends Account {
 	protected long _currentUserId = 0;
 	protected String client_id;
 	protected String secret;
+	private String user_agent = null;
 
 	protected AppAccount(String serverURL, String token) {
 		this._serverURL = serverURL;
@@ -121,6 +122,10 @@ public class AppAccount extends Account {
 	public void setFromUserLoginName(String loginName) {
 		this._loginName = loginName;
 
+	}
+	
+	public void setUserAgent(String _user_agent) {
+		this.user_agent  = _user_agent;
 	}
 
 	/**
@@ -199,8 +204,13 @@ public class AppAccount extends Account {
 					this._loginName);
 			headersList.add(as_user);
 		}
+		
+		String ua = "Minxing-SDK-5.3.0";
+		if (user_agent != null) {
+			ua = user_agent;
+		}
 
-		headersList.add(new PostParameter("User-Agent", "MySuperUserAgent"));
+		headersList.add(new PostParameter("User-Agent", ua));
 
 		String _url = "";
 
@@ -1248,6 +1258,39 @@ public class AppAccount extends Account {
 
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("body", message);
+		Map<String, String> headers = new HashMap<String, String>();
+
+		JSONObject return_json = this.post(
+				"/api/v1/conversations/" + conversation_id + "/messages",
+				params, headers).asJSONObject();
+
+		try {
+			return TextMessage.fromJSON(return_json.getJSONArray("items")
+					.getJSONObject(0));
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+
+	}
+	
+	/**
+	 * 发送消息到会话中。需要调用setFromUserLoginname()设置发送者身份
+	 * 
+	 * @param sender_login_name
+	 *            发送用户的账户名字，该账户做为消息的发送人
+	 * @param conversation_id
+	 *            会话的Id
+	 * @param message
+	 *            消息内容
+	 * @return
+	 */
+	public TextMessage sendConversationSystemMessage(String conversation_id,
+			String message) {
+		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
+
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("body", message);
+		params.put("message_type", "system");
 		Map<String, String> headers = new HashMap<String, String>();
 
 		JSONObject return_json = this.post(
