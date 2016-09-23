@@ -1,7 +1,9 @@
 package com.minxing.client.app;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -655,8 +657,15 @@ public class AppAccount extends Account {
 						if (deptHash.containsKey(code)) {
 							udept.setParent_dept_code(deptHash.get(code));
 						} else {
+							String dept_code = null;
+							try {
+								dept_code = URLEncoder.encode(code, "UTF-8");
+							} catch (UnsupportedEncodingException e) {
+								throw new MxException("encode deptcode error. dept_code:" + code, e);
+							}
+							
 							JSONObject r = this.get("/api/v1/departments/"
-									+ code + "/by_dept_code");
+									+ dept_code + "/by_dept_code");
 							String parent_code = r
 									.getString("parent_dept_code");
 							udept.setParent_dept_code(parent_code);
