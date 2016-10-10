@@ -391,10 +391,16 @@ public class AppAccount extends Account {
 
 		Map<String, String> params = new HashMap<String, String>();
 		PostParameter[] pps = createParams(params);
+		String ua = "Minxing-SDK-5.3.0";
+		if (user_agent != null) {
+			ua = user_agent;
+		}
+		params.put("User-Agent", ua);
+		PostParameter[] headers = createParams(params);
 
 		try {
 			InputStream response = this.getForStream("/files/" + file_id + "/"
-					+ fileFingerPrint, pps, pps, true);
+					+ fileFingerPrint, pps, headers, true);
 			return response;
 
 		} catch (Exception e) {
@@ -415,10 +421,15 @@ public class AppAccount extends Account {
 	public boolean downloadFileAndSave(int file_id, String fileFingerPrint, File f) {
 		Map<String, String> params = new HashMap<String, String>();
 		PostParameter[] pps = createParams(params);
-
+		String ua = "Minxing-SDK-5.3.0";
+		if (user_agent != null) {
+			ua = user_agent;
+		}
+		params.put("User-Agent", ua);
+		PostParameter[] headers = createParams(params);
 		try {
 			return this.getForStreamAndSave("/files/" + file_id + "/"
-					+ fileFingerPrint, pps, pps, true,f);
+					+ fileFingerPrint, pps, headers, true,f);
 		} catch (Exception e) {
 			throw new MxException(e);
 		}
@@ -447,10 +458,15 @@ public class AppAccount extends Account {
 
 		Map<String, String> params = new HashMap<String, String>();
 		PostParameter[] pps = createParams(params);
-
+		String ua = "Minxing-SDK-5.3.0";
+		if (user_agent != null) {
+			ua = user_agent;
+		}
+		params.put("User-Agent", ua);
+		PostParameter[] headers = createParams(params);
 		try {
 			InputStream response = this.getForStream("/thumbnails/" + fileId
-					+ "/" + fileFingerPrint, pps, pps, true);
+					+ "/" + fileFingerPrint, pps, headers, true);
 			return response;
 
 		} catch (Exception e) {
@@ -621,6 +637,7 @@ public class AppAccount extends Account {
 				user.setCellvoice2(o.getString("cellvoice2"));
 				user.setWorkvoice(o.getString("workvoice"));
 				user.setEmpCode(o.getString("emp_code"));
+				user.setSuspended(o.getBoolean("suspended"));
 
 				JSONArray depts = o.getJSONArray("departs");
 				if (depts != null && depts.length() > 0) {
