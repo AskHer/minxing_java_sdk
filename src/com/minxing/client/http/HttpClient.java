@@ -260,15 +260,15 @@ public class HttpClient implements java.io.Serializable {
 					throw new IllegalStateException("Oauth2 token is not set!");
 				}
 				headers.add(new Header("Authorization", tokenType + " " + token));
-				try {
-					ipaddr = InetAddress.getLocalHost();
-					headers.add(new Header("API-RemoteIP", ipaddr
-							.getHostAddress()));
-				} catch (Exception e) {
-					throw new MxException(
-							"InetAddress.getLocalHost error,check server's hosts and hostname",
-							e);
-				}
+//				try {
+//					ipaddr = InetAddress.getLocalHost();
+//					headers.add(new Header("API-RemoteIP", ipaddr
+//							.getHostAddress()));
+//				} catch (Exception e) {
+//					throw new MxException(
+//							"InetAddress.getLocalHost error,check server's hosts and hostname",
+//							e);
+//				}
 
 //				client.getHostConfiguration().getParams()
 //						.setParameter("http.default-headers", headers);
