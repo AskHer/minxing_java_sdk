@@ -1,5 +1,7 @@
 package com.minxing.client.organization;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 
 public class User extends Organization {
@@ -23,6 +25,7 @@ public class User extends Organization {
 	private Long dept_id = null; // 部门标识
 	private String display_order; // 排序
 	private Integer role_code; // 角色代码
+	private String area_code;//区号
 
 	private Long network_id;
 
@@ -349,7 +352,36 @@ public class User extends Organization {
 		if (null != this.getPosition()) {
 			params.put("position", this.getPosition());
 		}
+		if (null != this.getArea_code()) {
+			params.put("area_code", this.getArea_code());
+		}
 
+		for (int i = 1; i <= 10; i++) {
+			Method m;
+			try {
+				m = this.getClass().getMethod("getExt" + i, new Class[] {});
+				String ext = (String) m.invoke(this, new Object[] {});
+				if (null != ext) {
+					params.put("ext" + i, ext);
+				}
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
 
 		return params;
 	}
@@ -404,5 +436,13 @@ public class User extends Organization {
 
 	public void setHidden_dials(Boolean hidden_dials) {
 		this.hidden_dials = hidden_dials;
+	}
+
+	public String getArea_code() {
+		return area_code;
+	}
+
+	public void setArea_code(String area_code) {
+		this.area_code = area_code;
 	}
 }

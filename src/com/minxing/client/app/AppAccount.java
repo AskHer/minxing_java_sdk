@@ -596,6 +596,7 @@ public class AppAccount extends Account {
 				dept.setDisplay_order(o.getString("display_order"));
 				dept.setLevel(o.getInt("level"));
 				dept.setParentDeptId(o.getLong("parent_dept_id"));
+				dept.setParent_dept_code(o.getString("parent_dept_code"));
 
 				departments.add(dept);
 			}
