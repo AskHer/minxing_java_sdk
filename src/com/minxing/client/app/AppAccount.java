@@ -1333,6 +1333,71 @@ public class AppAccount extends Account {
 			throw new MxException("解析Json出错.", e);
 		}
 	}
+	
+	/**
+	 * 发送文件到会话聊天中
+	 * 
+	 * @param conversation_id
+	 * @param file
+	 * @return
+	 */
+	public long[] uploadGroupFile(long group_id, File file) {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("group_id", String.valueOf(group_id));
+		Map<String, String> headers = new HashMap<String, String>();
+
+		JSONArray arr = null;
+		long[] filesArray = new long[] {};
+		try {
+			arr = this.post("api/v1/uploaded_files", params, headers, file);
+			filesArray = new long[arr.length()];
+			for (int i = 0; i < arr.length(); i++) {
+				JSONObject o = arr.getJSONObject(i);
+				filesArray[i] = o.getLong("id");
+			}
+
+		} catch (Exception e) {
+			throw new MxException(e);
+		}
+
+		return filesArray;
+	}
+
+	/**
+	 * 发送文件到工作圈。需要调用setFromUserLoginname()设置发送者身份
+	 * 
+	 * @param group_id 工作圈的Id
+	 * @param messageText 消息的文本
+	 * @param imageFile 文件对象，只发送一个文件
+	 * @return
+	 */
+	public TextMessage sendGroupMessageWithImage(long group_id,String messageText,
+			File imageFile) {
+		long[] file_ids = uploadGroupFile(group_id, imageFile);
+		Map<String, String> params = new HashMap<String, String>();
+		for (int i = 0; i < file_ids.length; i++) {
+			params.put("attached[]",
+					String.format("original_image:%d", file_ids[i]));
+		}
+		Map<String, String> headers = new HashMap<String, String>();
+
+		
+		params.put("group_id", String.valueOf(group_id));
+		params.put("body", messageText);
+
+
+		headers = new HashMap<String, String>();
+
+		JSONObject new_message = this.post("/api/v1/messages", params, headers)
+				.asJSONObject();
+		try {
+			return TextMessage.fromJSON(new_message.getJSONArray("items")
+					.getJSONObject(0));
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+		
+	}
 
 	/**
 	 * 发送消息到工作圈中。需要调用setFromUserLoginname()设置发送者身份

@@ -15,8 +15,8 @@ public class SendMessageByApi {
 //		AppAccount account = AppAccount.loginByAccessToken(
 //				"http://localhost:3000",
 //				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
-		AppAccount account = AppAccount.loginByAccessToken("http://127.0.0.1:3000", "qd37z3o2AuJhjGpaa9kWEyOmixueaJI1ILhnlKQTGe4Ao4bp");
-		account.uploadUserAvatar("90001", "/Users/helhades/Documents/html5_notification/www/img/img_headPic3.png");
+		AppAccount account = AppAccount.loginByAccessToken("http://127.0.0.1:3000", "iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
+//		account.uploadUserAvatar("90001", "/Users/helhades/Documents/html5_notification/www/img/img_headPic3.png");
 		
 
 
@@ -29,7 +29,7 @@ public class SendMessageByApi {
 
 		// createConversation(account);
 		// createConversationWithGraph(account);
-
+		sendGroupMessageWithImage(account);
 		//createConversation(account);
 //		createConversationWithGraph(account);
 
@@ -52,6 +52,21 @@ public class SendMessageByApi {
 
 	}
 
+	private static void sendGroupMessageWithImage(AppAccount account) {
+
+		File file = new File("/Users/liujiang/Pictures/bg_full@1x.png");
+		long group_id = 49;// 会话id
+		
+		long fromUserId = 30766;// web上查询某人的详情，从url里获取id
+		account.setFromUserId(fromUserId);
+		// 推送文件到聊天
+		// 推送文字消息到聊天
+		TextMessage msg = account.sendGroupMessageWithImage(group_id,"工作圈图片发送测试", file);
+		System.out.println(msg);
+
+	}
+
+	
 	private static void createConversation(AppAccount account) {
 
 		account.setFromUserLoginName("oajcs3@js.chinamobile.com");
