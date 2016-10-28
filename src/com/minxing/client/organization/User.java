@@ -34,6 +34,7 @@ public class User extends Organization {
 	private Boolean hidden_dials;//是否隐藏电话
 
 	private String with_account; // if true also delete the user account
+	private String preferred_mobile = null;
 	// 扩展字段
 	private String ext1;
 	private String ext2;
@@ -105,7 +106,15 @@ public class User extends Organization {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+	
+	public void setPreferredMobile(String preferred_mobile) {
+		this.preferred_mobile = preferred_mobile;
+	}
 
+	public String getPreferredMobile() {
+		return preferred_mobile;
+	}
+	
 	public String getCellvoice1() {
 		return cellvoice1;
 	}
@@ -354,6 +363,10 @@ public class User extends Organization {
 		}
 		if (null != this.getArea_code()) {
 			params.put("area_code", this.getArea_code());
+		}
+		
+		if (null != this.getPreferredMobile()) {
+			params.put("preferred_mobile", this.getPreferredMobile());
 		}
 
 		for (int i = 1; i <= 10; i++) {
