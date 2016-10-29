@@ -1441,10 +1441,38 @@ public class AppAccount extends Account {
 	 * @return
 	 */
 	public TextMessage sendMessageToUser(long toUserId, String message) {
+//		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
+//
+//		Map<String, String> params = new HashMap<String, String>();
+//		params.put("body", message);
+//		Map<String, String> headers = new HashMap<String, String>();
+//
+//		JSONObject new_message = this.post(
+//				"/api/v1/conversations/to_user/" + toUserId, params, headers)
+//				.asJSONObject();
+//		try {
+//			return TextMessage.fromJSON(new_message.getJSONArray("items")
+//					.getJSONObject(0));
+//		} catch (JSONException e) {
+//			throw new MxException("解析Json出错.", e);
+//		}
+		return this.sendMessageToUser(toUserId, message, null);
+	}
+	/**
+	 * 发送消息到与某人的聊天会话中。需要调用setFromUserLoginname()设置发送者身份
+	 * @param toUserId
+	 * @param message
+	 * @param message_type plugin_message or null
+	 * @return
+	 */
+	public TextMessage sendMessageToUser(long toUserId, String message,String message_type) {
 		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
 
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("body", message);
+		if(message_type!=null){
+			params.put("message_type", message_type);
+		}
 		Map<String, String> headers = new HashMap<String, String>();
 
 		JSONObject new_message = this.post(
