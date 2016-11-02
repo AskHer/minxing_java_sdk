@@ -35,6 +35,7 @@ import com.minxing.client.ocu.Message;
 import com.minxing.client.ocu.Resource;
 import com.minxing.client.ocu.TextMessage;
 import com.minxing.client.ocu.UserInfo;
+import com.minxing.client.organization.AppVisibleScope;
 import com.minxing.client.organization.Department;
 import com.minxing.client.organization.Network;
 import com.minxing.client.organization.User;
@@ -123,9 +124,9 @@ public class AppAccount extends Account {
 		this._loginName = loginName;
 
 	}
-	
+
 	public void setUserAgent(String _user_agent) {
-		this.user_agent  = _user_agent;
+		this.user_agent = _user_agent;
 	}
 
 	/**
@@ -204,7 +205,7 @@ public class AppAccount extends Account {
 					this._loginName);
 			headersList.add(as_user);
 		}
-		
+
 		String ua = "Minxing-SDK-5.3.0";
 		if (user_agent != null) {
 			ua = user_agent;
@@ -408,17 +409,19 @@ public class AppAccount extends Account {
 		}
 
 	}
-	
+
 	/**
 	 * 发送文件到会话聊天中
 	 * 
 	 * @param conversation_id
 	 * @param fileFingerPrint
 	 *            文件的MD5校验码
-	 * @param file 要把文件存进这个file
+	 * @param file
+	 *            要把文件存进这个file
 	 * @return
 	 */
-	public boolean downloadFileAndSave(int file_id, String fileFingerPrint, File f) {
+	public boolean downloadFileAndSave(int file_id, String fileFingerPrint,
+			File f) {
 		Map<String, String> params = new HashMap<String, String>();
 		PostParameter[] pps = createParams(params);
 		String ua = "Minxing-SDK-5.3.0";
@@ -429,20 +432,17 @@ public class AppAccount extends Account {
 		PostParameter[] headers = createParams(params);
 		try {
 			return this.getForStreamAndSave("/files/" + file_id + "/"
-					+ fileFingerPrint, pps, headers, true,f);
+					+ fileFingerPrint, pps, headers, true, f);
 		} catch (Exception e) {
 			throw new MxException(e);
 		}
 	}
 
-	
-
 	private boolean getForStreamAndSave(String url, PostParameter[] params,
 			PostParameter[] headers, boolean WithTokenHeader, File f) {
-		return apiGetForStreamAndSave(url, "get", params, headers, WithTokenHeader,f);
+		return apiGetForStreamAndSave(url, "get", params, headers,
+				WithTokenHeader, f);
 	}
-
-	
 
 	/**
 	 * 下载文件的缩略图,5.3.3版本支持。
@@ -1289,7 +1289,7 @@ public class AppAccount extends Account {
 		}
 
 	}
-	
+
 	/**
 	 * 发送消息到会话中。需要调用setFromUserLoginname()设置发送者身份
 	 * 
@@ -1441,36 +1441,40 @@ public class AppAccount extends Account {
 	 * @return
 	 */
 	public TextMessage sendMessageToUser(long toUserId, String message) {
-//		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
-//
-//		Map<String, String> params = new HashMap<String, String>();
-//		params.put("body", message);
-//		Map<String, String> headers = new HashMap<String, String>();
-//
-//		JSONObject new_message = this.post(
-//				"/api/v1/conversations/to_user/" + toUserId, params, headers)
-//				.asJSONObject();
-//		try {
-//			return TextMessage.fromJSON(new_message.getJSONArray("items")
-//					.getJSONObject(0));
-//		} catch (JSONException e) {
-//			throw new MxException("解析Json出错.", e);
-//		}
+		// // 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
+		//
+		// Map<String, String> params = new HashMap<String, String>();
+		// params.put("body", message);
+		// Map<String, String> headers = new HashMap<String, String>();
+		//
+		// JSONObject new_message = this.post(
+		// "/api/v1/conversations/to_user/" + toUserId, params, headers)
+		// .asJSONObject();
+		// try {
+		// return TextMessage.fromJSON(new_message.getJSONArray("items")
+		// .getJSONObject(0));
+		// } catch (JSONException e) {
+		// throw new MxException("解析Json出错.", e);
+		// }
 		return this.sendMessageToUser(toUserId, message, null);
 	}
+
 	/**
 	 * 发送消息到与某人的聊天会话中。需要调用setFromUserLoginname()设置发送者身份
+	 * 
 	 * @param toUserId
 	 * @param message
-	 * @param message_type plugin_message or null
+	 * @param message_type
+	 *            plugin_message or null
 	 * @return
 	 */
-	public TextMessage sendMessageToUser(long toUserId, String message,String message_type) {
+	public TextMessage sendMessageToUser(long toUserId, String message,
+			String message_type) {
 		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
 
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("body", message);
-		if(message_type!=null){
+		if (message_type != null) {
 			params.put("message_type", message_type);
 		}
 		Map<String, String> headers = new HashMap<String, String>();
@@ -2923,8 +2927,100 @@ public class AppAccount extends Account {
 		}
 	}
 
+	public Object addAppVisibleScope(String app_id, String[] login_names,
+			String[] dept_codes) {
+		Map<String, String> params = new HashMap<String, String>();
+		if (login_names != null && login_names.length > 0) {
+			StringBuilder sb = new StringBuilder();
+			for (String str : login_names) {
+				sb.append(str).append(",");
+			}
+			params.put("login_names", sb.toString());
+		}
+		
+		if (dept_codes != null && dept_codes.length > 0) {
+			StringBuilder sb = new StringBuilder();
+			for (String str : dept_codes) {
+				sb.append(str).append(",");
+			}
+			params.put("ref_ids", sb.toString());
+		}
+		JSONObject obj = post("/api/v1/apps/scope/"+app_id,params,new HashMap<String, String>()).asJSONObject();
+		return obj;
+	}
+	
+	public Object deleteAppVisibleScope(String app_id, String[] login_names,
+			String[] dept_codes) {
+		Map<String, String> params = new HashMap<String, String>();
+		if (login_names != null && login_names.length > 0) {
+			StringBuilder sb = new StringBuilder();
+			for (String str : login_names) {
+				sb.append(str).append(",");
+			}
+			params.put("login_names", sb.toString());
+		}
+		
+		if (dept_codes != null && dept_codes.length > 0) {
+			StringBuilder sb = new StringBuilder();
+			for (String str : dept_codes) {
+				sb.append(str).append(",");
+			}
+			params.put("ref_ids", sb.toString());
+		}
+		JSONObject obj = delete("/api/v1/apps/scope/"+app_id,params);
+		return obj;
+	}
+	
+	
+	public Object getAppVisibleScope(String app_id) {
+		
+		JSONObject obj = get("/api/v1/apps/scope/"+app_id);
+		try {
+			JSONArray depts = obj.getJSONArray("depts");
+			List<Department> deps = new ArrayList<Department>();
+			if(depts!=null){
+				for(int i = 0;i<depts.length();i++){
+					JSONObject o = depts.getJSONObject(i);
+					Department dept = new Department();
+					dept.setId(o.getLong("id"));
+					dept.setDept_code(o.getString("dept_code"));
+					dept.setShortName(o.getString("short_name"));
+					dept.setFull_name(o.getString("full_name"));
+					dept.setDisplay_order(o.getString("display_order"));
+					dept.setParent_dept_code(o.getString("parent_dept_code"));
+					deps.add(dept);
+				}
+			}
+			JSONArray users = obj.getJSONArray("users");
+			List<User> us = new ArrayList<User>();
+			if(users!=null){
+				for(int i = 0;i<users.length();i++){
+					JSONObject o = users.getJSONObject(i);
+					User user = new User();
+					user.setId(o.getLong("id"));
+					user.setLoginName(o.getString("login_name"));
+
+					user.setEmail(o.getString("email"));
+					user.setName(o.getString("name"));
+					user.setTitle(o.getString("title"));
+					user.setCellvoice1(o.getString("cellvoice1"));
+					user.setCellvoice2(o.getString("cellvoice2"));
+					user.setWorkvoice(o.getString("workvoice"));
+					user.setEmpCode(o.getString("emp_code"));
+					user.setSuspended(o.getBoolean("suspended"));
+					us.add(user);
+				}
+			}
+			AppVisibleScope scope = new AppVisibleScope();
+			scope.setUsers(us);
+			scope.setDepartment(deps);
+			return scope;
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 
-	
-	
 }
