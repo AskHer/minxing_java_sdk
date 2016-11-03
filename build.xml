@@ -4,7 +4,7 @@
 	<property name="src.home" value="src" />
 	<property name="classes.home" value="bin" />
 	<property name="dist.home" value="dist" />
-	<property name="version" value="5.3.0" />
+	<property name="version" value="6.0.0" />
 
 
 	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
