@@ -21,7 +21,8 @@ public class TestGetAllUser {
 		try {
 			int count = 0;
 			for (int k = 0; k < 1; k++) {
-				result = account.exportUsers(10, true);
+//				result = account.exportUsers(10);   获取用户时不包含ext属性
+				result = account.exportUsers(10, true); //获取用户时包括ext属性
 				Iterator<UserSet> it = result.iterator();
 
 				while (it.hasNext()) {
