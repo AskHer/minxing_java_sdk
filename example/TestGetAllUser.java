@@ -15,13 +15,13 @@ public class TestGetAllUser {
 //				"vSo3xkp7qS-IMA0Zn_cdhusGfxy84cWcYFQ0W0sFPsFMJO-D");
 		AppAccount account = AppAccount.loginByAccessToken(
 				"http://localhost:3000",
-				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
+				"xslEyFD-N7N1WklYO0IiY2I3h8LeUKyfnnX9mizuv71EEaqa");
 
 		UserPackage result;
 		try {
 			int count = 0;
 			for (int k = 0; k < 1; k++) {
-				result = account.exportUsers(100);
+				result = account.exportUsers(10, true);
 				Iterator<UserSet> it = result.iterator();
 
 				while (it.hasNext()) {
@@ -53,6 +53,7 @@ public class TestGetAllUser {
 					
 
 					System.out.println("cell1:" + u.getCellvoice1());
+						 System.out.println("ext1:" + u.getExt1());
 					
 					Department[] depts = u.getAllDepartments();
 					

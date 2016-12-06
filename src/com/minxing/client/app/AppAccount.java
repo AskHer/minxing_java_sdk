@@ -606,14 +606,20 @@ public class AppAccount extends Account {
 		return departments;
 	}
 
-	protected List<User> getAllUsers(int page, int pageSize) {
+	protected List<User> getAllUsers(int page, int pageSize, boolean withExt) {
 		ArrayList<User> users = new ArrayList<User>();
 		try {
 
 			PostParameter p1 = new PostParameter("size",
 					String.valueOf(pageSize));
 			PostParameter p2 = new PostParameter("page", String.valueOf(page));
-			PostParameter[] params = new PostParameter[] { p1, p2 };
+			PostParameter[] params;
+			if(withExt){
+				PostParameter p3 = new PostParameter("with_ext", String.valueOf(withExt));
+				params = new PostParameter[] { p1, p2, p3 };
+			}else{
+				params = new PostParameter[] { p1, p2 };
+			}
 
 			JSONArray arrs = this
 					.getJSONArray("/api/v1/networks/users", params);
@@ -636,6 +642,18 @@ public class AppAccount extends Account {
 				u.setSuspended(o.getBoolean("suspended"));
 				u.setAvatarUrl(o.getString("avatar_url"));
 				u.setEmpCode(o.getString("emp_code"));
+				if(withExt){
+					u.setExt1(o.getString("ext1"));
+					u.setExt2(o.getString("ext2"));
+					u.setExt3(o.getString("ext3"));
+					u.setExt4(o.getString("ext4"));
+					u.setExt5(o.getString("ext5"));
+					u.setExt6(o.getString("ext6"));
+					u.setExt7(o.getString("ext7"));
+					u.setExt8(o.getString("ext8"));
+					u.setExt9(o.getString("ext9"));
+					u.setExt10(o.getString("ext10"));
+				}
 
 				JSONArray depts = o.getJSONArray("departs");
 				Department[] allDept = new Department[depts.length()];
@@ -664,7 +682,7 @@ public class AppAccount extends Account {
 							} catch (UnsupportedEncodingException e) {
 								throw new MxException("encode deptcode error. dept_code:" + code, e);
 							}
-							
+
 							JSONObject r = this.get("/api/v1/departments/"
 									+ dept_code + "/by_dept_code");
 							String parent_code = r
@@ -686,6 +704,10 @@ public class AppAccount extends Account {
 		return users;
 	}
 
+	protected List<User> getAllUsers(int page, int pageSize) {
+		return getAllUsers(page, pageSize, false);
+	}
+
 	/**
 	 * 导出全部的用户，包括了管理员，普通用户，公众号
 	 * 
@@ -695,6 +717,19 @@ public class AppAccount extends Account {
 	 */
 	public UserPackage exportUsers(int pageSize) {
 		return new UserPackage(this, pageSize);
+	}
+
+	/**
+	 * 导出全部的用户包括ext字段，包括了管理员，普通用户，公众号
+	 *
+	 * @param pageSize
+	 *            每次循环导出的用户大小，最大100
+	 * @param withExt
+	 *            是否包含ext字段
+	 * @return UserPackage对象。
+	 */
+	public UserPackage exportUsers(int pageSize, boolean withExt) {
+		return new UserPackage(this, pageSize, withExt);
 	}
 
 	/**
