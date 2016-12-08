@@ -54,9 +54,14 @@ public class TestGetAllUser {
 					
 
 					System.out.println("cell1:" + u.getCellvoice1());
-						 System.out.println("ext1:" + u.getExt1());
-					
-					Department[] depts = u.getAllDepartments();
+						 System.out.println("getExt1:" + u.getExt1());
+						 System.out.println("getCellvoice2:" + u.getCellvoice2());
+						 System.out.println("getWorkvoice:" + u.getWorkvoice());
+						 System.out.println("getPreferredMobile:" + u.getPreferredMobile());
+						 System.out.println("getPosition:" + u.getPosition());
+
+
+						 Department[] depts = u.getAllDepartments();
 					
 					for (int j = 0; j < depts.length; j++) {
 						System.out.println("  dept:" + depts[j]);
