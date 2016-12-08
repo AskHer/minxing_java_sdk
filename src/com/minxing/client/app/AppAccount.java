@@ -1,8 +1,13 @@
 package com.minxing.client.app;
 
 import java.io.File;
+
 import java.io.InputStream;
+
+import java.io.UnsupportedEncodingException;
+
 import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -382,10 +387,10 @@ public class AppAccount extends Account {
 	/**
 	 * 发送文件到会话聊天中
 	 * 
-	 * @param conversation_id
+	 *
 	 * @param fileFingerPrint
 	 *            文件的MD5校验码
-	 * @param file
+	 *
 	 * @return
 	 */
 	public InputStream downloadFile(Long file_id, String fileFingerPrint) {
@@ -413,10 +418,10 @@ public class AppAccount extends Account {
 	/**
 	 * 发送文件到会话聊天中
 	 * 
-	 * @param conversation_id
+	 *
 	 * @param fileFingerPrint
 	 *            文件的MD5校验码
-	 * @param file
+	 *
 	 *            要把文件存进这个file
 	 * @return
 	 */
@@ -711,6 +716,7 @@ public class AppAccount extends Account {
 				dept.setDisplay_order(o.getString("display_order"));
 				dept.setLevel(o.getInt("level"));
 				dept.setParentDeptId(o.getLong("parent_dept_id"));
+				dept.setParent_dept_code(o.getString("parent_dept_code"));
 
 				departments.add(dept);
 			}
@@ -756,14 +762,20 @@ public class AppAccount extends Account {
 		return departments;
 	}
 
-	protected List<User> getAllUsers(int page, int pageSize) {
+	protected List<User> getAllUsers(int page, int pageSize, boolean withExt) {
 		ArrayList<User> users = new ArrayList<User>();
 		try {
 
 			PostParameter p1 = new PostParameter("size",
 					String.valueOf(pageSize));
 			PostParameter p2 = new PostParameter("page", String.valueOf(page));
-			PostParameter[] params = new PostParameter[] { p1, p2 };
+			PostParameter[] params;
+			if(withExt){
+				PostParameter p3 = new PostParameter("with_ext", String.valueOf(withExt));
+				params = new PostParameter[] { p1, p2, p3 };
+			}else{
+				params = new PostParameter[] { p1, p2 };
+			}
 
 			JSONArray arrs = this
 					.getJSONArray("/api/v1/networks/users", params);
@@ -778,7 +790,10 @@ public class AppAccount extends Account {
 				u.setLoginName(o.getString("login_name"));
 
 				u.setCellvoice1(o.getString("cell_phone"));
-				u.setCellvoice2(o.getString("preferred_mobile"));
+				u.setCellvoice2(o.getString("cellvoice2"));
+				u.setPreferredMobile(o.getString("preferred_mobile"));
+				u.setWorkvoice(o.getString("workvoice"));
+				u.setPosition(o.getString("position"));
 				u.setEmail(o.getString("email"));
 				u.setEmpCode(o.getString("dept_ref_id"));
 				u.setNetworkId(o.getLong("network_id"));
@@ -786,6 +801,18 @@ public class AppAccount extends Account {
 				u.setSuspended(o.getBoolean("suspended"));
 				u.setAvatarUrl(o.getString("avatar_url"));
 				u.setEmpCode(o.getString("emp_code"));
+				if(withExt){
+					u.setExt1(o.getString("ext1"));
+					u.setExt2(o.getString("ext2"));
+					u.setExt3(o.getString("ext3"));
+					u.setExt4(o.getString("ext4"));
+					u.setExt5(o.getString("ext5"));
+					u.setExt6(o.getString("ext6"));
+					u.setExt7(o.getString("ext7"));
+					u.setExt8(o.getString("ext8"));
+					u.setExt9(o.getString("ext9"));
+					u.setExt10(o.getString("ext10"));
+				}
 
 				JSONArray depts = o.getJSONArray("departs");
 
@@ -809,8 +836,15 @@ public class AppAccount extends Account {
 						if (deptHash.containsKey(code)) {
 							udept.setParent_dept_code(deptHash.get(code));
 						} else {
+							String dept_code = null;
+							try {
+								dept_code = URLEncoder.encode(code, "UTF-8");
+							} catch (UnsupportedEncodingException e) {
+								throw new MxException("encode deptcode error. dept_code:" + code, e);
+							}
+
 							JSONObject r = this.get("/api/v1/departments/"
-									+ code + "/by_dept_code");
+									+ dept_code + "/by_dept_code");
 							String parent_code = r
 									.getString("parent_dept_code");
 							udept.setParent_dept_code(parent_code);
@@ -830,6 +864,10 @@ public class AppAccount extends Account {
 		return users;
 	}
 
+	protected List<User> getAllUsers(int page, int pageSize) {
+		return getAllUsers(page, pageSize, false);
+	}
+
 	/**
 	 * 导出全部的用户，包括了管理员，普通用户，公众号
 	 * 
@@ -842,9 +880,22 @@ public class AppAccount extends Account {
 	}
 
 	/**
+	 * 导出全部的用户包括ext字段，包括了管理员，普通用户，公众号
+	 *
+	 * @param pageSize
+	 *            每次循环导出的用户大小，最大100
+	 * @param withExt
+	 *            是否包含ext字段
+	 * @return UserPackage对象。
+	 */
+	public UserPackage exportUsers(int pageSize, boolean withExt) {
+		return new UserPackage(this, pageSize, withExt);
+	}
+
+	/**
 	 * 给出多个loginName，返回login name 对应的用户列表.
 	 * 
-	 * @param network_name
+	 *
 	 * @param loginNames
 	 * @return
 	 */
@@ -907,8 +958,8 @@ public class AppAccount extends Account {
 	/**
 	 * 给出多个loginName，返回login name 对应的用户列表.
 	 * 
-	 * @param network_name
-	 * @param loginNames
+	 *
+	 * @param ids
 	 * @return
 	 */
 	public User[] findUserByIds(Long[] ids) {
@@ -1261,7 +1312,7 @@ public class AppAccount extends Account {
 	/**
 	 * 发送消息到会话中。需要调用setFromUserLoginname()设置发送者身份
 	 * 
-	 * @param sender_login_name
+	 *
 	 *            发送用户的账户名字，该账户做为消息的发送人
 	 * @param conversation_id
 	 *            会话的Id
@@ -1293,7 +1344,7 @@ public class AppAccount extends Account {
 	/**
 	 * 发送消息到会话中。需要调用setFromUserLoginname()设置发送者身份
 	 * 
-	 * @param sender_login_name
+	 *
 	 *            发送用户的账户名字，该账户做为消息的发送人
 	 * @param conversation_id
 	 *            会话的Id
@@ -1354,7 +1405,7 @@ public class AppAccount extends Account {
 	/**
 	 * 发送文件到会话聊天中
 	 * 
-	 * @param conversation_id
+	 *
 	 * @param file
 	 * @return
 	 */
@@ -1837,8 +1888,7 @@ public class AppAccount extends Account {
 	/**
 	 * 向移动设备推送自定义的消息,根据给出来的app id,向下载App的全部用户推送消息。
 	 * 
-	 * @param appId
-	 *            将消息发送给全部app下载用户的appId。
+	 *
 	 * @param message
 	 *            发送的消息，文本格式，可以自定内容的编码，系统会将内容发送到接受的移动设备上。
 	 * @param alert
@@ -2377,7 +2427,7 @@ public class AppAccount extends Account {
 	 *            1.第三方系统如果和敏行属于一个域下，比如类似的*.minxin.com，可以从cookie获取mx_sso_token
 	 *            2.第三方系统可以从HttpServletRequest的parameter中获取mx_sso_token
 	 *            3.第三方系统可以从HttpServletRequest的header中获取mx_sso_token
-	 * @param app_id
+	 *
 	 *            校验客户端提供的Token是不是来自这个app_id产生的，如果不是，则校验失败。
 	 * @param expires_in_seconds
 	 *            token在给定的时间内是否过期，单位为秒。0 表示校验
@@ -2512,8 +2562,7 @@ public class AppAccount extends Account {
 	 * @param queryString
 	 *            url的query String部分，例如 http://g.com?abc=1&de=2 的url，query
 	 *            string 为abc=1&de=2
-	 * @param securet
-	 *            ocu或者app的 securet。
+	 * 。
 	 * @return true 如果签名被认证。
 	 */
 	public boolean verifyURLSignature(String queryString, String secret) {
