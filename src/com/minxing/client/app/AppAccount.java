@@ -22,6 +22,7 @@ import com.minxing.client.json.JSONException;
 import com.minxing.client.json.JSONObject;
 import com.minxing.client.model.Account;
 import com.minxing.client.model.ApiErrorException;
+import com.minxing.client.model.AppVisiableResult;
 import com.minxing.client.model.Conversation;
 import com.minxing.client.model.Graph;
 import com.minxing.client.model.Group;
@@ -2992,7 +2993,7 @@ public class AppAccount extends Account {
 		}
 	}
 
-	public Object addAppVisibleScope(String app_id, String[] login_names,
+	public AppVisiableResult addAppVisibleScope(String app_id, String[] login_names,
 			String[] dept_codes) {
 		Map<String, String> params = new HashMap<String, String>();
 		if (login_names != null && login_names.length > 0) {
@@ -3011,7 +3012,10 @@ public class AppAccount extends Account {
 			params.put("ref_ids", sb.toString());
 		}
 		JSONObject obj = post("/api/v1/apps/scope/"+app_id,params,new HashMap<String, String>()).asJSONObject();
-		return obj;
+		JSONObject users = (JSONObject)obj;
+		AppVisiableResult result = new AppVisiableResult(users);
+		
+		return result;
 	}
 	
 	public Object deleteAppVisibleScope(String app_id, String[] login_names,
