@@ -9,10 +9,17 @@ public class UserSetIterator implements Iterator<UserSet> {
 	int userSize = 100;
 	private AppAccount account;
 	private int currentPage = 0;
+	private boolean withExt;
 
 	UserSetIterator(AppAccount _account, int _userSize) {
 		this.account = _account;
 		this.userSize = _userSize;
+		this.withExt = false;
+	}
+	UserSetIterator(AppAccount _account, int _userSize, boolean _withExt) {
+		this.account = _account;
+		this.userSize = _userSize;
+		this.withExt = _withExt;
 	}
 
 	@Override
@@ -28,7 +35,7 @@ public class UserSetIterator implements Iterator<UserSet> {
 	@Override
 	public UserSet next() {
 		currentPage = currentPage + 1;
-		User[] users = account.getAllUsers(currentPage,userSize).toArray(new User[]{});
+		User[] users = account.getAllUsers(currentPage,userSize, this.withExt).toArray(new User[]{});
 		UserSet us = new UserSet(users);
 		
 		if (users.length == 0) {
