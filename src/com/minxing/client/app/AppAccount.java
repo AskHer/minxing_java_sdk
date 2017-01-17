@@ -643,7 +643,7 @@ public class AppAccount extends Account {
 				user.setCellvoice2(o.getString("cellvoice2"));
 				user.setWorkvoice(o.getString("workvoice"));
 				user.setEmpCode(o.getString("emp_code"));
-				user.setSuspended(o.getBoolean("suspended"));
+				user.setSuspended(o.getInt("suspended")>0);
 
 				JSONArray depts = o.getJSONArray("departs");
 				if (depts != null && depts.length() > 0) {
