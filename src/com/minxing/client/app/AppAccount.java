@@ -644,6 +644,7 @@ public class AppAccount extends Account {
 				u.setDeptCode(o.getString("dept_ref_id"));
 				u.setDeptId(o.getLong("dept_id"));
 				u.setEmpCode(o.getString("emp_code"));
+				u.setTitle(o.getString("title"));
 				users.add(u);
 			}
 		} catch (JSONException e) {
