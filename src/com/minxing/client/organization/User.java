@@ -23,6 +23,7 @@ public class User extends Organization {
 	private String emp_code; // 工号
 	private String dept_code; // 部门标识
 	private Long dept_id = null; // 部门标识
+	private String dept_name; //部门名字
 	private String display_order; // 排序
 	private Integer role_code; // 角色代码
 	private String area_code;//区号
@@ -458,5 +459,13 @@ public class User extends Organization {
 
 	public void setArea_code(String area_code) {
 		this.area_code = area_code;
+	}
+
+	public String getDeptName() {
+		return dept_name;
+	}
+
+	public void setDeptName(String dept_name) {
+		this.dept_name = dept_name;
 	}
 }
