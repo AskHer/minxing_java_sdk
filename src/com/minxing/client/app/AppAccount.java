@@ -643,6 +643,7 @@ public class AppAccount extends Account {
 				//u.setAvatarUrl(o.getString("avatar_url"));
 				u.setDeptCode(o.getString("dept_ref_id"));
 				u.setDeptId(o.getLong("dept_id"));
+				u.setDeptName(o.getString("dept_name"));
 				u.setEmpCode(o.getString("emp_code"));
 				u.setTitle(o.getString("title"));
 				users.add(u);
