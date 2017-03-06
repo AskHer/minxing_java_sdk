@@ -6,6 +6,7 @@ import com.minxing.client.ocu.ArticleMessage;
 import com.minxing.client.ocu.Resource;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CreateShowData {
@@ -26,7 +27,7 @@ public class CreateShowData {
 	}
 
 	private static void createLink(AppAccount account, boolean show_by_popup) {
-		ArticleMessage m = new ArticleMessage(true, show_by_popup);
+		ArticleMessage m = new ArticleMessage(true, show_by_popup, new Date("2017年07月30日 10时:47分:45秒"));
 		m.addArticle(new Article("请假单", "请假人：姚广利<br>请假事由：因父亲生病住院，需要人照顾，特请假<br>请假时间：6月28日 - 6月30日<br>工作交接人：马青冈", "", "/mxpp/plists/html/oa1.html", ""));
 
 
@@ -41,7 +42,7 @@ public class CreateShowData {
 	}
 
 	private static void createNews(AppAccount account, boolean show_by_popup) {
-		ArticleMessage m = new ArticleMessage(false, show_by_popup);
+		ArticleMessage m = new ArticleMessage(false, show_by_popup, new Date("2017年07月30日 10时:47分:45秒"));
 		Resource resource = new Resource("电信巨头推理财凸显竞争压力", "", "", "2014-05-27", "https://www.minxing365.com/plists/html/new1.jpg"
 				, "<p>继中国电信推出添益宝后，中国联通和中国移动也纷纷试水金融理财。此举凸显三大运营商的业绩压力，也是面对虚拟运营商竞争的回应。</p>\n\n"
 				+ "<p>三大运营商纷纷试水金融理财</p>\n\n"
@@ -113,7 +114,7 @@ public class CreateShowData {
 	}
 
 	private static void createOaData(AppAccount account, boolean show_by_popup) {
-		ArticleMessage m = new ArticleMessage(false, show_by_popup);
+		ArticleMessage m = new ArticleMessage(false, show_by_popup, new Date("2017年07月30日 10时:47分:45秒"));
 		m.addArticle(new Article("请假单", "请假人：姚广利<br>请假事由：因父亲生病住院，需要人照顾，特请假<br>请假时间：6月28日 - 6月30日<br>工作交接人：马青冈", "", "https://www.minxing365.com/plists/html/oa1.html", ""));
 
 		List<String> ids = new ArrayList<String>();
