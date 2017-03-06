@@ -27,7 +27,7 @@ public class ArticleMessage implements Message {
 		articles = new ArrayList<Article>();
 		this.secret = secret;
 		this.show_by_popup = show_by_popup;
-		this.invalid_time = new SimpleDateFormat("yyyy年MM月dd日 HH时:mm分:ss秒").format(date);
+		this.invalid_time = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
 	}
 
 	public List<Article> getArticles() {

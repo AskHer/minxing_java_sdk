@@ -1,5 +1,3 @@
-
-
 import com.minxing.client.app.AppAccount;
 import com.minxing.client.ocu.Article;
 import com.minxing.client.ocu.ArticleMessage;
@@ -13,13 +11,14 @@ public class CreateShowData {
 
 	public static void main(String[] args) throws InterruptedException {
 
+//		System.out.println(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(new Date()));
 		AppAccount account = AppAccount.loginByAccessToken("http://localhost:3000",
 				"cGTsJXPAJeEwUEXvt2SvJ--0q7cPunUqvc4AMKb8i6y-PUti");
 
 //		createJingfen(account);
 //		createNews(account);
 //		createOaData(account);
-		createLink(account);
+//		createLink(account);
 	}
 
 	private static void createLink(AppAccount account) {
