@@ -69,9 +69,9 @@ public class ArticleMessage implements Message {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
 		sb.append("\"article_count\":").append(articles.size()).append(",");
-		if (secret) {
+//		if (secret) {
 			sb.append("\"secret\":").append(secret).append(",");
-		}
+//		}
 		if (show_by_popup) {
 			sb.append("\"show_by_popup\":").append(show_by_popup).append(",");
 			sb.append("\"invalid_time\":").append("\"").append(invalid_time).append("\",");
