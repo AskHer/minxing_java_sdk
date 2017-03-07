@@ -1,19 +1,33 @@
 package com.minxing.client.ocu;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ArticleMessage implements Message {
 	private List<Article> articles;
 	private boolean secret;
+	private boolean show_by_popup;// 如果为true时，将在终端上弹屏显示
+	private String invalid_time;
 
 	public ArticleMessage() {
 		this(false);
 	}
 
 	public ArticleMessage(boolean secret) {
+		this(secret, false, null);
+	}
+
+	/**
+	 * @param secret
+	 * @param show_by_popup 如果为true时，将在终端上弹屏显示
+	 */
+	public ArticleMessage(boolean secret, boolean show_by_popup, Date date) {
 		articles = new ArrayList<Article>();
 		this.secret = secret;
+		this.show_by_popup = show_by_popup;
+		this.invalid_time = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
 	}
 
 	public List<Article> getArticles() {
@@ -55,8 +69,12 @@ public class ArticleMessage implements Message {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
 		sb.append("\"article_count\":").append(articles.size()).append(",");
-		if (secret) {
+//		if (secret) {
 			sb.append("\"secret\":").append(secret).append(",");
+//		}
+		if (show_by_popup) {
+			sb.append("\"show_by_popup\":").append(show_by_popup).append(",");
+			sb.append("\"invalid_time\":").append("\"").append(invalid_time).append("\",");
 		}
 
 		sb.append("\"articles\":[");
@@ -129,7 +147,7 @@ public class ArticleMessage implements Message {
 		// TODO Auto-generated method stub
 		return RICH_TEXT_MESSAGE;
 	}
-	
+
 //	public static void main(String[] args) {
 //		ArticleMessage am = new ArticleMessage();
 //		Article pt = new Article("标题\r\n", "内容\r详细内容", "", "", "");
