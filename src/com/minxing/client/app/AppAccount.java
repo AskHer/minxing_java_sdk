@@ -57,7 +57,7 @@ public class AppAccount extends Account {
 	protected long _currentUserId = 0;
 	protected String client_id;
 	protected String secret;
-	private String user_agent = null;
+	private String user_agent = "MinxingMessenger/5.3.0 (JavaSDK)";
 
 	protected AppAccount(String serverURL, String token) {
 		this._serverURL = serverURL;
@@ -76,7 +76,6 @@ public class AppAccount extends Account {
 	protected AppAccount(String serverURL, String loginName, String password,
 			String clientId) {
 		this._serverURL = serverURL;
-		this.client_id = clientId;
 		PostParameter grant_type = new PostParameter("grant_type", "password");
 		PostParameter login_name = new PostParameter("login_name", loginName);
 		PostParameter passwd = new PostParameter("password", password);
@@ -101,13 +100,17 @@ public class AppAccount extends Account {
 			if (return_rsp.getStatusCode() == 200) {
 
 				JSONObject o = return_rsp.asJSONObject();
-				try {
-					_token = o.getString("access_token");
-					client.setToken(this._token);
-					client.setTokenType("Bearer");
+				if (o.getString("redirect_url") == null) {
+					try {
+						_token = o.getString("access_token");
+						client.setToken(this._token);
+						client.setTokenType("Bearer");
 
-				} catch (JSONException e) {
-					throw new MxException("解析返回值出错", e);
+					} catch (JSONException e) {
+						throw new MxException("解析返回值出错", e);
+					}
+				} else {
+					throw new MxException("需要二次认证才能登录系统");
 				}
 			} else {
 				throw new MxException("HTTP " + return_rsp.getStatusCode()
@@ -249,6 +252,14 @@ public class AppAccount extends Account {
 		}
 
 		return _url;
+	}
+	
+	/**
+	 * get current access token. if null, app account not signin.
+	 * @return
+	 */
+	public String getCurrentToken() {
+		return _token;
 	}
 
 	// ////////////////////////////////////////////////////////////////////
@@ -771,10 +782,11 @@ public class AppAccount extends Account {
 					String.valueOf(pageSize));
 			PostParameter p2 = new PostParameter("page", String.valueOf(page));
 			PostParameter[] params;
-			if(withExt){
-				PostParameter p3 = new PostParameter("with_ext", String.valueOf(withExt));
+			if (withExt) {
+				PostParameter p3 = new PostParameter("with_ext",
+						String.valueOf(withExt));
 				params = new PostParameter[] { p1, p2, p3 };
-			}else{
+			} else {
 				params = new PostParameter[] { p1, p2 };
 			}
 
@@ -802,7 +814,7 @@ public class AppAccount extends Account {
 				u.setSuspended(o.getBoolean("suspended"));
 				u.setAvatarUrl(o.getString("avatar_url"));
 				u.setEmpCode(o.getString("emp_code"));
-				if(withExt){
+				if (withExt) {
 					u.setExt1(o.getString("ext1"));
 					u.setExt2(o.getString("ext2"));
 					u.setExt3(o.getString("ext3"));
@@ -841,7 +853,9 @@ public class AppAccount extends Account {
 							try {
 								dept_code = URLEncoder.encode(code, "UTF-8");
 							} catch (UnsupportedEncodingException e) {
-								throw new MxException("encode deptcode error. dept_code:" + code, e);
+								throw new MxException(
+										"encode deptcode error. dept_code:"
+												+ code, e);
 							}
 
 							JSONObject r = this.get("/api/v1/departments/"
@@ -1314,7 +1328,8 @@ public class AppAccount extends Account {
 	 * 发送消息到会话中。需要调用setFromUserLoginname()设置发送者身份
 	 * 
 	 *
-	 *            发送用户的账户名字，该账户做为消息的发送人
+	 * 发送用户的账户名字，该账户做为消息的发送人
+	 * 
 	 * @param conversation_id
 	 *            会话的Id
 	 * @param message
@@ -1346,7 +1361,8 @@ public class AppAccount extends Account {
 	 * 发送消息到会话中。需要调用setFromUserLoginname()设置发送者身份
 	 * 
 	 *
-	 *            发送用户的账户名字，该账户做为消息的发送人
+	 * 发送用户的账户名字，该账户做为消息的发送人
+	 * 
 	 * @param conversation_id
 	 *            会话的Id
 	 * @param message
@@ -1402,7 +1418,7 @@ public class AppAccount extends Account {
 			throw new MxException("解析Json出错.", e);
 		}
 	}
-	
+
 	/**
 	 * 发送文件到会话聊天中
 	 * 
@@ -1435,13 +1451,16 @@ public class AppAccount extends Account {
 	/**
 	 * 发送文件到工作圈。需要调用setFromUserLoginname()设置发送者身份
 	 * 
-	 * @param group_id 工作圈的Id
-	 * @param messageText 消息的文本
-	 * @param imageFile 文件对象，只发送一个文件
+	 * @param group_id
+	 *            工作圈的Id
+	 * @param messageText
+	 *            消息的文本
+	 * @param imageFile
+	 *            文件对象，只发送一个文件
 	 * @return
 	 */
-	public TextMessage sendGroupMessageWithImage(long group_id,String messageText,
-			File imageFile) {
+	public TextMessage sendGroupMessageWithImage(long group_id,
+			String messageText, File imageFile) {
 		long[] file_ids = uploadGroupFile(group_id, imageFile);
 		Map<String, String> params = new HashMap<String, String>();
 		for (int i = 0; i < file_ids.length; i++) {
@@ -1450,10 +1469,8 @@ public class AppAccount extends Account {
 		}
 		Map<String, String> headers = new HashMap<String, String>();
 
-		
 		params.put("group_id", String.valueOf(group_id));
 		params.put("body", messageText);
-
 
 		headers = new HashMap<String, String>();
 
@@ -1465,7 +1482,7 @@ public class AppAccount extends Account {
 		} catch (JSONException e) {
 			throw new MxException("解析Json出错.", e);
 		}
-		
+
 	}
 
 	/**
@@ -2562,8 +2579,7 @@ public class AppAccount extends Account {
 	 * 
 	 * @param queryString
 	 *            url的query String部分，例如 http://g.com?abc=1&de=2 的url，query
-	 *            string 为abc=1&de=2
-	 * 。
+	 *            string 为abc=1&de=2 。
 	 * @return true 如果签名被认证。
 	 */
 	public boolean verifyURLSignature(String queryString, String secret) {
@@ -3042,8 +3058,8 @@ public class AppAccount extends Account {
 		}
 	}
 
-	public AppVisiableResult addAppVisibleScope(String app_id, String[] login_names,
-			String[] dept_codes) {
+	public AppVisiableResult addAppVisibleScope(String app_id,
+			String[] login_names, String[] dept_codes) {
 		Map<String, String> params = new HashMap<String, String>();
 		if (login_names != null && login_names.length > 0) {
 			StringBuilder sb = new StringBuilder();
@@ -3052,7 +3068,7 @@ public class AppAccount extends Account {
 			}
 			params.put("login_names", sb.toString());
 		}
-		
+
 		if (dept_codes != null && dept_codes.length > 0) {
 			StringBuilder sb = new StringBuilder();
 			for (String str : dept_codes) {
@@ -3060,13 +3076,14 @@ public class AppAccount extends Account {
 			}
 			params.put("ref_ids", sb.toString());
 		}
-		JSONObject obj = post("/api/v1/apps/scope/"+app_id,params,new HashMap<String, String>()).asJSONObject();
-		JSONObject users = (JSONObject)obj;
+		JSONObject obj = post("/api/v1/apps/scope/" + app_id, params,
+				new HashMap<String, String>()).asJSONObject();
+		JSONObject users = (JSONObject) obj;
 		AppVisiableResult result = new AppVisiableResult(users);
-		
+
 		return result;
 	}
-	
+
 	public Object deleteAppVisibleScope(String app_id, String[] login_names,
 			String[] dept_codes) {
 		Map<String, String> params = new HashMap<String, String>();
@@ -3077,7 +3094,7 @@ public class AppAccount extends Account {
 			}
 			params.put("login_names", sb.toString());
 		}
-		
+
 		if (dept_codes != null && dept_codes.length > 0) {
 			StringBuilder sb = new StringBuilder();
 			for (String str : dept_codes) {
@@ -3085,19 +3102,18 @@ public class AppAccount extends Account {
 			}
 			params.put("ref_ids", sb.toString());
 		}
-		JSONObject obj = delete("/api/v1/apps/scope/"+app_id,params);
+		JSONObject obj = delete("/api/v1/apps/scope/" + app_id, params);
 		return obj;
 	}
-	
-	
+
 	public Object getAppVisibleScope(String app_id) {
-		
-		JSONObject obj = get("/api/v1/apps/scope/"+app_id);
+
+		JSONObject obj = get("/api/v1/apps/scope/" + app_id);
 		try {
 			JSONArray depts = obj.getJSONArray("depts");
 			List<Department> deps = new ArrayList<Department>();
-			if(depts!=null){
-				for(int i = 0;i<depts.length();i++){
+			if (depts != null) {
+				for (int i = 0; i < depts.length(); i++) {
 					JSONObject o = depts.getJSONObject(i);
 					Department dept = new Department();
 					dept.setId(o.getLong("id"));
@@ -3111,8 +3127,8 @@ public class AppAccount extends Account {
 			}
 			JSONArray users = obj.getJSONArray("users");
 			List<User> us = new ArrayList<User>();
-			if(users!=null){
-				for(int i = 0;i<users.length();i++){
+			if (users != null) {
+				for (int i = 0; i < users.length(); i++) {
 					JSONObject o = users.getJSONObject(i);
 					User user = new User();
 					user.setId(o.getLong("id"));
@@ -3139,6 +3155,5 @@ public class AppAccount extends Account {
 			return null;
 		}
 	}
-	
 
 }
