@@ -97,7 +97,7 @@ public class AppAccount extends Account {
 			if (return_rsp.getStatusCode() == 200) {
 
 				JSONObject o = return_rsp.asJSONObject();
-				if (o.getString("redirect_url") == null) {
+				if (o.getString("redirect_url") == null || o.getString("redirect_url").equals("")) {
 					try {
 						_token = o.getString("access_token");
 						client.setToken(this._token);
