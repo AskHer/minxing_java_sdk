@@ -704,6 +704,16 @@ public class AppAccount extends Account {
 				user.setWorkvoice(o.getString("workvoice"));
 				user.setEmpCode(o.getString("emp_code"));
 				user.setSuspended(o.getBoolean("suspended"));
+				user.setExt1(o.getString("ext1"));
+				user.setExt2(o.getString("ext2"));
+				user.setExt3(o.getString("ext3"));
+				user.setExt4(o.getString("ext4"));
+				user.setExt5(o.getString("ext5"));
+				user.setExt6(o.getString("ext6"));
+				user.setExt7(o.getString("ext7"));
+				user.setExt8(o.getString("ext8"));
+				user.setExt9(o.getString("ext9"));
+				user.setExt10(o.getString("ext10"));
 
 				JSONArray depts = o.getJSONArray("departs");
 				if (depts != null && depts.length() > 0) {
@@ -2606,7 +2616,16 @@ public class AppAccount extends Account {
 
 		user.setEmpCode(o.getString("emp_code"));
 		user.setNetworkId(o.getLong("network_id"));
-
+		user.setExt1(o.getString("ext1"));
+		user.setExt2(o.getString("ext2"));
+		user.setExt3(o.getString("ext3"));
+		user.setExt4(o.getString("ext4"));
+		user.setExt5(o.getString("ext5"));
+		user.setExt6(o.getString("ext6"));
+		user.setExt7(o.getString("ext7"));
+		user.setExt8(o.getString("ext8"));
+		user.setExt9(o.getString("ext9"));
+		user.setExt10(o.getString("ext10"));
 		JSONArray depts = o.getJSONArray("departs");
 		Department[] allDept = new Department[depts.length()];
 		for (int i = 0, n = depts.length(); i < n; i++) {
