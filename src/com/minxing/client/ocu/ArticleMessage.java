@@ -27,7 +27,7 @@ public class ArticleMessage implements Message {
 		articles = new ArrayList<Article>();
 		this.secret = secret;
 		this.show_by_popup = show_by_popup;
-		this.invalid_time = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
+		this.invalid_time = date != null ? "" : new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(date);
 	}
 
 	public List<Article> getArticles() {
@@ -70,7 +70,7 @@ public class ArticleMessage implements Message {
 		sb.append("{");
 		sb.append("\"article_count\":").append(articles.size()).append(",");
 //		if (secret) {
-			sb.append("\"secret\":").append(secret).append(",");
+		sb.append("\"secret\":").append(secret).append(",");
 //		}
 		if (show_by_popup) {
 			sb.append("\"show_by_popup\":").append(show_by_popup).append(",");
