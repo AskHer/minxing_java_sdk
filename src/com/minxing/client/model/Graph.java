@@ -1,9 +1,10 @@
 package com.minxing.client.model;
 
+import com.alibaba.fastjson.JSON;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.map.ObjectMapper;
 
 public class Graph {
 	Long id;
@@ -100,7 +101,7 @@ public class Graph {
 		share_link.put("share_link", link);
 
 		try {
-			String story = new ObjectMapper().writeValueAsString(share_link);
+			String story= JSON.toJSONString(share_link);
 			return story;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
