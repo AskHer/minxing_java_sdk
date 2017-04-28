@@ -666,6 +666,72 @@ public class AppAccount extends Account {
 	}
 
 	/**
+	 * 得到某个部门下的全部用户,包括子部门和兼职用户
+	 *
+	 * @param departmentCode
+	 *            部门代码或者部门引用的Id
+	 *            @param includeSubDevision 是否包含子部门
+	 *            @param detail 是否包含更详细的信息
+	 *            @param ext 是否包含ext信息
+	 * @return 用户的列表
+	 *
+	 */
+	public List<User> getAllUsersInDepartment(String departmentCode,
+	                                          boolean includeSubDevision,boolean detail, boolean ext) {
+		ArrayList<User> users = new ArrayList<User>();
+		try {
+			JSONArray arrs = this
+					.getJSONArray("/api/v1/departments/all_users?dept_code="
+							+ departmentCode + "&include_subdivision="
+							+ includeSubDevision+"&include_detail="+detail + "&include_ext=" + ext);
+			for (int i = 0; i < arrs.length(); i++) {
+				JSONObject o = (JSONObject) arrs.get(i);
+				User u = new User();
+				u.setId(o.getLong("id"));
+				u.setName(o.getString("name"));
+				u.setLoginName(o.getString("login_name"));
+				u.setHidden(o.getBoolean("hidden")? "true":"false");
+				u.setSuspended(o.getBoolean("suspended"));
+
+
+				u.setCellvoice1(o.getString("cell_phone"));
+				u.setCellvoice2(o.getString("cellvoice2"));
+				u.setPreferredMobile(o.getString("preferred_mobile"));
+				u.setWorkvoice(o.getString("workvoice"));
+				u.setPosition(o.getString("position"));
+				u.setEmail(o.getString("email"));
+				//u.setEmpCode(o.getString("dept_ref_id"));
+				u.setNetworkId(o.getLong("network_id"));
+				u.setRoleCode(o.getInt("role_code"));
+				u.setSuspended(o.getBoolean("suspended"));
+				//u.setAvatarUrl(o.getString("avatar_url"));
+				u.setDeptCode(o.getString("dept_ref_id"));
+				u.setDeptId(o.getLong("dept_id"));
+				u.setDeptName(o.getString("dept_name"));
+				u.setEmpCode(o.getString("emp_code"));
+				u.setTitle(o.getString("title"));
+
+				u.setExt1(o.getString("ext1"));
+				u.setExt2(o.getString("ext2"));
+				u.setExt3(o.getString("ext3"));
+				u.setExt4(o.getString("ext4"));
+				u.setExt5(o.getString("ext5"));
+				u.setExt6(o.getString("ext6"));
+				u.setExt7(o.getString("ext7"));
+				u.setExt8(o.getString("ext8"));
+				u.setExt9(o.getString("ext9"));
+				u.setExt10(o.getString("ext10"));
+				users.add(u);
+			}
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+		return users;
+	}
+
+
+
+	/**
 	 * 获得某个网络下的用户信息
 	 * 
 	 * @param network_name
