@@ -386,7 +386,6 @@ public class HttpClient implements java.io.Serializable {
 			}
 
 			if (WithTokenHeader) {
-				log.info("WithTokenHeader: " + WithTokenHeader);
 				if (tokenType == null || tokenType.trim().equals("")) {
 					tokenType = "Bearer";
 				}
@@ -394,9 +393,7 @@ public class HttpClient implements java.io.Serializable {
 				if (token == null) {
 					throw new IllegalStateException("Oauth2 token is not set!");
 				}
-				log.info("token: " + token);
 				headers.add(new Header("Authorization", tokenType + " " + token));
-				log.info("headers: " + new Gson().toJson(headers));
 
 //				try {
 //					ipaddr = InetAddress.getLocalHost();
@@ -418,7 +415,6 @@ public class HttpClient implements java.io.Serializable {
 				method.setRequestHeader(h);
 			}
 
-//			log.info("method: " + new Gson().toJson(method));
 			org.apache.commons.httpclient.HttpClient client = this
 					.createHttpClient(150, 30000, 30000, 1024 * 1024);
 			client.executeMethod(method);

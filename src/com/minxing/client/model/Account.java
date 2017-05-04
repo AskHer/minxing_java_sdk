@@ -181,7 +181,6 @@ public abstract class Account {
 
 		Response response = null;
 		if (method.equals("get")) {
-			log.info("method==get");
 			StringBuilder sb = new StringBuilder(url);
 			if (null != params && params.length > 0) {
 				String encodedParams = HttpClient.encodeParameters(params);
@@ -204,12 +203,10 @@ public abstract class Account {
 
 			params = paramsList.toArray(new PostParameter[0]);
 			headers = headersList.toArray(new PostParameter[0]);
-			log.info("params: " + new Gson().toJson(params));
 
 			if (tempUrl != null && !tempUrl.trim().equals("")) {
 				url = tempUrl;
 			}
-			log.info("tempUrl: " + tempUrl);
 			response = client.get0(tempUrl, headers);
 		} else {
 

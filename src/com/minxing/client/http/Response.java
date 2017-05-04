@@ -27,8 +27,6 @@ public class Response {
 
 	static Logger log = Logger.getLogger(Response.class.getSimpleName());
 	public JSONObject asJSONObject() throws MxException {
-		log.info("statusCode: " + statusCode);
-		log.info("responseAsString: " + responseAsString);
 		try {
 			return new JSONObject(responseAsString);
 		} catch (JSONException jsone) {
