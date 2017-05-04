@@ -11,7 +11,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
+import com.google.gson.Gson;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.ParameterParser;
@@ -1701,7 +1703,7 @@ public class AppAccount extends Account {
 	 */
 	public OcuMessageSendResult sendOcuMessageToUsers(String[] toUserIds,
 			Message message, String ocuId, String ocuSecret) {
-		return sendOcuMessageToUsers(null, toUserIds, message, ocuId, ocuSecret);
+		return sendOcuMessageToUsers("2", toUserIds, message, ocuId, ocuSecret);
 
 	}
 
@@ -1750,7 +1752,8 @@ public class AppAccount extends Account {
 		}
 
 		if (network_id != null)
-			params.put("network_id", network_id);
+		params.put("network_id", network_id);
+		log.info("network_id: " + network_id);
 		params.put("direct_to_user_ids", direct_to_user_ids);
 		params.put("ocu_id", ocuId);
 		params.put("ocu_secret", ocuSecret);
@@ -2438,8 +2441,8 @@ public class AppAccount extends Account {
 			if (expires_in_seconds != 0) {
 				getURL.append("?expires_in=").append(expires_in_seconds);
 			}
-			JSONObject o = this.get(getURL.toString());
 
+			JSONObject o = this.get(getURL.toString());
 			String by_app_id = o.getString("by_app_id");
 			String by_ocu_id = o.getString("by_ocu_id");
 
@@ -2485,9 +2488,10 @@ public class AppAccount extends Account {
 	 *             校验失败，则抛出这个异常.
 	 */
 
+	static Logger log = Logger.getLogger(AppAccount.class.getSimpleName());
 	public User verifyOcuSSOToken(String token, String ocu_id,
 			int expires_in_seconds) throws MxVerifyException {
-
+		log.info("ocu_id: " + ocu_id);
 		try {
 			StringBuilder getURL = new StringBuilder("/api/v1/oauth/user_info/");
 			getURL.append(token);
@@ -2495,6 +2499,7 @@ public class AppAccount extends Account {
 				getURL.append("?expires_in=").append(expires_in_seconds);
 			}
 
+			log.info("getURL: " + getURL.toString());
 			JSONObject o = this.get(getURL.toString());
 
 			String by_ocu_id = o.getString("by_ocu_id");
@@ -2576,6 +2581,7 @@ public class AppAccount extends Account {
 	}
 
 	private User getUser(JSONObject o) throws JSONException {
+		log.info("getUser->o :" + new Gson().toJson(o));
 		User user = new User();
 		user.setId(o.getLong("user_id"));
 		user.setLoginName(o.getString("login_name"));

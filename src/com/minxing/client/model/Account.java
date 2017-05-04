@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
+import com.google.gson.Gson;
 import com.minxing.client.http.HttpClient;
 import com.minxing.client.http.Response;
 import com.minxing.client.json.JSONArray;
@@ -166,6 +168,7 @@ public abstract class Account {
 		return tempUrl;
 	}
 
+	static Logger log = Logger.getLogger(Account.class.getSimpleName());
 	private Response apiForResponse(String url, String method,
 			PostParameter[] params, PostParameter[] headers,
 			Boolean WithTokenHeader) throws MxException {
@@ -178,6 +181,7 @@ public abstract class Account {
 
 		Response response = null;
 		if (method.equals("get")) {
+			log.info("method==get");
 			StringBuilder sb = new StringBuilder(url);
 			if (null != params && params.length > 0) {
 				String encodedParams = HttpClient.encodeParameters(params);
@@ -200,11 +204,12 @@ public abstract class Account {
 
 			params = paramsList.toArray(new PostParameter[0]);
 			headers = headersList.toArray(new PostParameter[0]);
+			log.info("params: " + new Gson().toJson(params));
 
 			if (tempUrl != null && !tempUrl.trim().equals("")) {
 				url = tempUrl;
 			}
-
+			log.info("tempUrl: " + tempUrl);
 			response = client.get0(tempUrl, headers);
 		} else {
 

@@ -6,6 +6,8 @@ import com.minxing.client.json.JSONObject;
 import com.minxing.client.model.ApiErrorException;
 import com.minxing.client.model.MxException;
 
+import java.util.logging.Logger;
+
 public class Response {
 
 	private int statusCode;
@@ -23,7 +25,10 @@ public class Response {
 		return statusCode;
 	}
 
+	static Logger log = Logger.getLogger(Response.class.getSimpleName());
 	public JSONObject asJSONObject() throws MxException {
+		log.info("statusCode: " + statusCode);
+		log.info("responseAsString: " + responseAsString);
 		try {
 			return new JSONObject(responseAsString);
 		} catch (JSONException jsone) {

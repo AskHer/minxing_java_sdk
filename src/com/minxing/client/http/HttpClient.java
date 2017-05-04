@@ -11,7 +11,9 @@ import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
+import com.google.gson.Gson;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
@@ -365,9 +367,11 @@ public class HttpClient implements java.io.Serializable {
 			PostParameter[] headerParameters) throws MxException {
 		return httpRequest(method, true, headerParameters, null);
 	}
+	static Logger log = Logger.getLogger(HttpClient.class.getSimpleName());
 
 	public Response httpRequest(HttpMethod method, Boolean WithTokenHeader,
 			PostParameter[] headerParameters, File file) throws MxException {
+
 		InetAddress ipaddr;
 		int responseCode = -1;
 		try {
@@ -382,13 +386,18 @@ public class HttpClient implements java.io.Serializable {
 			}
 
 			if (WithTokenHeader) {
+				log.info("WithTokenHeader: " + WithTokenHeader);
 				if (tokenType == null || tokenType.trim().equals("")) {
 					tokenType = "Bearer";
 				}
+
 				if (token == null) {
 					throw new IllegalStateException("Oauth2 token is not set!");
 				}
+				log.info("token: " + token);
 				headers.add(new Header("Authorization", tokenType + " " + token));
+				log.info("headers: " + new Gson().toJson(headers));
+
 //				try {
 //					ipaddr = InetAddress.getLocalHost();
 //					headers.add(new Header("API-RemoteIP", ipaddr
@@ -408,20 +417,24 @@ public class HttpClient implements java.io.Serializable {
 			for (Header h : headers) {
 				method.setRequestHeader(h);
 			}
+
+//			log.info("method: " + new Gson().toJson(method));
 			org.apache.commons.httpclient.HttpClient client = this
 					.createHttpClient(150, 30000, 30000, 1024 * 1024);
 			client.executeMethod(method);
+
 
 			Header content_type = method.getResponseHeader("Content-Type");
 			responseCode = method.getStatusCode();
 
 			Response response = new Response();
 
+
 			response.setResponseAsString(this.getResponseBodyAsString(method));
 			response.setStatusCode(responseCode);
 
-			if (responseCode >= 400) {
 
+			if (responseCode >= 400) {
 				if (responseCode == 405) {
 					throw new MxException("HTTP " + method.getStatusCode()
 							+ ": Method Not Allowed", method.getStatusCode());
@@ -432,9 +445,10 @@ public class HttpClient implements java.io.Serializable {
 					throw new MxException(getCause(responseCode),
 							response.asJSONObject(), method.getStatusCode());
 				} else {
-					throw new MxException("HTTP " + method.getStatusCode()
+//					System.exit(0);
+					/*throw new MxException("HTTP " + method.getStatusCode()
 							+ ": " + response.getResponseAsString(),
-							method.getStatusCode());
+							method.getStatusCode());*/
 				}
 
 			}
