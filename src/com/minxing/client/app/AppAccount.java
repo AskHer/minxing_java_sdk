@@ -1,43 +1,13 @@
 package com.minxing.client.app;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.ParameterParser;
-import org.apache.commons.httpclient.util.URIUtil;
-
 import com.minxing.client.http.HttpClient;
 import com.minxing.client.http.Response;
 import com.minxing.client.json.JSONArray;
 import com.minxing.client.json.JSONException;
 import com.minxing.client.json.JSONObject;
-import com.minxing.client.model.Account;
-import com.minxing.client.model.ApiErrorException;
-import com.minxing.client.model.AppVisiableResult;
-import com.minxing.client.model.Conversation;
-import com.minxing.client.model.Graph;
-import com.minxing.client.model.Group;
-import com.minxing.client.model.MxException;
-import com.minxing.client.model.MxVerifyException;
-import com.minxing.client.model.PostParameter;
-import com.minxing.client.model.ShareLink;
-import com.minxing.client.ocu.AppMessage;
-import com.minxing.client.ocu.ArticleMessage;
+import com.minxing.client.model.*;
+import com.minxing.client.ocu.*;
 import com.minxing.client.ocu.Message;
-import com.minxing.client.ocu.Resource;
-import com.minxing.client.ocu.TextMessage;
-import com.minxing.client.ocu.UserInfo;
 import com.minxing.client.organization.AppVisibleScope;
 import com.minxing.client.organization.Department;
 import com.minxing.client.organization.Network;
@@ -45,6 +15,18 @@ import com.minxing.client.organization.User;
 import com.minxing.client.utils.HMACSHA1;
 import com.minxing.client.utils.StringUtil;
 import com.minxing.client.utils.UrlEncoder;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.util.ParameterParser;
+import org.apache.commons.httpclient.util.URIUtil;
+
+import java.io.File;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.util.*;
 
 public class AppAccount extends Account {
 
@@ -71,14 +53,14 @@ public class AppAccount extends Account {
 	}
 
 	protected AppAccount(String serverURL, String loginName, String password,
-			String clientId) {
+	                     String clientId) {
 		this._serverURL = serverURL;
 		PostParameter grant_type = new PostParameter("grant_type", "password");
 		PostParameter login_name = new PostParameter("login_name", loginName);
 		PostParameter passwd = new PostParameter("password", password);
 		PostParameter app_id = new PostParameter("app_id", clientId);
-		PostParameter[] params = new PostParameter[] { grant_type, login_name,
-				passwd, app_id };
+		PostParameter[] params = new PostParameter[]{grant_type, login_name,
+				passwd, app_id};
 
 		try {
 			URL aURL = new URL(_serverURL);
@@ -88,7 +70,7 @@ public class AppAccount extends Account {
 
 			String cm = StringUtil.bytesToHex(messageDigest.digest());
 			PostParameter checksum = new PostParameter("X-CLIENT-CHECKSUM", cm);
-			PostParameter[] header = new PostParameter[] { checksum };
+			PostParameter[] header = new PostParameter[]{checksum};
 
 			HttpClient _client = new HttpClient();
 			Response return_rsp = _client.post(serverURL + "/oauth2/token",
@@ -122,9 +104,8 @@ public class AppAccount extends Account {
 
 	/**
 	 * 设置API调用的用户身份，消息按照这个身份发出
-	 * 
-	 * @param loginName
-	 *            登录名
+	 *
+	 * @param loginName 登录名
 	 */
 	public void setFromUserLoginName(String loginName) {
 		this._loginName = loginName;
@@ -137,9 +118,8 @@ public class AppAccount extends Account {
 
 	/**
 	 * 设置API调用的用户身份，消息按照这个身份发出
-	 * 
-	 * @param userId
-	 *            用户对象的Id.
+	 *
+	 * @param userId 用户对象的Id.
 	 */
 	public void setFromUserId(long userId) {
 		this._currentUserId = userId;
@@ -147,60 +127,52 @@ public class AppAccount extends Account {
 
 	/**
 	 * 使用接入端的Token登录系统
-	 * 
-	 * @param serverURL
-	 *            服务器的访问地址
-	 * @param bearerToken
-	 *            bearerToken，从接入端的配置中获取
+	 *
+	 * @param serverURL   服务器的访问地址
+	 * @param bearerToken bearerToken，从接入端的配置中获取
 	 * @return
 	 */
 	public static AppAccount loginByAccessToken(String serverURL,
-			String bearerToken) {
+	                                            String bearerToken) {
 		return new AppAccount(serverURL, bearerToken);
 	}
 
 	/**
 	 * 使用接入端的appid、appsecret登录系统，
-	 * 
-	 * @param serverURL
-	 *            系统的url.
-	 * @param app_id
-	 *            接入端应用的Id,在接入端管理的页面上可以找到。
-	 * @param secret
-	 *            接入端应用的秘钥，可以在接入端的页面上看到。
+	 *
+	 * @param serverURL 系统的url.
+	 * @param app_id    接入端应用的Id,在接入端管理的页面上可以找到。
+	 * @param secret    接入端应用的秘钥，可以在接入端的页面上看到。
 	 * @return
 	 */
 	public static AppAccount loginByAppSecret(String serverURL, String app_id,
-			String secret) {
+	                                          String secret) {
 		return new AppAccount(serverURL, app_id, secret);
 	}
 
 	/**
 	 * 使用用户名密码方式登录系统
-	 * 
-	 * @param serverURL
-	 *            服务器的访问地址
-	 * @param loginName
-	 *            系统登录名
-	 * @param password
-	 *            用户密码
-	 * @param clientId
-	 *            使用的注册客户端，可以设置为4,表示PC的客户端。0-web 1-ios 2-android
+	 *
+	 * @param serverURL 服务器的访问地址
+	 * @param loginName 系统登录名
+	 * @param password  用户密码
+	 * @param clientId  使用的注册客户端，可以设置为4,表示PC的客户端。0-web 1-ios 2-android
 	 * @return
 	 */
 	public static AppAccount loginByPassword(String serverURL,
-			String loginName, String password, String clientId) {
+	                                         String loginName, String password, String clientId) {
 
 		return new AppAccount(serverURL, loginName, password, clientId);
 	}
 
 	// //////////////////////////////////////////////////////////////////////////
+
 	/**
 	 * url拼接
 	 */
 	@Override
 	protected String beforeRequest(String url, List<PostParameter> paramsList,
-			List<PostParameter> headersList) {
+	                               List<PostParameter> headersList) {
 
 		if (this._currentUserId != 0L) {
 			PostParameter as_user = new PostParameter("X-AS-USER",
@@ -240,7 +212,7 @@ public class AppAccount extends Account {
 			String token = UrlEncoder.encode(this.client_id
 					+ ":"
 					+ HMACSHA1.getSignature(_url + "?timestamp=" + time,
-							this.secret));
+					this.secret));
 
 			client.setToken(token);
 			client.setTokenType("MAC");
@@ -250,9 +222,10 @@ public class AppAccount extends Account {
 
 		return _url;
 	}
-	
+
 	/**
 	 * get current access token. if null, app account not signin.
+	 *
 	 * @return
 	 */
 	public String getCurrentToken() {
@@ -263,7 +236,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * rest api通道，get方法API调用
-	 * 
+	 *
 	 * @param url
 	 * @param params
 	 * @return
@@ -283,7 +256,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * rest api通道，post方法API调用
-	 * 
+	 *
 	 * @param url
 	 * @param params
 	 * @param headers
@@ -296,9 +269,8 @@ public class AppAccount extends Account {
 	// PostParameter[] hs = createParams(headers);
 	// return this.post(url, pps, hs, true);
 	// }
-
 	public Response post(String url, Map<String, String> params,
-			Map<String, String> headers) throws MxException {
+	                     Map<String, String> headers) throws MxException {
 		PostParameter[] pps = createParams(params);
 		PostParameter[] hs = createParams(headers);
 		return this.postForResponse(url, pps, hs, true);
@@ -306,7 +278,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * rest api通道，post方法API调用,上传文件
-	 * 
+	 *
 	 * @param url
 	 * @param params
 	 * @param headers
@@ -315,7 +287,7 @@ public class AppAccount extends Account {
 	 * @throws MxException
 	 */
 	public JSONArray post(String url, Map<String, String> params,
-			Map<String, String> headers, File file) throws MxException {
+	                      Map<String, String> headers, File file) throws MxException {
 		PostParameter[] pps = createParams(params);
 		PostParameter[] hs = createParams(headers);
 		return this.post(url, pps, hs, file, true);
@@ -323,7 +295,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * rest api通道，put方法API调用
-	 * 
+	 *
 	 * @param url
 	 * @param params
 	 * @return
@@ -337,7 +309,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * rest api通道，delete方法的API调用
-	 * 
+	 *
 	 * @param url
 	 * @param params
 	 * @return
@@ -355,7 +327,7 @@ public class AppAccount extends Account {
 		}
 		PostParameter[] pps = new PostParameter[params.size()];
 		int i = 0;
-		for (Iterator<String> it = params.keySet().iterator(); it.hasNext();) {
+		for (Iterator<String> it = params.keySet().iterator(); it.hasNext(); ) {
 			String key = it.next();
 			String value = params.get(key);
 			PostParameter p = new PostParameter(key, value);
@@ -366,7 +338,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送文件到会话聊天中
-	 * 
+	 *
 	 * @param conversation_id
 	 * @param file
 	 * @return
@@ -377,7 +349,7 @@ public class AppAccount extends Account {
 		Map<String, String> headers = new HashMap<String, String>();
 
 		JSONArray arr = null;
-		long[] filesArray = new long[] {};
+		long[] filesArray = new long[]{};
 		try {
 			arr = this.post("api/v1/uploaded_files", params, headers, file);
 			filesArray = new long[arr.length()];
@@ -395,11 +367,8 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送文件到会话聊天中
-	 * 
 	 *
-	 * @param fileFingerPrint
-	 *            文件的MD5校验码
-	 *
+	 * @param fileFingerPrint 文件的MD5校验码
 	 * @return
 	 */
 	public InputStream downloadFile(Long file_id, String fileFingerPrint) {
@@ -426,16 +395,14 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送文件到会话聊天中
-	 * 
 	 *
-	 * @param fileFingerPrint
-	 *            文件的MD5校验码
-	 *
-	 *            要把文件存进这个file
+	 * @param fileFingerPrint 文件的MD5校验码
+	 *                        <p>
+	 *                        要把文件存进这个file
 	 * @return
 	 */
 	public boolean downloadFileAndSave(int file_id, String fileFingerPrint,
-			File f) {
+	                                   File f) {
 		Map<String, String> params = new HashMap<String, String>();
 		PostParameter[] pps = createParams(params);
 		String ua = "Minxing-SDK-5.3.0";
@@ -453,19 +420,16 @@ public class AppAccount extends Account {
 	}
 
 	private boolean getForStreamAndSave(String url, PostParameter[] params,
-			PostParameter[] headers, boolean WithTokenHeader, File f) {
+	                                    PostParameter[] headers, boolean WithTokenHeader, File f) {
 		return apiGetForStreamAndSave(url, "get", params, headers,
 				WithTokenHeader, f);
 	}
 
 	/**
 	 * 下载文件的缩略图,5.3.3版本支持。
-	 * 
-	 * @param fileId
-	 *            文件的Id
-	 * 
-	 * @param fileFingerPrint
-	 *            文件的md5校验码
+	 *
+	 * @param fileId          文件的Id
+	 * @param fileFingerPrint 文件的md5校验码
 	 * @return 缩略图的流
 	 */
 	public InputStream downloadThumbnail(Long fileId, String fileFingerPrint) {
@@ -491,11 +455,9 @@ public class AppAccount extends Account {
 
 	/**
 	 * 上传头像
-	 * 
-	 * @param loginName
-	 *            登录名 给这个登录名的用户上传头像
-	 * @param avatarPath
-	 *            头像文件的路径
+	 *
+	 * @param loginName  登录名 给这个登录名的用户上传头像
+	 * @param avatarPath 头像文件的路径
 	 * @return
 	 */
 	public boolean uploadUserAvatar(String loginName, String avatarPath) {
@@ -522,9 +484,8 @@ public class AppAccount extends Account {
 
 	/**
 	 * 获得某个用户的Id.
-	 * 
-	 * @param loginname
-	 *            用户登录名
+	 *
+	 * @param loginname 用户登录名
 	 * @return 用户的Id.
 	 */
 	public Long getIdByLoginname(String loginname) {
@@ -539,7 +500,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 获得某个用户
-	 * 
+	 *
 	 * @param loginname
 	 * @return
 	 */
@@ -550,16 +511,12 @@ public class AppAccount extends Account {
 	/**
 	 * 得到某个部门下的全部用户
 	 *
-	 * @param departmentCode
-	 *            部门代码
-	 * @param networkId
-	 *            网络部门
+	 * @param departmentCode 部门代码
+	 * @param networkId      网络部门
 	 * @return 用户的列表
-	 *
-	 * 
 	 */
 	public List<UserInfo> getAllUsersInDepartment(String networkId,
-			String departmentCode) {
+	                                              String departmentCode) {
 		ArrayList<UserInfo> users = new ArrayList<UserInfo>();
 		try {
 			JSONArray arrs = this.getJSONArray("/api/v1/departments/dept/"
@@ -581,14 +538,12 @@ public class AppAccount extends Account {
 
 	/**
 	 * 得到某个部门下的全部用户,包括子部门和兼职用户
-	 * 
-	 * @param departmentCode
-	 *            部门代码或者部门引用的Id
+	 *
+	 * @param departmentCode 部门代码或者部门引用的Id
 	 * @return 用户的列表
-	 * 
 	 */
 	public List<UserInfo> getAllUsersInDepartment(String departmentCode,
-			boolean includeSubDevision) {
+	                                              boolean includeSubDevision) {
 		ArrayList<UserInfo> users = new ArrayList<UserInfo>();
 		try {
 			JSONArray arrs = this
@@ -612,35 +567,33 @@ public class AppAccount extends Account {
 		}
 		return users;
 	}
-	
+
 	/**
 	 * 得到某个部门下的全部用户,包括子部门和兼职用户
-	 * 
-	 * @param departmentCode
-	 *            部门代码或者部门引用的Id
-	 *            @param includeSubDevision 是否包含子部门
-	 *            @param detail 是否包含更详细的信息
+	 *
+	 * @param departmentCode     部门代码或者部门引用的Id
+	 * @param includeSubDevision 是否包含子部门
+	 * @param detail             是否包含更详细的信息
 	 * @return 用户的列表
-	 * 
 	 */
 	public List<User> getAllUsersInDepartment(String departmentCode,
-			boolean includeSubDevision,boolean detail) {
+	                                          boolean includeSubDevision, boolean detail) {
 		ArrayList<User> users = new ArrayList<User>();
 		try {
 			JSONArray arrs = this
 					.getJSONArray("/api/v1/departments/all_users?dept_code="
 							+ departmentCode + "&include_subdivision="
-							+ includeSubDevision+"&include_detail="+detail);
+							+ includeSubDevision + "&include_detail=" + detail);
 			for (int i = 0; i < arrs.length(); i++) {
 				JSONObject o = (JSONObject) arrs.get(i);
 				User u = new User();
 				u.setId(o.getLong("id"));
 				u.setName(o.getString("name"));
 				u.setLoginName(o.getString("login_name"));
-				u.setHidden(o.getBoolean("hidden")? "true":"false");
+				u.setHidden(o.getBoolean("hidden") ? "true" : "false");
 				u.setSuspended(o.getBoolean("suspended"));
-				
-				
+
+
 				u.setCellvoice1(o.getString("cell_phone"));
 				u.setCellvoice2(o.getString("cellvoice2"));
 				u.setPreferredMobile(o.getString("preferred_mobile"));
@@ -668,29 +621,27 @@ public class AppAccount extends Account {
 	/**
 	 * 得到某个部门下的全部用户,包括子部门和兼职用户
 	 *
-	 * @param departmentCode
-	 *            部门代码或者部门引用的Id
-	 *            @param includeSubDevision 是否包含子部门
-	 *            @param detail 是否包含更详细的信息
-	 *            @param ext 是否包含ext信息
+	 * @param departmentCode     部门代码或者部门引用的Id
+	 * @param includeSubDevision 是否包含子部门
+	 * @param detail             是否包含更详细的信息
+	 * @param ext                是否包含ext信息
 	 * @return 用户的列表
-	 *
 	 */
 	public List<User> getAllUsersInDepartment(String departmentCode,
-	                                          boolean includeSubDevision,boolean detail, boolean ext) {
+	                                          boolean includeSubDevision, boolean detail, boolean ext) {
 		ArrayList<User> users = new ArrayList<User>();
 		try {
 			JSONArray arrs = this
 					.getJSONArray("/api/v1/departments/all_users?dept_code="
 							+ departmentCode + "&include_subdivision="
-							+ includeSubDevision+"&include_detail="+detail + "&include_ext=" + ext);
+							+ includeSubDevision + "&include_detail=" + detail + "&include_ext=" + ext);
 			for (int i = 0; i < arrs.length(); i++) {
 				JSONObject o = (JSONObject) arrs.get(i);
 				User u = new User();
 				u.setId(o.getLong("id"));
 				u.setName(o.getString("name"));
 				u.setLoginName(o.getString("login_name"));
-				u.setHidden(o.getBoolean("hidden")? "true":"false");
+				u.setHidden(o.getBoolean("hidden") ? "true" : "false");
 				u.setSuspended(o.getBoolean("suspended"));
 
 
@@ -730,14 +681,11 @@ public class AppAccount extends Account {
 	}
 
 
-
 	/**
 	 * 获得某个网络下的用户信息
-	 * 
-	 * @param network_name
-	 *            网络名称，例如 abc.com
-	 * @param loginname
-	 *            要查询的用户的登录名称
+	 *
+	 * @param network_name 网络名称，例如 abc.com
+	 * @param loginname    要查询的用户的登录名称
 	 * @return 账户对应的网络用户，如果找不到则抛出MxException.
 	 */
 	public User findUserByLoginname(String network_name, String loginname) {
@@ -749,9 +697,9 @@ public class AppAccount extends Account {
 			if (network_name != null) {
 				PostParameter network_name_p = new PostParameter(
 						"network_name", network_name);
-				params = new PostParameter[] { login_name_p, network_name_p };
+				params = new PostParameter[]{login_name_p, network_name_p};
 			} else {
-				params = new PostParameter[] { login_name_p };
+				params = new PostParameter[]{login_name_p};
 			}
 
 			JSONObject o = this.get("/api/v1/users/by_login_name", params);
@@ -836,7 +784,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 获得全部的部门信息
-	 * 
+	 *
 	 * @return
 	 */
 	public List<Department> getAllDepartments() {
@@ -865,9 +813,8 @@ public class AppAccount extends Account {
 
 	/**
 	 * 获得全部的部门信息
-	 * 
-	 * @param paraentDepartmentCode
-	 *            只获取该部门下的部门信息，否则返回全部的部门数据
+	 *
+	 * @param paraentDepartmentCode 只获取该部门下的部门信息，否则返回全部的部门数据
 	 * @return
 	 */
 	public List<Department> getDepartmentsByParentDeptCode(
@@ -910,9 +857,9 @@ public class AppAccount extends Account {
 			if (withExt) {
 				PostParameter p3 = new PostParameter("with_ext",
 						String.valueOf(withExt));
-				params = new PostParameter[] { p1, p2, p3 };
+				params = new PostParameter[]{p1, p2, p3};
 			} else {
-				params = new PostParameter[] { p1, p2 };
+				params = new PostParameter[]{p1, p2};
 			}
 
 			JSONArray arrs = this
@@ -1010,9 +957,8 @@ public class AppAccount extends Account {
 
 	/**
 	 * 导出全部的用户，包括了管理员，普通用户，公众号
-	 * 
-	 * @param pageSize
-	 *            每次循环导出的用户大小，最大100
+	 *
+	 * @param pageSize 每次循环导出的用户大小，最大100
 	 * @return UserPackage对象。
 	 */
 	public UserPackage exportUsers(int pageSize) {
@@ -1022,10 +968,8 @@ public class AppAccount extends Account {
 	/**
 	 * 导出全部的用户包括ext字段，包括了管理员，普通用户，公众号
 	 *
-	 * @param pageSize
-	 *            每次循环导出的用户大小，最大100
-	 * @param withExt
-	 *            是否包含ext字段
+	 * @param pageSize 每次循环导出的用户大小，最大100
+	 * @param withExt  是否包含ext字段
 	 * @return UserPackage对象。
 	 */
 	public UserPackage exportUsers(int pageSize, boolean withExt) {
@@ -1034,7 +978,6 @@ public class AppAccount extends Account {
 
 	/**
 	 * 给出多个loginName，返回login name 对应的用户列表.
-	 * 
 	 *
 	 * @param loginNames
 	 * @return
@@ -1044,7 +987,7 @@ public class AppAccount extends Account {
 		try {
 
 			if (loginNames == null || loginNames.length == 0) {
-				return new User[] {};
+				return new User[]{};
 			}
 
 			PostParameter ssoKey = new PostParameter("sso_key", "login_name");
@@ -1059,7 +1002,7 @@ public class AppAccount extends Account {
 			PostParameter ssoKeyValues = new PostParameter("key_values",
 					loginNameString.toString());
 
-			PostParameter[] params = new PostParameter[] { ssoKey, ssoKeyValues };
+			PostParameter[] params = new PostParameter[]{ssoKey, ssoKeyValues};
 
 			JSONObject o = this.get("/api/v1/networks/about_user", params);
 			JSONArray users = o.getJSONArray("items");
@@ -1097,7 +1040,6 @@ public class AppAccount extends Account {
 
 	/**
 	 * 给出多个loginName，返回login name 对应的用户列表.
-	 * 
 	 *
 	 * @param ids
 	 * @return
@@ -1107,7 +1049,7 @@ public class AppAccount extends Account {
 		try {
 
 			if (ids == null || ids.length == 0) {
-				return new User[] {};
+				return new User[]{};
 			}
 
 			PostParameter ssoKey = new PostParameter("sso_key", "user_id");
@@ -1122,7 +1064,7 @@ public class AppAccount extends Account {
 			PostParameter ssoKeyValues = new PostParameter("key_values",
 					loginNameString.toString());
 
-			PostParameter[] params = new PostParameter[] { ssoKey, ssoKeyValues };
+			PostParameter[] params = new PostParameter[]{ssoKey, ssoKeyValues};
 
 			JSONObject o = this.get("/api/v1/networks/about_user", params);
 			JSONArray users = o.getJSONArray("items");
@@ -1160,11 +1102,9 @@ public class AppAccount extends Account {
 
 	/**
 	 * 根据用户给的查询条件，查询用户.
-	 * 
-	 * @param q
-	 *            查询条件，用户姓名，pinyin，或者电话(至少5字符)
-	 * @param limit
-	 *            限制返回的数目。
+	 *
+	 * @param q     查询条件，用户姓名，pinyin，或者电话(至少5字符)
+	 * @param limit 限制返回的数目。
 	 * @return 查询到的用户列表
 	 */
 	public User[] searchUser(String q, int limit) {
@@ -1180,7 +1120,7 @@ public class AppAccount extends Account {
 			PostParameter ret_limit = new PostParameter("limit",
 					String.valueOf(_limit));
 
-			PostParameter[] params = new PostParameter[] { query, ret_limit };
+			PostParameter[] params = new PostParameter[]{query, ret_limit};
 
 			JSONObject o = this.get("/api/v1/departments/search", params);
 			JSONArray users = o.getJSONArray("items");
@@ -1205,7 +1145,7 @@ public class AppAccount extends Account {
 					udept.setCode(u.getString("dept_code"));
 					udept.setId(u.getLong("dept_id"));
 					udept.setFull_name(u.getString("dept_name"));
-					user.setAllDepartments(new Department[] { udept });
+					user.setAllDepartments(new Department[]{udept});
 
 				}
 
@@ -1225,9 +1165,8 @@ public class AppAccount extends Account {
 
 	/**
 	 * 添加用户的联系人，请先使用setFromUserLoginName设置被添加人账户
-	 * 
-	 * @param loginNames
-	 *            增加的联系人登录名列表
+	 *
+	 * @param loginNames 增加的联系人登录名列表
 	 */
 	public void addUserContract(String[] loginNames) {
 		for (int i = 0; i < loginNames.length; i++) {
@@ -1258,9 +1197,8 @@ public class AppAccount extends Account {
 
 	/**
 	 * 删除用户的联系人，请先使用setFromUserLoginName设置被添加人账户
-	 * 
-	 * @param loginNames
-	 *            移除的联系人列表
+	 *
+	 * @param loginNames 移除的联系人列表
 	 */
 	public void removeUserContract(String[] loginNames) {
 		for (int i = 0; i < loginNames.length; i++) {
@@ -1268,7 +1206,7 @@ public class AppAccount extends Account {
 
 			Response response = this.deleteForResponse(
 					"/api/v1/subscriptions/users/" + u.getId(),
-					new PostParameter[] {});
+					new PostParameter[]{});
 			JSONArray return_json = response.asJSONArray();
 			try {
 				Long userId = return_json.getJSONObject(0).getLong("id");
@@ -1287,13 +1225,13 @@ public class AppAccount extends Account {
 
 	/**
 	 * 列出用户的常用联系人
-	 * 
+	 *
 	 * @return
 	 */
 	public User[] listUserContract() {
 		try {
 
-			PostParameter[] params = new PostParameter[] {};
+			PostParameter[] params = new PostParameter[]{};
 
 			JSONObject o = this.get("/api/v1/subscriptions/users", params);
 			JSONArray users = o.getJSONArray("items");
@@ -1338,13 +1276,12 @@ public class AppAccount extends Account {
 	// ///////////////////////////////////////////////////////////////////////////////////////////////
 	// Create Conversation
 	//
+
 	/**
 	 * 发送消息到会话中。需要调用setFromUserLoginname()设置发送者身份
-	 * 
-	 * @param login_names
-	 *            创建会话的用户列表，不需要包括创建人自己
-	 * @param message
-	 *            消息内容,如果不提供，只会得到一条系统消息
+	 *
+	 * @param login_names 创建会话的用户列表，不需要包括创建人自己
+	 * @param message     消息内容,如果不提供，只会得到一条系统消息
 	 * @return Conversation对象和对象的Id。
 	 */
 	public Conversation createConversation(String[] login_names, String message) {
@@ -1353,17 +1290,14 @@ public class AppAccount extends Account {
 
 	/**
 	 * 创建一个Graph的conversation。
-	 * 
-	 * @param login_names
-	 *            创建会话的用户列表，不包括创建人自身.
-	 * @param message
-	 *            消息内容，如果不提供，则忽略这个参数。
-	 * @param g
-	 *            Graph对象，可以包含任何链接地址的对象.
+	 *
+	 * @param login_names 创建会话的用户列表，不包括创建人自身.
+	 * @param message     消息内容，如果不提供，则忽略这个参数。
+	 * @param g           Graph对象，可以包含任何链接地址的对象.
 	 * @return Conversation对象和对象的Id。
 	 */
 	public Conversation createConversationWithGraph(String[] login_names,
-			String message, Graph g) {
+	                                                String message, Graph g) {
 		Map<String, String> params = new HashMap<String, String>();
 		if (g != null) {
 			params.put("title", g.getTitle());
@@ -1393,7 +1327,7 @@ public class AppAccount extends Account {
 	}
 
 	private Conversation createConversation(String[] login_names,
-			String messageBody, Long graphId) {
+	                                        String messageBody, Long graphId) {
 		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
 
 		Map<String, String> params = new HashMap<String, String>();
@@ -1451,18 +1385,16 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送消息到会话中。需要调用setFromUserLoginname()设置发送者身份
-	 * 
-	 *
+	 * <p>
+	 * <p>
 	 * 发送用户的账户名字，该账户做为消息的发送人
-	 * 
-	 * @param conversation_id
-	 *            会话的Id
-	 * @param message
-	 *            消息内容
+	 *
+	 * @param conversation_id 会话的Id
+	 * @param message         消息内容
 	 * @return
 	 */
 	public TextMessage sendConversationMessage(String conversation_id,
-			String message) {
+	                                           String message) {
 		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
 
 		Map<String, String> params = new HashMap<String, String>();
@@ -1484,18 +1416,16 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送消息到会话中。需要调用setFromUserLoginname()设置发送者身份
-	 * 
-	 *
+	 * <p>
+	 * <p>
 	 * 发送用户的账户名字，该账户做为消息的发送人
-	 * 
-	 * @param conversation_id
-	 *            会话的Id
-	 * @param message
-	 *            消息内容
+	 *
+	 * @param conversation_id 会话的Id
+	 * @param message         消息内容
 	 * @return
 	 */
 	public TextMessage sendConversationSystemMessage(String conversation_id,
-			String message) {
+	                                                 String message) {
 		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
 
 		Map<String, String> params = new HashMap<String, String>();
@@ -1518,13 +1448,13 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送文件到会话中。需要调用setFromUserLoginname()设置发送者身份
-	 * 
+	 *
 	 * @param conversation_id
 	 * @param file
 	 * @return
 	 */
 	public TextMessage sendConversationFileMessage(String conversation_id,
-			File file) {
+	                                               File file) {
 		long[] file_ids = uploadConversationFile(conversation_id, file);
 		Map<String, String> params = new HashMap<String, String>();
 		for (int i = 0; i < file_ids.length; i++) {
@@ -1546,7 +1476,6 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送文件到会话聊天中
-	 * 
 	 *
 	 * @param file
 	 * @return
@@ -1557,7 +1486,7 @@ public class AppAccount extends Account {
 		Map<String, String> headers = new HashMap<String, String>();
 
 		JSONArray arr = null;
-		long[] filesArray = new long[] {};
+		long[] filesArray = new long[]{};
 		try {
 			arr = this.post("api/v1/uploaded_files", params, headers, file);
 			filesArray = new long[arr.length()];
@@ -1575,17 +1504,14 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送文件到工作圈。需要调用setFromUserLoginname()设置发送者身份
-	 * 
-	 * @param group_id
-	 *            工作圈的Id
-	 * @param messageText
-	 *            消息的文本
-	 * @param imageFile
-	 *            文件对象，只发送一个文件
+	 *
+	 * @param group_id    工作圈的Id
+	 * @param messageText 消息的文本
+	 * @param imageFile   文件对象，只发送一个文件
 	 * @return
 	 */
 	public TextMessage sendGroupMessageWithImage(long group_id,
-			String messageText, File imageFile) {
+	                                             String messageText, File imageFile) {
 		long[] file_ids = uploadGroupFile(group_id, imageFile);
 		Map<String, String> params = new HashMap<String, String>();
 		for (int i = 0; i < file_ids.length; i++) {
@@ -1612,7 +1538,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送消息到工作圈中。需要调用setFromUserLoginname()设置发送者身份
-	 * 
+	 *
 	 * @param groupId
 	 * @param message
 	 * @return
@@ -1623,27 +1549,27 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送分享消息到工作圈中。需要调用setFromUserLoginname()设置发送者身份
-	 * 
+	 *
 	 * @param groupId
 	 * @param message
 	 * @param shareLink
 	 * @return
 	 */
 	public TextMessage sendSharelinkToGroup(long groupId, String message,
-			ShareLink shareLink) {
+	                                        ShareLink shareLink) {
 		return sendTextMessageToGroup(groupId, message, shareLink.toJson());
 	}
 
 	/**
 	 * 发送消息到工作圈中。需要调用setFromUserLoginname()设置发送者身份
-	 * 
+	 *
 	 * @param groupId
 	 * @param message
 	 * @param story
 	 * @return
 	 */
 	public TextMessage sendTextMessageToGroup(long groupId, String message,
-			String story) {
+	                                          String story) {
 
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("group_id", String.valueOf(groupId));
@@ -1668,7 +1594,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送消息到与某人的聊天中。需要调用setFromUserLoginname()设置发送者身份
-	 * 
+	 *
 	 * @param u
 	 * @param message
 	 * @return
@@ -1694,7 +1620,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送消息到与某人的聊天会话中。需要调用setFromUserLoginname()设置发送者身份
-	 * 
+	 *
 	 * @param toUserId
 	 * @param message
 	 * @return
@@ -1720,15 +1646,14 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送消息到与某人的聊天会话中。需要调用setFromUserLoginname()设置发送者身份
-	 * 
+	 *
 	 * @param toUserId
 	 * @param message
-	 * @param message_type
-	 *            plugin_message or null
+	 * @param message_type plugin_message or null
 	 * @return
 	 */
 	public TextMessage sendMessageToUser(long toUserId, String message,
-			String message_type) {
+	                                     String message_type) {
 		// 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
 
 		Map<String, String> params = new HashMap<String, String>();
@@ -1750,8 +1675,8 @@ public class AppAccount extends Account {
 	}
 
 	public Long createOcuResource(String title, String sub_title,
-			String author, String create_time, String pic_url, String content,
-			String ocuId, String ocuSecret) {
+	                              String author, String create_time, String pic_url, String content,
+	                              String ocuId, String ocuSecret) {
 
 		Map<String, String> params = new HashMap<String, String>();
 
@@ -1782,40 +1707,31 @@ public class AppAccount extends Account {
 
 	/**
 	 * 发送公众号消息
-	 * 
-	 * @param toUserIds
-	 *            用户的login_name数组，如果传null,则是给订阅的所有人发消息
-	 * @param message
-	 *            消息对象数据，可以是复杂文本，也可以是简单对象
-	 * @param ocuId
-	 *            公众号的id
-	 * @param ocuSecret
-	 *            公众号的秘钥，校验是否可以发送
+	 *
+	 * @param toUserIds 用户的login_name数组，如果传null,则是给订阅的所有人发消息
+	 * @param message   消息对象数据，可以是复杂文本，也可以是简单对象
+	 * @param ocuId     公众号的id
+	 * @param ocuSecret 公众号的秘钥，校验是否可以发送
 	 * @return
 	 */
 	public OcuMessageSendResult sendOcuMessageToUsers(String[] toUserIds,
-			Message message, String ocuId, String ocuSecret) {
+	                                                  Message message, String ocuId, String ocuSecret) {
 		return sendOcuMessageToUsers(null, toUserIds, message, ocuId, ocuSecret);
 
 	}
 
 	/**
 	 * 发送公众号消息,指定社区id
-	 * 
-	 * @param toUserIds
-	 *            用户的login_name数组，如果传null,则是给订阅的所有人发消息
-	 * @param network_id
-	 *            用户的社区
-	 * @param message
-	 *            消息对象数据，可以是复杂文本，也可以是简单对象
-	 * @param ocuId
-	 *            公众号的id
-	 * @param ocuSecret
-	 *            公众号的秘钥，校验是否可以发送
+	 *
+	 * @param toUserIds  用户的login_name数组，如果传null,则是给订阅的所有人发消息
+	 * @param network_id 用户的社区
+	 * @param message    消息对象数据，可以是复杂文本，也可以是简单对象
+	 * @param ocuId      公众号的id
+	 * @param ocuSecret  公众号的秘钥，校验是否可以发送
 	 * @return
 	 */
 	public OcuMessageSendResult sendOcuMessageToUsers(String network_id,
-			String[] toUserIds, Message message, String ocuId, String ocuSecret) {
+	                                                  String[] toUserIds, Message message, String ocuId, String ocuSecret) {
 		String direct_to_user_ids = "";
 
 		if (message instanceof ArticleMessage) {
@@ -1883,9 +1799,8 @@ public class AppAccount extends Account {
 
 	/**
 	 * 创建任意用户的Web端 SSOToken,使用这个API，需要接入端能够拥有创建SSOToken的权限
-	 * 
-	 * @param loginName
-	 *            需要创建token的账户loginName.
+	 *
+	 * @param loginName 需要创建token的账户loginName.
 	 * @return 正常调用将返回 Web端的SSOToken.
 	 */
 	public String createMXSSOToken(String loginName) {
@@ -1912,22 +1827,17 @@ public class AppAccount extends Account {
 
 	/**
 	 * 向移动设备推送自定义的消息
-	 * 
-	 * @param user_ids
-	 *            发送的消息，文本格式，使用','分割，例如'1,2,3'
-	 * @param message
-	 *            发送的消息，文本格式，可以自定内容的编码，系统会将内容发送到接受的移动设备上。
-	 * @param alert
-	 *            iOS通知栏消息，对Android无效，走Apple的Apn发送出去。文本格式,例如'您收到一条新消息'
-	 * @param alert_extend
-	 *            iOS apn推送的隐藏字段，放在custom字段,
-	 *            json的字段,例如:"{'a': '1920-10-11 11:20'}"。
+	 *
+	 * @param user_ids     发送的消息，文本格式，使用','分割，例如'1,2,3'
+	 * @param message      发送的消息，文本格式，可以自定内容的编码，系统会将内容发送到接受的移动设备上。
+	 * @param alert        iOS通知栏消息，对Android无效，走Apple的Apn发送出去。文本格式,例如'您收到一条新消息'
+	 * @param alert_extend iOS apn推送的隐藏字段，放在custom字段,
+	 *                     json的字段,例如:"{'a': '1920-10-11 11:20'}"。
 	 * @return 实际发送了多少个用户，user_ids中有无效的用户将被剔除。
-	 * @throws ApiErrorException
-	 *             当调用数据出错时抛出。
+	 * @throws ApiErrorException 当调用数据出错时抛出。
 	 */
 	public int pushMessage(String user_ids, String message, String alert,
-			String alert_extend) throws ApiErrorException {
+	                       String alert_extend) throws ApiErrorException {
 
 		try {
 
@@ -1952,7 +1862,6 @@ public class AppAccount extends Account {
 	}
 
 	/**
-	 * 
 	 * @param loginName
 	 * @param message
 	 * @return 产生的消息id。可以用来追踪消息
@@ -1989,22 +1898,17 @@ public class AppAccount extends Account {
 
 	/**
 	 * 向移动设备推送自定义的消息,根据给出来的app id,向下载App的全部用户推送消息。
-	 * 
-	 * @param appId
-	 *            将消息发送给全部app下载用户的appId。
-	 * @param message
-	 *            发送的消息，文本格式，可以自定内容的编码，系统会将内容发送到接受的移动设备上。
-	 * @param alert
-	 *            iOS通知栏消息，对Android无效，走Apple的Apn发送出去。文本格式,例如'您收到一条新消息'
-	 * @param alert_extend
-	 *            iOS apn推送的隐藏字段，放在custom字段,
-	 *            json的字段,例如:"{'a': '1920-10-11 11:20'}"。
+	 *
+	 * @param appId        将消息发送给全部app下载用户的appId。
+	 * @param message      发送的消息，文本格式，可以自定内容的编码，系统会将内容发送到接受的移动设备上。
+	 * @param alert        iOS通知栏消息，对Android无效，走Apple的Apn发送出去。文本格式,例如'您收到一条新消息'
+	 * @param alert_extend iOS apn推送的隐藏字段，放在custom字段,
+	 *                     json的字段,例如:"{'a': '1920-10-11 11:20'}"。
 	 * @return 实际发送了多少个用户，user_ids中有无效的用户将被剔除。
-	 * @throws ApiErrorException
-	 *             当调用数据出错时抛出。
+	 * @throws ApiErrorException 当调用数据出错时抛出。
 	 */
 	public int pushMessageToAllAppUsers(int appId, String message,
-			String alert, String alert_extend) throws ApiErrorException {
+	                                    String alert, String alert_extend) throws ApiErrorException {
 
 		try {
 
@@ -2030,21 +1934,16 @@ public class AppAccount extends Account {
 
 	/**
 	 * 向移动设备推送自定义的消息,根据给出来的app id,向下载App的全部用户推送消息。
-	 * 
 	 *
-	 * @param message
-	 *            发送的消息，文本格式，可以自定内容的编码，系统会将内容发送到接受的移动设备上。
-	 * @param alert
-	 *            iOS通知栏消息，对Android无效，走Apple的Apn发送出去。文本格式,例如'您收到一条新消息'
-	 * @param alert_extend
-	 *            iOS apn推送的隐藏字段，放在custom字段,
-	 *            json的字段,例如:"{'a': '1920-10-11 11:20'}"。
+	 * @param message      发送的消息，文本格式，可以自定内容的编码，系统会将内容发送到接受的移动设备上。
+	 * @param alert        iOS通知栏消息，对Android无效，走Apple的Apn发送出去。文本格式,例如'您收到一条新消息'
+	 * @param alert_extend iOS apn推送的隐藏字段，放在custom字段,
+	 *                     json的字段,例如:"{'a': '1920-10-11 11:20'}"。
 	 * @return 实际发送了多少个用户，user_ids中有无效的用户将被剔除。
-	 * @throws ApiErrorException
-	 *             当调用数据出错时抛出。
+	 * @throws ApiErrorException 当调用数据出错时抛出。
 	 */
 	public int pushMessageToAllDepartmentUsers(String departmentCode,
-			String message, String alert, String alert_extend)
+	                                           String message, String alert, String alert_extend)
 			throws ApiErrorException {
 
 		try {
@@ -2072,9 +1971,8 @@ public class AppAccount extends Account {
 
 	/**
 	 * 获得一个会话的全部消息消息的消息文本，第一条消息就是主消息。
-	 * 
-	 * @param threadId
-	 *            会话的Id
+	 *
+	 * @param threadId 会话的Id
 	 * @return Message的数组
 	 * @throws ApiErrorException
 	 */
@@ -2102,7 +2000,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 人员组织同步接口，增加机构部门
-	 * 
+	 *
 	 * @param departement
 	 * @return
 	 * @throws ApiErrorException
@@ -2139,9 +2037,8 @@ public class AppAccount extends Account {
 
 	/**
 	 * 人员组织同步接口，更新部门数据
-	 * 
-	 * @param departement
-	 *            更新的部门对象
+	 *
+	 * @param departement 更新的部门对象
 	 * @throws ApiErrorException
 	 */
 	public Department updateDepartment(Department departement)
@@ -2175,11 +2072,9 @@ public class AppAccount extends Account {
 
 	/**
 	 * 人员组织同步接口，删除某个部门
-	 * 
-	 * @param departmentCode
-	 *            需要删除的部门代码
-	 * @param deleteWithUsers
-	 *            是否连同部门下的人员一起删除
+	 *
+	 * @param departmentCode  需要删除的部门代码
+	 * @param deleteWithUsers 是否连同部门下的人员一起删除
 	 * @throws ApiErrorException
 	 */
 
@@ -2212,7 +2107,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 人员组织同步接口，增加用户
-	 * 
+	 *
 	 * @param user
 	 * @return
 	 * @throws ApiErrorException
@@ -2245,7 +2140,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 人员组织同步接口，增加用户
-	 * 
+	 *
 	 * @param user
 	 * @return
 	 * @throws ApiErrorException
@@ -2253,20 +2148,16 @@ public class AppAccount extends Account {
 
 	/**
 	 * 为用户新增一个兼职部门
-	 * 
-	 * @param userLoginName
-	 *            要处理的用户
-	 * @param departmentCode
-	 *            兼职部门的code
-	 * @param displayOrder
-	 *            用户在兼职部门的显示顺序，必须是一个整数，例如“20”,如果不是数字，则被设置为0。
-	 * @param title
-	 *            兼职部门的职务
+	 *
+	 * @param userLoginName  要处理的用户
+	 * @param departmentCode 兼职部门的code
+	 * @param displayOrder   用户在兼职部门的显示顺序，必须是一个整数，例如“20”,如果不是数字，则被设置为0。
+	 * @param title          兼职部门的职务
 	 * @return true 如果创建成功, 失败则抛出异常
 	 * @throws ApiErrorException
 	 */
 	public boolean addUserDepartment(String userLoginName,
-			String departmentCode, String displayOrder, String title)
+	                                 String departmentCode, String displayOrder, String title)
 			throws ApiErrorException {
 
 		try {
@@ -2304,16 +2195,14 @@ public class AppAccount extends Account {
 
 	/**
 	 * 删除用户的部门或者兼职部门
-	 * 
-	 * @param userLoginName
-	 *            要删除用户的登录名称
-	 * @param departmentCode
-	 *            需要删除的部门代码
+	 *
+	 * @param userLoginName  要删除用户的登录名称
+	 * @param departmentCode 需要删除的部门代码
 	 * @return
 	 * @throws ApiErrorException
 	 */
 	public boolean removeUserDepartment(String userLoginName,
-			String departmentCode) throws ApiErrorException {
+	                                    String departmentCode) throws ApiErrorException {
 
 		try {
 
@@ -2342,7 +2231,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 人员组织同步接口，更新用户
-	 * 
+	 *
 	 * @param user
 	 * @throws ApiErrorException
 	 */
@@ -2355,7 +2244,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 人员组织同步接口，如果一个用户在多个社区里，该接口只删除指定社区的用户信息
-	 * 
+	 *
 	 * @param user
 	 * @throws ApiErrorException
 	 */
@@ -2365,7 +2254,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 人员组织同步接口，删除该用户所有社区的信息
-	 * 
+	 *
 	 * @param user
 	 * @throws ApiErrorException
 	 */
@@ -2375,7 +2264,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 根据loginname删除用户
-	 * 
+	 *
 	 * @param loginName
 	 * @throws ApiErrorException
 	 */
@@ -2416,7 +2305,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 创建社区
-	 * 
+	 *
 	 * @param network
 	 * @return
 	 * @throws ApiErrorException
@@ -2450,7 +2339,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 更新社区
-	 * 
+	 *
 	 * @param network
 	 * @throws ApiErrorException
 	 */
@@ -2479,7 +2368,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 删除社区
-	 * 
+	 *
 	 * @param name
 	 * @throws ApiErrorException
 	 */
@@ -2507,23 +2396,18 @@ public class AppAccount extends Account {
 
 	/**
 	 * 校验应用商店的应用携带的SSOTOken是否有效，通过连接minxing服务器，检查token代表的敏行用户的身份。
-	 * 
-	 * @param token
-	 *            客户端提供的SSO Token。几种获取方式
-	 *            1.第三方系统如果和敏行属于一个域下，比如类似的*.minxin.com，可以从cookie获取mx_sso_token
-	 *            2.第三方系统可以从HttpServletRequest的parameter中获取mx_sso_token
-	 *            3.第三方系统可以从HttpServletRequest的header中获取mx_sso_token
-	 * @param app_id
-	 *            校验客户端提供的Token是不是来自这个app_id产生的，如果不是，则校验失败。
-	 * 
-	 * @param expires_in_seconds
-	 *            token是否在给定的时间内过期，单位为秒，如果为0，表示不验证过期。
+	 *
+	 * @param token              客户端提供的SSO Token。几种获取方式
+	 *                           1.第三方系统如果和敏行属于一个域下，比如类似的*.minxin.com，可以从cookie获取mx_sso_token
+	 *                           2.第三方系统可以从HttpServletRequest的parameter中获取mx_sso_token
+	 *                           3.第三方系统可以从HttpServletRequest的header中获取mx_sso_token
+	 * @param app_id             校验客户端提供的Token是不是来自这个app_id产生的，如果不是，则校验失败。
+	 * @param expires_in_seconds token是否在给定的时间内过期，单位为秒，如果为0，表示不验证过期。
 	 * @return 如果校验成功，返回token对应的用户信息
-	 * @throws MxVerifyException
-	 *             校验失败，则抛出这个异常.
+	 * @throws MxVerifyException 校验失败，则抛出这个异常.
 	 */
 	public User verifyAppSSOToken(String token, String app_id,
-			int expires_in_seconds) throws MxVerifyException {
+	                              int expires_in_seconds) throws MxVerifyException {
 
 		try {
 
@@ -2564,23 +2448,20 @@ public class AppAccount extends Account {
 
 	/**
 	 * 校验公众号消息打开时携带的 SSOTOken，通过连接minxing服务器，检查token代表的敏行用户的身份。
-	 * 
-	 * @param token
-	 *            客户端提供的SSO Token.几种获取方式
-	 *            1.第三方系统如果和敏行属于一个域下，比如类似的*.minxin.com，可以从cookie获取mx_sso_token
-	 *            2.第三方系统可以从HttpServletRequest的parameter中获取mx_sso_token
-	 *            3.第三方系统可以从HttpServletRequest的header中获取mx_sso_token
 	 *
-	 *            校验客户端提供的Token是不是来自这个app_id产生的，如果不是，则校验失败。
-	 * @param expires_in_seconds
-	 *            token在给定的时间内是否过期，单位为秒。0 表示校验
+	 * @param token              客户端提供的SSO Token.几种获取方式
+	 *                           1.第三方系统如果和敏行属于一个域下，比如类似的*.minxin.com，可以从cookie获取mx_sso_token
+	 *                           2.第三方系统可以从HttpServletRequest的parameter中获取mx_sso_token
+	 *                           3.第三方系统可以从HttpServletRequest的header中获取mx_sso_token
+	 *                           <p>
+	 *                           校验客户端提供的Token是不是来自这个app_id产生的，如果不是，则校验失败。
+	 * @param expires_in_seconds token在给定的时间内是否过期，单位为秒。0 表示校验
 	 * @return 如果校验成功，返回token对应的用户信息
-	 * @throws MxVerifyException
-	 *             校验失败，则抛出这个异常.
+	 * @throws MxVerifyException 校验失败，则抛出这个异常.
 	 */
 
 	public User verifyOcuSSOToken(String token, String ocu_id,
-			int expires_in_seconds) throws MxVerifyException {
+	                              int expires_in_seconds) throws MxVerifyException {
 
 		try {
 			StringBuilder getURL = new StringBuilder("/api/v1/oauth/user_info/");
@@ -2621,15 +2502,13 @@ public class AppAccount extends Account {
 
 	/**
 	 * 校验应用商店的应用携带的SSOTOken是否有效，通过连接minxing服务器，检查token代表的敏行用户的身份。
-	 * 
-	 * @param token
-	 *            客户端提供的SSO Token。几种获取方式
-	 *            1.第三方系统如果和敏行属于一个域下，比如类似的*.minxin.com，可以从cookie获取mx_sso_token
-	 *            2.第三方系统可以从HttpServletRequest的parameter中获取mx_sso_token
-	 *            3.第三方系统可以从HttpServletRequest的header中获取mx_sso_token
+	 *
+	 * @param token 客户端提供的SSO Token。几种获取方式
+	 *              1.第三方系统如果和敏行属于一个域下，比如类似的*.minxin.com，可以从cookie获取mx_sso_token
+	 *              2.第三方系统可以从HttpServletRequest的parameter中获取mx_sso_token
+	 *              3.第三方系统可以从HttpServletRequest的header中获取mx_sso_token
 	 * @return 如果校验成功，返回token对应的用户信息
-	 * @throws MxVerifyException
-	 *             校验失败，则抛出这个异常.
+	 * @throws MxVerifyException 校验失败，则抛出这个异常.
 	 */
 	public User verifySSOToken(String token) throws MxVerifyException {
 
@@ -2643,7 +2522,6 @@ public class AppAccount extends Account {
 	}
 
 	/**
-	 * 
 	 * @param login_name
 	 * @param password
 	 * @return
@@ -2710,10 +2588,9 @@ public class AppAccount extends Account {
 
 	/**
 	 * 校验一下URL上的签名信息，确认这个请求来自敏行的服务器
-	 * 
-	 * @param queryString
-	 *            url的query String部分，例如 http://g.com?abc=1&de=2 的url，query
-	 *            string 为abc=1&de=2 。
+	 *
+	 * @param queryString url的query String部分，例如 http://g.com?abc=1&de=2 的url，query
+	 *                    string 为abc=1&de=2 。
 	 * @return true 如果签名被认证。
 	 */
 	public boolean verifyURLSignature(String queryString, String secret) {
@@ -2781,47 +2658,35 @@ public class AppAccount extends Account {
 
 	/**
 	 * 创建工作圈，默认不是hidden的。
-	 * 
-	 * @param name
-	 *            工作圈的名字
-	 * @param description
-	 *            工作圈的名字
-	 * @param isPublic
-	 *            公开的还是私有的工作圈，true创建公开的工作圈，false：创建私有的工作圈
-	 * @param groupType
-	 *            工作圈的类型，Group.SUPPORT， Group.NORMAL,表示咨询组，普通类型的组
-	 * @param displayOrder
-	 *            排序号
-	 * 
+	 *
+	 * @param name         工作圈的名字
+	 * @param description  工作圈的名字
+	 * @param isPublic     公开的还是私有的工作圈，true创建公开的工作圈，false：创建私有的工作圈
+	 * @param groupType    工作圈的类型，Group.SUPPORT， Group.NORMAL,表示咨询组，普通类型的组
+	 * @param displayOrder 排序号
 	 * @return 如果创建成功，则返回创建成功的组信息。如果失败抛出 ApiErrorException。
 	 * @throws ApiErrorException
 	 */
 	public Group createGroup(String name, String description, boolean isPublic,
-			String groupType, int displayOrder) throws ApiErrorException {
+	                         String groupType, int displayOrder) throws ApiErrorException {
 		return createGroup(name, description, isPublic, groupType, false, 0,
 				displayOrder);
 	}
 
 	/**
 	 * 创建工作圈。
-	 * 
-	 * @param name
-	 *            工作圈的名字
-	 * @param description
-	 *            工作圈的名字
-	 * @param isPublic
-	 *            公开的还是私有的工作圈，true创建公开的工作圈，false：创建私有的工作圈
-	 * @param groupType
-	 *            工作圈的类型，Group.SUPPORT， Group.NORMAL,表示咨询组，普通类型的组
-	 * @param hidden
-	 *            是否隐藏，仅对私有组生效。
-	 * @param limteSize
-	 *            组内成员数限制.
+	 *
+	 * @param name        工作圈的名字
+	 * @param description 工作圈的名字
+	 * @param isPublic    公开的还是私有的工作圈，true创建公开的工作圈，false：创建私有的工作圈
+	 * @param groupType   工作圈的类型，Group.SUPPORT， Group.NORMAL,表示咨询组，普通类型的组
+	 * @param hidden      是否隐藏，仅对私有组生效。
+	 * @param limteSize   组内成员数限制.
 	 * @return 如果创建成功，则返回创建成功的组信息。如果失败抛出 ApiErrorException。
 	 * @throws ApiErrorException
 	 */
 	public Group createGroup(String name, String description, boolean isPublic,
-			String groupType, boolean hidden, int limteSize, int displayOrder)
+	                         String groupType, boolean hidden, int limteSize, int displayOrder)
 			throws ApiErrorException {
 		try {
 
@@ -2874,7 +2739,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 为群组增加管理员
-	 * 
+	 *
 	 * @param departement
 	 * @return
 	 * @throws ApiErrorException
@@ -2882,13 +2747,10 @@ public class AppAccount extends Account {
 
 	/**
 	 * 为群组增加管理人员
-	 * 
-	 * @param groupId
-	 *            群组的Id
-	 * @param loginNames
-	 *            人员的登录名
-	 * @throws ApiErrorException
-	 *             如果执行失败，抛出异常
+	 *
+	 * @param groupId    群组的Id
+	 * @param loginNames 人员的登录名
+	 * @throws ApiErrorException 如果执行失败，抛出异常
 	 */
 	public void addGroupAdmin(Long groupId, String[] loginNames)
 			throws ApiErrorException {
@@ -2917,13 +2779,10 @@ public class AppAccount extends Account {
 
 	/**
 	 * 为群组增加管理人员
-	 * 
-	 * @param groupId
-	 *            群组的Id
-	 * @param loginNames
-	 *            人员的登录名
-	 * @throws ApiErrorException
-	 *             如果执行失败，抛出异常
+	 *
+	 * @param groupId    群组的Id
+	 * @param loginNames 人员的登录名
+	 * @throws ApiErrorException 如果执行失败，抛出异常
 	 */
 	public void addGroupMember(Long groupId, String[] loginNames)
 			throws ApiErrorException {
@@ -2952,13 +2811,10 @@ public class AppAccount extends Account {
 
 	/**
 	 * 将部门放入群组中
-	 * 
-	 * @param groupId
-	 *            群组Id.
-	 * @param department_codes
-	 *            部门代码,每个部门的唯一编码，创建部门时候提供的
-	 * @throws ApiErrorException
-	 *             如果执行失败，抛出该错误。
+	 *
+	 * @param groupId          群组Id.
+	 * @param department_codes 部门代码,每个部门的唯一编码，创建部门时候提供的
+	 * @throws ApiErrorException 如果执行失败，抛出该错误。
 	 */
 	public void addGroupDepartmentMember(Long groupId, String[] department_codes)
 			throws ApiErrorException {
@@ -2987,7 +2843,6 @@ public class AppAccount extends Account {
 	}
 
 	/**
-	 * 
 	 * @param groupId
 	 * @param loginNames
 	 */
@@ -3014,7 +2869,7 @@ public class AppAccount extends Account {
 
 	/**
 	 * 列出专家支持组
-	 * 
+	 *
 	 * @return 专家支持组的列表
 	 * @throws ApiErrorException
 	 */
@@ -3045,7 +2900,7 @@ public class AppAccount extends Account {
 					user = new Group(g.getLong("id"), g.getString("name"),
 							g.getString("description"),
 							g.getBoolean("public_group"), "support".equals(g
-									.getString("group_type")), false,
+							.getString("group_type")), false,
 							g.getInt("display_order"));
 
 				}
@@ -3065,9 +2920,8 @@ public class AppAccount extends Account {
 
 	/**
 	 * 获得组的管理员列表
-	 * 
-	 * @param groupId
-	 *            组的Id信息。
+	 *
+	 * @param groupId 组的Id信息。
 	 * @return
 	 * @throws ApiErrorException
 	 */
@@ -3112,11 +2966,9 @@ public class AppAccount extends Account {
 
 	/**
 	 * 删除工作圈
-	 * 
-	 * @param groupId
-	 *            工作圈的Id
-	 * @throws ApiErrorException
-	 *             如果阐述产生异常，则扔出该Exception.
+	 *
+	 * @param groupId 工作圈的Id
+	 * @throws ApiErrorException 如果阐述产生异常，则扔出该Exception.
 	 */
 
 	public void removeGroup(long groupId) throws ApiErrorException {
@@ -3181,7 +3033,28 @@ public class AppAccount extends Account {
 	public boolean kick(String login_name) throws ApiErrorException {
 		try {
 			JSONObject ret = delete("/api/v1/oauth/kick/" + login_name);
-			if ("200".equals(ret.get("code"))) {
+			if ("200".equals(ret.get("code").toString())) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			throw new ApiErrorException("Error return", 500, e);
+		}
+	}
+
+	/**
+	 * kick is a new api
+	 *
+	 * @param login_name
+	 * @return
+	 * @throws ApiErrorException
+	 */
+	public boolean kick2(String login_name) throws ApiErrorException {
+		try {
+			JSONObject ret = delete("/api/v1/oauth/kick?login_name=" + login_name);
+			if ("200".equals(ret.get("code").toString())) {
 				return true;
 			} else {
 				return false;
@@ -3193,7 +3066,7 @@ public class AppAccount extends Account {
 	}
 
 	public AppVisiableResult addAppVisibleScope(String app_id,
-			String[] login_names, String[] dept_codes) {
+	                                            String[] login_names, String[] dept_codes) {
 		Map<String, String> params = new HashMap<String, String>();
 		if (login_names != null && login_names.length > 0) {
 			StringBuilder sb = new StringBuilder();
@@ -3219,7 +3092,7 @@ public class AppAccount extends Account {
 	}
 
 	public Object deleteAppVisibleScope(String app_id, String[] login_names,
-			String[] dept_codes) {
+	                                    String[] dept_codes) {
 		Map<String, String> params = new HashMap<String, String>();
 		if (login_names != null && login_names.length > 0) {
 			StringBuilder sb = new StringBuilder();

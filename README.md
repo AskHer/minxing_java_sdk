@@ -26,3 +26,7 @@ System.out.println(message);
 				
 ```
 
+###2017年5月27日###
+=
+增加新接口 kick2 - 将在线的人踢下线
+
