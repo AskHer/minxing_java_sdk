@@ -184,7 +184,7 @@ public class AppAccount extends Account {
 			headersList.add(as_user);
 		}
 
-		String ua = "Minxing-SDK-5.3.0";
+		String ua = "Minxing-SDK-5.3.1";
 		if (user_agent != null) {
 			ua = user_agent;
 		}
@@ -375,7 +375,7 @@ public class AppAccount extends Account {
 
 		Map<String, String> params = new HashMap<String, String>();
 		PostParameter[] pps = createParams(params);
-		String ua = "Minxing-SDK-5.3.0";
+		String ua = "Minxing-SDK-5.3.1";
 		if (user_agent != null) {
 			ua = user_agent;
 		}
@@ -405,7 +405,7 @@ public class AppAccount extends Account {
 	                                   File f) {
 		Map<String, String> params = new HashMap<String, String>();
 		PostParameter[] pps = createParams(params);
-		String ua = "Minxing-SDK-5.3.0";
+		String ua = "Minxing-SDK-5.3.1";
 		if (user_agent != null) {
 			ua = user_agent;
 		}
@@ -436,7 +436,7 @@ public class AppAccount extends Account {
 
 		Map<String, String> params = new HashMap<String, String>();
 		PostParameter[] pps = createParams(params);
-		String ua = "Minxing-SDK-5.3.0";
+		String ua = "Minxing-SDK-5.3.1";
 		if (user_agent != null) {
 			ua = user_agent;
 		}
