@@ -207,6 +207,7 @@ public abstract class Account {
 			if (tempUrl != null && !tempUrl.trim().equals("")) {
 				url = tempUrl;
 			}
+			log.info("tempUrl: " + tempUrl);
 			response = client.get0(tempUrl, headers);
 		} else {
 

@@ -724,6 +724,16 @@ public class AppAccount extends Account {
 
 	}
 
+	public User[] findUserByExt (PostParameter[] params) {
+
+		try {
+			JSONArray array = this.getJSONArray("/api/v1/users/by_ext", params);
+			return getUsers(array);
+		} catch (JSONException e) {
+			throw new MxException("解析Json出错.", e);
+		}
+	}
+
 	public Department findDepartmentByDeptCode(String dept_code) {
 
 		Department dept = null;
@@ -2575,6 +2585,42 @@ public class AppAccount extends Account {
 			throw new MxVerifyException("Verify password failed!", e);
 		}
 
+	}
+
+	private User[] getUsers(JSONArray array) throws JSONException {
+		List<User> userList = new ArrayList<>();
+		for (int j = 0; j < array.length(); j++) {
+			JSONObject o = (JSONObject) array.get(j);
+			User user = new User();
+			user.setId(o.getLong("user_id"));
+			user.setLoginName(o.getString("login_name"));
+
+			user.setEmail(o.getString("email"));
+			user.setName(o.getString("name"));
+			user.setTitle(o.getString("login_name"));
+			user.setCellvoice1(o.getString("cell_phone"));
+			user.setCellvoice2(o.getString("preferred_mobile"));
+
+			user.setEmpCode(o.getString("emp_code"));
+			user.setNetworkId(o.getLong("network_id"));
+
+			JSONArray depts = o.getJSONArray("departs");
+			Department[] allDept = new Department[depts.length()];
+			for (int i = 0, n = depts.length(); i < n; i++) {
+				JSONObject dobj = depts.getJSONObject(i);
+
+				Department udept = new Department();
+				udept.setCode(dobj.getString("dept_ref_id"));
+				udept.setShortName(dobj.getString("dept_short_name"));
+				udept.setFull_name(dobj.getString("dept_full_name"));
+				udept.setPath(dobj.getString("dept_code"));
+				allDept[i] = udept;
+			}
+			user.setAllDepartments(allDept);
+			userList.add(user);
+		}
+
+		return userList.toArray(new User[userList.size()]);
 	}
 
 	private User getUser(JSONObject o) throws JSONException {

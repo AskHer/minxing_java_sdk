@@ -1,7 +1,9 @@
+import com.google.gson.Gson;
 import com.minxing.client.app.AppAccount;
 import com.minxing.client.json.JSONException;
 import com.minxing.client.model.ApiErrorException;
 import com.minxing.client.model.MxException;
+import com.minxing.client.model.PostParameter;
 import com.minxing.client.organization.Department;
 import com.minxing.client.organization.Network;
 import com.minxing.client.organization.User;
@@ -15,8 +17,9 @@ public class TestAppSyncAccount {
 	public static void main(String[] args) throws Exception {
 
 		AppAccount account = AppAccount.loginByAccessToken(
-				"http://127.0.0.1:3000",
-				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
+				"http://dev3.dehuinet.com:8013",
+				"SPAS6hBFBqlj4bEr9rP3l42M7nhCs-JKBeP9O5VOV3PxmlIk");
+
 
 		// testSetRootDepartment(account);
 		// testAddDepartment(account);
@@ -35,7 +38,7 @@ public class TestAppSyncAccount {
 		// testAdd10User(account);
 		// testUpdate5toSameUser(account);
 		// testUpdate10User(account);
-		testUpdateUserPhone(account);
+//		testUpdateUserPhone(account);
 
 		// testDelete10User(account);
 		// testDelete10Dept(account);
@@ -47,6 +50,18 @@ public class TestAppSyncAccount {
 //		testAddUserDepartment(account);
 //
 //		testRemoveUserDepartment(account);
+
+		System.out.println(new Gson().toJson(findUserByExt(account)));
+//		System.out.println(new Gson().toJson(account.findUserByLoginname("admin@dehuinet")));
+	}
+
+	private static User[] findUserByExt(AppAccount account) {
+
+		PostParameter[] params = new PostParameter[]{
+				new PostParameter("ext1", "123"),
+				new PostParameter("ext2", "123"),
+		};
+		return account.findUserByExt(params);
 	}
 
 	private static void testSetRootDepartment(AppAccount account) {
