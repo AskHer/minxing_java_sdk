@@ -1,7 +1,9 @@
+import com.google.gson.Gson;
 import com.minxing.client.app.AppAccount;
 import com.minxing.client.json.JSONException;
 import com.minxing.client.model.ApiErrorException;
 import com.minxing.client.model.MxException;
+import com.minxing.client.model.PostParameter;
 import com.minxing.client.organization.Department;
 import com.minxing.client.organization.Network;
 import com.minxing.client.organization.User;
@@ -47,6 +49,16 @@ public class TestAppSyncAccount {
 //		testAddUserDepartment(account);
 //
 //		testRemoveUserDepartment(account);
+		System.out.println(new Gson().toJson(findUserByExt(account)));
+	}
+
+	private static User[] findUserByExt(AppAccount account) {
+
+		PostParameter[] params = new PostParameter[]{
+				new PostParameter("ext1", "123"),
+				new PostParameter("ext2", "123"),
+		};
+		return account.findUserByExt(params);
 	}
 
 	private static void testSetRootDepartment(AppAccount account) {
