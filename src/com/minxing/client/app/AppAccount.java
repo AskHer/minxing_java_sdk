@@ -2558,7 +2558,7 @@ public class AppAccount extends Account {
 	}
 
 	private User[] getUsers(JSONArray array) throws JSONException {
-		List<User> userList = new ArrayList<>();
+		List<User> userList = new ArrayList<User>();
 		for (int j = 0; j < array.length(); j++) {
 			JSONObject o = (JSONObject) array.get(j);
 			User user = new User();
