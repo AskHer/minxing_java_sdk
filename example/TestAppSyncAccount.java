@@ -1,4 +1,4 @@
-import com.google.gson.Gson;
+import com.alibaba.fastjson.JSON;
 import com.minxing.client.app.AppAccount;
 import com.minxing.client.json.JSONException;
 import com.minxing.client.model.ApiErrorException;
@@ -8,6 +8,8 @@ import com.minxing.client.organization.Department;
 import com.minxing.client.organization.Network;
 import com.minxing.client.organization.User;
 
+import java.util.Arrays;
+
 public class TestAppSyncAccount {
 
 	static boolean all = false;// 是否全网管理 ，如果是需要设置network_name
@@ -16,10 +18,12 @@ public class TestAppSyncAccount {
 
 	public static void main(String[] args) throws Exception {
 
-		AppAccount account = AppAccount.loginByAccessToken(
+		/*AppAccount account = AppAccount.loginByAccessToken(
 				"http://dev3.dehuinet.com:8013",
-				"SPAS6hBFBqlj4bEr9rP3l42M7nhCs-JKBeP9O5VOV3PxmlIk");
-
+				"SPAS6hBFBqlj4bEr9rP3l42M7nhCs-JKBeP9O5VOV3PxmlIk");*/
+		AppAccount account = AppAccount.loginByAccessToken(
+				"http://192.168.100.245",
+				"IMG8a-LQSDKufW7HvarOSXQHNWLPDts8z2NpgZ_9sQT3Zlww");
 
 		// testSetRootDepartment(account);
 		// testAddDepartment(account);
@@ -50,9 +54,6 @@ public class TestAppSyncAccount {
 //		testAddUserDepartment(account);
 //
 //		testRemoveUserDepartment(account);
-
-		System.out.println(new Gson().toJson(findUserByExt(account)));
-//		System.out.println(new Gson().toJson(account.findUserByLoginname("admin@dehuinet")));
 	}
 
 	private static User[] findUserByExt(AppAccount account) {
