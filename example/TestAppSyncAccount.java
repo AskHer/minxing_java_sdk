@@ -1,4 +1,3 @@
-import com.google.gson.Gson;
 import com.minxing.client.app.AppAccount;
 import com.minxing.client.json.JSONException;
 import com.minxing.client.model.ApiErrorException;
@@ -37,7 +36,7 @@ public class TestAppSyncAccount {
 		// testAdd10User(account);
 		// testUpdate5toSameUser(account);
 		// testUpdate10User(account);
-		testUpdateUserPhone(account);
+//		testUpdateUserPhone(account);
 
 		// testDelete10User(account);
 		// testDelete10Dept(account);
@@ -49,7 +48,6 @@ public class TestAppSyncAccount {
 //		testAddUserDepartment(account);
 //
 //		testRemoveUserDepartment(account);
-		System.out.println(new Gson().toJson(findUserByExt(account)));
 	}
 
 	private static User[] findUserByExt(AppAccount account) {
