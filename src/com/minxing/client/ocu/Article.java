@@ -14,9 +14,11 @@ public class Article {
 		private Resource resource;
 		private String action_label;
 		
-		public Article(String title, String desc, String picUrl, String url, String app_url){
+		public Article(String title, String description, String picUrl, String url, String app_url){
+			if (description != null)
+				description = description.replaceAll("\\\\", "\\\\\\\\");
 			this.title = title;
-			this.description = desc;
+			this.description = description;
 			this.picUrl = picUrl;
 			this.url = url;
 			this.app_url = app_url;
@@ -31,6 +33,8 @@ public class Article {
 		}
 		
 		public Article(Resource resource, String title, String picUrl, String description){
+			if (description != null)
+				description = description.replaceAll("\\\\", "\\\\\\\\");
 			this.title = title;
 			this.picUrl = picUrl;
 			this.type = "resource";
