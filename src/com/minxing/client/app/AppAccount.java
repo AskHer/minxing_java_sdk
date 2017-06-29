@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.google.gson.Gson;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.ParameterParser;
