@@ -10,12 +10,11 @@ public class TestOcuAccount {
 			// oa.sendMessageToUsersStr(new
 			// HtmlMessage("测试<a href='http://www.baidu.com'>百度</a>"),
 			// "dev001@dehui220.com.cn");
+			String title = "嘟嘟【待办】OA事务申请" + i;// 提醒标题
+			String content = "嘟嘟运营FATCA\\CRS需求上线申请（RL04994）贾晓梅【jiaxm06】温馨提示：不支持PC端点击!";// 提醒内容
 			ArticleMessage am = new ArticleMessage();
-			Article pt = new Article("标题\r\n", "内容\r详细内容", "", "", "");
-			am.addArticle(pt);
-//			"YJ-wkN4UiD_ESq3tXB_Q4E9I872wKqeBd1KqVL5fjYSIAkUV"
-//			"jdpX3zA3p3WLmIuKTEMsakdgn3uTlmIfdmcQwgkuJrqapRkb"
-//			4s7XJpPRSvl9UrEFZ_6A_vqVldXts9fN8woK1G-O7KmG3bQK
+			Article article = new Article(title, content, "", "http://oawxn.taikang.com/moa//m/s?s=EXKVes0tP93BoyetMuqX8mFzl+FLNFjZKd7WlNrBtokpqSMdB3RI9w==&quot", null);
+			am.addArticle(article);
 			AppAccount account = AppAccount.loginByAccessToken(
 					"http://192.168.100.230:8030",
 					"45hmk4pjz5h80lk8imNXzhnJWW_haUznfwYDI1cRrKBFUOkG");
@@ -26,7 +25,7 @@ public class TestOcuAccount {
 			String ocuSecret = "4fa6a29b49a273240a0947c4a20178ed";
 
 			OcuMessageSendResult send_to = account.sendOcuMessageToUsers(
-					new String[] {"2521"}, am, ocuId, ocuSecret);
+					new String[] {"69"}, am, ocuId, ocuSecret);
 			System.out.println("发送至:" + send_to.getCount() + "人");
 			System.out.println("发送消息Id:" + send_to.getMessageId());
 			System.out.println("发送用户Id列表:" + send_to.getUserIds());
