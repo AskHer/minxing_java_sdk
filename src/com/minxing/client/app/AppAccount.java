@@ -13,8 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.ParameterParser;
 import org.apache.commons.httpclient.util.URIUtil;
 
@@ -46,6 +49,9 @@ import com.minxing.client.organization.User;
 import com.minxing.client.utils.HMACSHA1;
 import com.minxing.client.utils.StringUtil;
 import com.minxing.client.utils.UrlEncoder;
+
+import static com.lambdaworks.codec.Base16.encode;
+
 
 public class AppAccount extends Account {
 
@@ -149,7 +155,7 @@ public class AppAccount extends Account {
 	 * @param serverURL
 	 *            服务器的访问地址
 	 * @param bearerToken
-	 *            bearerToken，从接入端的配置中获取
+	 *            bearerToken，从接入端的配置中获取，也可以从数据库里获取
 	 * @return
 	 */
 	public static AppAccount loginByAccessToken(String serverURL,
@@ -732,6 +738,47 @@ public class AppAccount extends Account {
 			throw new MxException("解析Json出错.", e);
 		}
 	}
+
+	public String getAccessToken(String login_name, String password) throws Exception {
+
+		byte[] bytes = DigestUtils.sha("test.dehuinet.com:" + login_name);
+		String CHECKSUM = new String(encode(bytes, false));
+		log.info("CHECKSUM: " + CHECKSUM);
+
+		org.apache.commons.httpclient.HttpClient client = new org.apache.commons.httpclient.HttpClient();
+		PostMethod method = new PostMethod("http://test.dehuinet.com:8030/oauth2/token");
+		NameValuePair[] body = new NameValuePair[]{
+				new NameValuePair("client_id", "3"),
+				new NameValuePair("grant_type", "password"),
+				new NameValuePair("include_user", "true"),
+				new NameValuePair("login_name", login_name),
+				new NameValuePair("password", password),
+		};
+		HttpMethodParams param = method.getParams();
+		param.setContentCharset("UTF-8");
+		method.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		method.setRequestHeader("X-CLIENT-CHECKSUM", CHECKSUM);
+		method.setRequestBody(body);
+		client.executeMethod(method);
+		return new JSONObject(method.getResponseBodyAsString()).getString("access_token");
+	}
+
+	/*public static final char[] ENC_TAB = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+	public static String encode(byte[] data, int offset, int length) {
+		StringBuffer buff = new StringBuffer(length * 2);
+		int i = offset, total = offset + length;
+		while (i < total) {
+			buff.append(ENC_TAB[(data[i] & 0xF0) >> 4]);
+			buff.append(ENC_TAB[data[i] & 0x0F]);
+			i++;
+		}
+
+		return buff.toString();
+	}
+	public static String encode(byte[] data) {
+		return encode(data, 0, data.length);
+	}*/
+
 
 	public Department findDepartmentByDeptCode(String dept_code) {
 
@@ -2531,6 +2578,9 @@ public class AppAccount extends Account {
 
 	}
 
+	/**
+	 * 这个token是header里的MX-Authorization
+	 * */
 	public User verifyOcuSSOToken(String token, String ocu_id)
 			throws MxVerifyException {
 		return verifyOcuSSOToken(token, ocu_id, 0);
