@@ -741,12 +741,13 @@ public class AppAccount extends Account {
 
 	public String getAccessToken(String login_name, String password) throws Exception {
 
-		byte[] bytes = DigestUtils.sha("test.dehuinet.com:" + login_name);
+		String[] arr = _serverURL.split(":");
+		byte[] bytes = DigestUtils.sha(arr[1].substring(2, arr[1].length()) + ":" + login_name);
 		String CHECKSUM = new String(encode(bytes, false));
 		log.info("CHECKSUM: " + CHECKSUM);
 
 		org.apache.commons.httpclient.HttpClient client = new org.apache.commons.httpclient.HttpClient();
-		PostMethod method = new PostMethod("http://test.dehuinet.com:8030/oauth2/token");
+		PostMethod method = new PostMethod(_serverURL + "/oauth2/token");
 		NameValuePair[] body = new NameValuePair[]{
 				new NameValuePair("client_id", "3"),
 				new NameValuePair("grant_type", "password"),
@@ -2699,6 +2700,7 @@ public class AppAccount extends Account {
 			allDept[i] = udept;
 		}
 		user.setAllDepartments(allDept);
+		user.setAvatarUrl(o.getString("avatar_url"));
 		return user;
 	}
 
