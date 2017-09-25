@@ -1,5 +1,7 @@
 package com.minxing.client.organization;
 
+import com.minxing.client.model.MxException;
+
 import java.util.HashMap;
 
 public class Department extends Organization {
@@ -91,11 +93,15 @@ public class Department extends Organization {
 	}
 
 	public void setLevel(Integer _l) {
+		if (_l == null)
+			throw new MxException("level不能为空");
 		this.level = _l;
 
 	}
 
 	public int getLeval() {
+		if (this.level == null)
+			return 0;
 		return this.level;
 	}
 

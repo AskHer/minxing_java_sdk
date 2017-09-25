@@ -757,7 +757,9 @@ public class AppAccount extends Account {
 		}
 
 	}
-
+	/**
+	 * 根据扩展字段查找用户列表
+	 * */
 	public User[] findUserByExt (PostParameter[] params) {
 
 		try {

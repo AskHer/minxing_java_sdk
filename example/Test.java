@@ -2,21 +2,20 @@
 
 import java.util.List;
 
+import com.alibaba.fastjson.JSON;
 import com.minxing.client.app.AppAccount;
 import com.minxing.client.organization.User;
 
 public class Test {
 	
 	public static void main(String[] args) throws Exception{
-		
-		User u = new User();
-		AppAccount account = AppAccount.loginByAccessToken("http://192.168.100.245","XrhAoAjWyWktkeLvVqAi8lf9z444mYgRxImwOx8K8gphnBbm");
-		u.setLoginName("njhh1");
-//		u.setName("name");
-//		u.setExt2("ext2");
-//		account.addNewUser(u);
-		u.setExt2("333");
-		account.updateUser(u);
+//		String url = "http://192.168.100.245";
+//		String token = "XrhAoAjWyWktkeLvVqAi8lf9z444mYgRxImwOx8K8gphnBbm";
+		String url = "http://test.dehuinet.com:8030";
+		String token = "lf-gJ4ATa8mkAwTTMvq8mV_5aD826q-Qr5AjhSkuoRZhp-k1";
+		AppAccount account = AppAccount.loginByAccessToken(url,token);
+
+		System.out.println(JSON.toJSONString(account.findUserByLoginname("liuwen")));
 //		List list = account.getAllDepartments();
 		System.out.println(1);
 	}
