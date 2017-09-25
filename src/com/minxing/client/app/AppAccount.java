@@ -3113,7 +3113,7 @@ public class AppAccount extends Account {
 		}
 	}
 
-	public Object addAppVisibleScope(String app_id,
+	public AppVisiableResult addAppVisibleScope(String app_id,
 	                                            String[] login_names, String[] dept_codes) {
 		Map<String, String> params = new HashMap<String, String>();
 		if (login_names != null && login_names.length > 0) {
@@ -3133,10 +3133,10 @@ public class AppAccount extends Account {
 		}
 		JSONObject obj = post("/api/v1/apps/scope/" + app_id, params,
 				new HashMap<String, String>()).asJSONObject();
-		/*JSONObject users = (JSONObject) obj;
-		AppVisiableResult result = new AppVisiableResult(users);*/
+		JSONObject users = (JSONObject) obj;
+		AppVisiableResult result = new AppVisiableResult(users);
 
-		return obj;
+		return result;
 	}
 
 	public Object deleteAppVisibleScope(String app_id, String[] login_names,
