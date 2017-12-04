@@ -5,8 +5,8 @@ public class TestPing {
 
 	public static void main(String[] args) {
 		AppAccount account = AppAccount.loginByAccessToken(
-				"http://localhost:3000",
-				"iPefUDrrardwZMWQXaZnBDBCLyY3iksJTmYtP2rcrJ0EYCJA");
+				"http://test.dehuinet.com:8030",
+				"45hmk4pjz5h80lk8imNXzhnJWW_haUznfwYDI1cRrKBFUOkG");
 
 		try {
 

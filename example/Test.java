@@ -3,7 +3,6 @@
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.google.gson.Gson;
 import com.minxing.client.app.AppAccount;
 import com.minxing.client.organization.User;
 
