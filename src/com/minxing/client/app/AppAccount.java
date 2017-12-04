@@ -1,18 +1,20 @@
 package com.minxing.client.app;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
+import com.minxing.client.http.HttpClient;
+import com.minxing.client.http.Response;
+import com.minxing.client.json.JSONArray;
+import com.minxing.client.json.JSONException;
+import com.minxing.client.json.JSONObject;
+import com.minxing.client.model.*;
+import com.minxing.client.ocu.*;
+import com.minxing.client.ocu.Message;
+import com.minxing.client.organization.AppVisibleScope;
+import com.minxing.client.organization.Department;
+import com.minxing.client.organization.Network;
+import com.minxing.client.organization.User;
+import com.minxing.client.utils.HMACSHA1;
+import com.minxing.client.utils.StringUtil;
+import com.minxing.client.utils.UrlEncoder;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.URIException;
@@ -21,36 +23,16 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.ParameterParser;
 import org.apache.commons.httpclient.util.URIUtil;
 
-import com.minxing.client.http.HttpClient;
-import com.minxing.client.http.Response;
-import com.minxing.client.json.JSONArray;
-import com.minxing.client.json.JSONException;
-import com.minxing.client.json.JSONObject;
-import com.minxing.client.model.Account;
-import com.minxing.client.model.ApiErrorException;
-import com.minxing.client.model.AppVisiableResult;
-import com.minxing.client.model.Conversation;
-import com.minxing.client.model.Graph;
-import com.minxing.client.model.Group;
-import com.minxing.client.model.MxException;
-import com.minxing.client.model.MxVerifyException;
-import com.minxing.client.model.PostParameter;
-import com.minxing.client.model.ShareLink;
-import com.minxing.client.ocu.AppMessage;
-import com.minxing.client.ocu.ArticleMessage;
-import com.minxing.client.ocu.Message;
-import com.minxing.client.ocu.Resource;
-import com.minxing.client.ocu.TextMessage;
-import com.minxing.client.ocu.UserInfo;
-import com.minxing.client.organization.AppVisibleScope;
-import com.minxing.client.organization.Department;
-import com.minxing.client.organization.Network;
-import com.minxing.client.organization.User;
-import com.minxing.client.utils.HMACSHA1;
-import com.minxing.client.utils.StringUtil;
-import com.minxing.client.utils.UrlEncoder;
+import java.io.File;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.util.*;
+import java.util.logging.Logger;
 
-import static com.lambdaworks.codec.Base16.encode;
+import static com.sun.org.apache.bcel.internal.classfile.Utility.encode;
 
 
 public class AppAccount extends Account {
