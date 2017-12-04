@@ -32,7 +32,7 @@ import java.security.MessageDigest;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static com.sun.org.apache.bcel.internal.classfile.Utility.encode;
+import static com.lambdaworks.codec.Base16.encode;
 
 
 public class AppAccount extends Account {
