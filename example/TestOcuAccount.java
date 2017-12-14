@@ -3,9 +3,19 @@ import com.minxing.client.app.AppAccount;
 import com.minxing.client.app.OcuMessageSendResult;
 import com.minxing.client.ocu.Article;
 import com.minxing.client.ocu.ArticleMessage;
+import com.minxing.client.ocu.ArticleMessageNew;
+import com.minxing.client.ocu.ArticleNew;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestOcuAccount {
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) {
+//		testSendOcuMessageToUsers();
+		testSendOcuMessage();
+	}
+
+	public static void testSendOcuMessageToUsers() {
 		for (int i = 0; i < 10; i++) {
 			// oa.sendMessageToUsersStr(new
 			// HtmlMessage("测试<a href='http://www.baidu.com'>百度</a>"),
@@ -29,8 +39,36 @@ public class TestOcuAccount {
 			System.out.println("发送至:" + send_to.getCount() + "人");
 			System.out.println("发送消息Id:" + send_to.getMessageId());
 			System.out.println("发送用户Id列表:" + send_to.getUserIds());
-			Thread.currentThread().sleep(1000);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
+	}
+	public static void testSendOcuMessage(){
+		AppAccount account = AppAccount.loginByAccessToken(
+				"http://dev5.dehuinet.com:8015",
+				"oCnV5eM3zfVwdqACyiQCa-P8_Kq_ZeoFBEA2vwWohRvZHEuP");
+		/*这三个是要想办法获取的*/
+		int network_id = 2;
+		int ocuId = 2092;
+		String ocuSecret = "ba6c255c6d9051a4f560586c7ca54d1e";
+
+		List<ArticleNew> articles = new ArrayList<>();
+		ArticleNew article = new ArticleNew()
+				.setTitle("备降")
+				.setImage("upload/mxpp_1509957004221.jpg")
+				.setDescription("11月3日，从纽约飞往广州的南航CZ600航班上，一名女性旅客空中突发病情。")
+				.setAuthor("小程序")
+				.setBody("这是body");
+		articles.add(article);
+		ArticleMessageNew articleMessage = new ArticleMessageNew()
+				.setOcuId(ocuId)
+				.setOcuSecret(ocuSecret)
+				.setArticles(articles);
+
+		account.sendOcuMessage(articleMessage, network_id, ocuSecret);
 	}
 
 }
