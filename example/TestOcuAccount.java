@@ -50,18 +50,25 @@ public class TestOcuAccount {
 		AppAccount account = AppAccount.loginByAccessToken(
 				"http://dev5.dehuinet.com:8015",
 				"oCnV5eM3zfVwdqACyiQCa-P8_Kq_ZeoFBEA2vwWohRvZHEuP");
-		/*这三个是要想办法获取的*/
+//		社区标识
 		int network_id = 2;
+//		ocuId和ocuSecret这俩参数在公众号平台的管理页面里找
 		int ocuId = 2092;
 		String ocuSecret = "ba6c255c6d9051a4f560586c7ca54d1e";
 
 		List<ArticleNew> articles = new ArrayList<>();
 		ArticleNew article = new ArticleNew()
+//				文章标题
 				.setTitle("备降")
+//				封面的图片地址
 				.setImage("upload/mxpp_1509957004221.jpg")
+//				文章简介
 				.setDescription("11月3日，从纽约飞往广州的南航CZ600航班上，一名女性旅客空中突发病情。")
+//				文章作者
 				.setAuthor("小程序")
-				.setBody("这是body");
+//				内容，是一段html
+				.setBody("<html>这是body<html>");
+//		可以添加多个文章
 		articles.add(article);
 		ArticleMessageNew articleMessage = new ArticleMessageNew()
 				.setOcuId(ocuId)
