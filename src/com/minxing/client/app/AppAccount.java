@@ -2287,6 +2287,20 @@ public class AppAccount extends Account {
         deleteUser(u, false);
     }
 
+    public void deleteUserById(long id) throws ApiErrorException{
+        try {
+            JSONObject json_result = delete("/api/v1/users/" + id);
+            int code = json_result.getInt("code");
+            if (code != 200 && code != 201) {
+
+                String msg = json_result.getString("message");
+                throw new ApiErrorException(code, msg);
+
+            }
+        } catch (JSONException e) {
+            throw new ApiErrorException("返回JSON错误", 500, e);
+        }
+    }
     private void deleteUser(User user, boolean withDeleteAccount)
             throws ApiErrorException {
 
