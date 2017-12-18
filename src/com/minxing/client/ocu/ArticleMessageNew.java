@@ -1,17 +1,68 @@
 package com.minxing.client.ocu;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
 
 import java.util.List;
 
-@Data
-@Accessors(chain = true)
+
 public class ArticleMessageNew {
-    private int ocuId;
+    private String openId;
     private String type = "single";
     private boolean secret = false;
     private String ocuSecret;
     private String timestamp = String.valueOf(System.currentTimeMillis() + 1000 * 60);
     private List<ArticleNew> articles;
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public ArticleMessageNew setOpenId(String openId) {
+        this.openId = openId;
+        return this;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public ArticleMessageNew setType(String type) {
+        this.type = type;
+        return this;
+    }
+
+    public boolean isSecret() {
+        return secret;
+    }
+
+    public ArticleMessageNew setSecret(boolean secret) {
+        this.secret = secret;
+        return this;
+    }
+
+    public String getOcuSecret() {
+        return ocuSecret;
+    }
+
+    public ArticleMessageNew setOcuSecret(String ocuSecret) {
+        this.ocuSecret = ocuSecret;
+        return this;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public ArticleMessageNew setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
+    public List<ArticleNew> getArticles() {
+        return articles;
+    }
+
+    public ArticleMessageNew setArticles(List<ArticleNew> articles) {
+        this.articles = articles;
+        return this;
+    }
 }

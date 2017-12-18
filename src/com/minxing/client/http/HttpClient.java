@@ -1,25 +1,19 @@
 package com.minxing.client.http;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.methods.DeleteMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
@@ -338,6 +332,16 @@ public class HttpClient implements java.io.Serializable {
 
 	}
 
+	public String post(String url, String params, PostParameter[] headers, boolean withTokenHeader) throws Exception {
+		PostMethod postMethod = new PostMethod(url);
+//		System.out.println(params);
+//		RequestEntity entity = new StringRequestEntity(params);
+		RequestEntity entity = new InputStreamRequestEntity(new ByteArrayInputStream(params.getBytes()), "application/json");
+		postMethod.setRequestEntity(entity);
+		Response response = httpRequest(postMethod, withTokenHeader, headers, null);
+		return response.getResponseAsString();
+	}
+
 	public Response put(String url, PostParameter[] params,
 			PostParameter[] headers, Boolean WithTokenHeader)
 			throws MxException {
@@ -551,5 +555,6 @@ public class HttpClient implements java.io.Serializable {
 				.get1("http://192.168.100.230:8030/files/3587/ace6d35d40d5cbd623913c09fdd4fdf2",
 						p,null);
 	}
+
 
 }
