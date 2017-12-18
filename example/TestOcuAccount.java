@@ -18,8 +18,16 @@ import java.util.List;
 public class TestOcuAccount {
 	public static void main(String[] args) {
 //		testSendOcuMessageToUsers();
-//		testSendOcuMessage();
-		clientTest();
+        while (true){
+            testSendOcuMessage();
+            try {
+                Thread.sleep(1000 * 20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+//		clientTest();
 	}
 
 	public static void testSendOcuMessageToUsers() {
@@ -54,9 +62,7 @@ public class TestOcuAccount {
 		}
 	}
 	public static void testSendOcuMessage(){
-		System.setProperty("http.proxySet", "true");
-		System.setProperty("http.proxyHost", "192.168.40.244");
-		System.setProperty("http.proxyPort", "8888");
+
 
 		AppAccount account = AppAccount.loginByAccessToken(
 				"http://dev5.dehuinet.com:8015",
@@ -64,7 +70,7 @@ public class TestOcuAccount {
 //		社区标识
 		int network_id = 2;
 //		ocuId和ocuSecret这俩参数在公众号平台的管理页面里找
-		String openId = "";
+		String ocuId = "running_man";
 		String ocuSecret = "ba6c255c6d9051a4f560586c7ca54d1e";
 
 		List<ArticleNew> articles = new ArrayList<>();
@@ -82,7 +88,7 @@ public class TestOcuAccount {
 //		可以添加多个文章
 		articles.add(article);
 		ArticleMessageNew articleMessage = new ArticleMessageNew()
-				.setOpenId(openId)
+				.setOcuId(ocuId)
 				.setOcuSecret(ocuSecret)
 				.setArticles(articles);
 

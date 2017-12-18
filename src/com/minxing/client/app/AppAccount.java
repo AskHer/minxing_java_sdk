@@ -1799,7 +1799,7 @@ public class AppAccount extends Account {
         String sign = AesHelper.SHA1(sb.toString());*/
         PostParameter[] headers = new PostParameter[]{
                 new PostParameter("Content-Type", "application/json"),
-                new PostParameter("timestamp", "timestamp"),
+//                new PostParameter("timestamp", timestamp),
                 new PostParameter("User-Agent", "MinxingMessenger public_platform"),
                 new PostParameter("mx_network_id", String.valueOf(network_id))
         };

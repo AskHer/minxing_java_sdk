@@ -5,19 +5,19 @@ import java.util.List;
 
 
 public class ArticleMessageNew {
-    private String openId;
+    private String ocuId;
     private String type = "single";
     private boolean secret = false;
     private String ocuSecret;
     private String timestamp = String.valueOf(System.currentTimeMillis() + 1000 * 60);
     private List<ArticleNew> articles;
 
-    public String getOpenId() {
-        return openId;
+    public String getOcuId() {
+        return ocuId;
     }
 
-    public ArticleMessageNew setOpenId(String openId) {
-        this.openId = openId;
+    public ArticleMessageNew setOcuId(String ocuId) {
+        this.ocuId = ocuId;
         return this;
     }
 
