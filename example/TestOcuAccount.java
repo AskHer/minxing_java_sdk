@@ -5,14 +5,29 @@ import com.minxing.client.ocu.Article;
 import com.minxing.client.ocu.ArticleMessage;
 import com.minxing.client.ocu.ArticleMessageNew;
 import com.minxing.client.ocu.ArticleNew;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.RequestEntity;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestOcuAccount {
 	public static void main(String[] args) {
 //		testSendOcuMessageToUsers();
-		testSendOcuMessage();
+        while (true){
+            testSendOcuMessage();
+            try {
+                Thread.sleep(1000 * 20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+//		clientTest();
 	}
 
 	public static void testSendOcuMessageToUsers() {
@@ -26,8 +41,8 @@ public class TestOcuAccount {
 			Article article = new Article(title, content, "", "http://oawxn.taikang.com/moa//m/s?s=EXKVes0tP93BoyetMuqX8mFzl+FLNFjZKd7WlNrBtokpqSMdB3RI9w==&quot", null);
 			am.addArticle(article);
 			AppAccount account = AppAccount.loginByAccessToken(
-					"http://192.168.100.230:8030",
-					"45hmk4pjz5h80lk8imNXzhnJWW_haUznfwYDI1cRrKBFUOkG");
+					"http://dev5.dehuinet.com:8015",
+					"oCnV5eM3zfVwdqACyiQCa-P8_Kq_ZeoFBEA2vwWohRvZHEuP");
 
 //			String ocuId = "40dbd78cc10e32d7a36f2a518460f7f7";
 //			String ocuSecret = "88cb9f89de14332abc787486a4249b30";
@@ -47,13 +62,15 @@ public class TestOcuAccount {
 		}
 	}
 	public static void testSendOcuMessage(){
+
+
 		AppAccount account = AppAccount.loginByAccessToken(
 				"http://dev5.dehuinet.com:8015",
 				"oCnV5eM3zfVwdqACyiQCa-P8_Kq_ZeoFBEA2vwWohRvZHEuP");
 //		社区标识
 		int network_id = 2;
 //		ocuId和ocuSecret这俩参数在公众号平台的管理页面里找
-		int ocuId = 2092;
+		String ocuId = "running_man";
 		String ocuSecret = "ba6c255c6d9051a4f560586c7ca54d1e";
 
 		List<ArticleNew> articles = new ArrayList<>();
@@ -75,7 +92,27 @@ public class TestOcuAccount {
 				.setOcuSecret(ocuSecret)
 				.setArticles(articles);
 
-		account.sendOcuMessage(articleMessage, network_id, ocuSecret);
+		account.sendOcuMessage(articleMessage, network_id);
+	}
+
+	public static void clientTest(){
+		/*System.setProperty("http.proxySet", "true");
+		System.setProperty("http.proxyHost", "192.168.40.244");
+		System.setProperty("http.proxyPort", "8888");*/
+
+		String url = "https://www.baidu.com";
+		String params = "";
+		HttpClient client = new HttpClient();
+		PostMethod postMethod = new PostMethod(url);
+		RequestEntity entity = new InputStreamRequestEntity(new ByteArrayInputStream(params.getBytes()), "application/json");
+		postMethod.setRequestEntity(entity);
+		try {
+			client.executeMethod(postMethod);
+			String res = postMethod.getResponseBodyAsString();
+			System.out.println(res);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.minxing.client.app;
 
+import com.alibaba.fastjson.JSON;
 import com.minxing.client.http.HttpClient;
 import com.minxing.client.http.Response;
 import com.minxing.client.json.JSONArray;
@@ -12,12 +13,9 @@ import com.minxing.client.organization.AppVisibleScope;
 import com.minxing.client.organization.Department;
 import com.minxing.client.organization.Network;
 import com.minxing.client.organization.User;
-import com.minxing.client.utils.AesHelper;
 import com.minxing.client.utils.HMACSHA1;
 import com.minxing.client.utils.StringUtil;
 import com.minxing.client.utils.UrlEncoder;
-import com.xiaoleilu.hutool.http.HttpRequest;
-import com.xiaoleilu.hutool.json.JSONUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.URIException;
@@ -1773,7 +1771,8 @@ public class AppAccount extends Account {
     //
     //
 
-    public void sendOcuMessage(ArticleMessageNew articleMessage, int network_id, String ocuSecret) {
+
+    public void sendOcuMessage(ArticleMessageNew articleMessage, int network_id) {
         // _serverURL不能是300端口，必须是nginx端口
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -1785,28 +1784,44 @@ public class AppAccount extends Account {
         }
         String timestamp = articleMessage.getTimestamp();
         articleMessage.setTimestamp(timestamp);
-        com.xiaoleilu.hutool.json.JSONObject params =
-                JSONUtil.parseObj(articleMessage, true);
+        /*com.xiaoleilu.hutool.json.JSONObject params =
+                JSONUtil.parseObj(articleMessage, true);*/
+        String params = JSON.toJSONString(articleMessage);
         String url = _serverURL + "/mxpp/ocu_messages/custom";
-        String mx_access_token = _token;
 
-        StringBuilder sb = new StringBuilder().append(params.toString())
+//        String mx_access_token = _token;
+
+        /*StringBuilder sb = new StringBuilder().append(params.toString())
                 .append(":")
                 .append(timestamp)
                 .append(":")
                 .append(ocuSecret);
-        String sign = AesHelper.SHA1(sb.toString());
-
-        String result = HttpRequest.post(url)
+        String sign = AesHelper.SHA1(sb.toString());*/
+        PostParameter[] headers = new PostParameter[]{
+                new PostParameter("Content-Type", "application/json"),
+//                new PostParameter("timestamp", timestamp),
+                new PostParameter("User-Agent", "MinxingMessenger public_platform"),
+                new PostParameter("mx_network_id", String.valueOf(network_id))
+        };
+        try {
+            String res = client.post(url, params, headers, true);
+            System.out.println(res);
+            log.info(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        /*String res = HttpRequest.post(url)
                 .contentType("application/json")
                 .header("timestamp", timestamp)
-                .header("sign", sign)
+//                .header("sign", sign)
                 .header("User-Agent", "MinxingMessenger public_platform")
-                .header("mx_access_token", mx_access_token)
+//                .header("mx_access_token", mx_access_token)
+                .header("Authorization", "Bearer " + _token)
                 .header("mx_network_id", String.valueOf(network_id))
                 .body(params)
                 .execute()
-                .body();
+                .body();*/
+
     }
 
     /**
@@ -2287,6 +2302,20 @@ public class AppAccount extends Account {
         deleteUser(u, false);
     }
 
+    public void deleteUserById(long id) throws ApiErrorException{
+        try {
+            JSONObject json_result = delete("/api/v1/users/" + id);
+            int code = json_result.getInt("code");
+            if (code != 200 && code != 201) {
+
+                String msg = json_result.getString("message");
+                throw new ApiErrorException(code, msg);
+
+            }
+        } catch (JSONException e) {
+            throw new ApiErrorException("返回JSON错误", 500, e);
+        }
+    }
     private void deleteUser(User user, boolean withDeleteAccount)
             throws ApiErrorException {
 

@@ -59,6 +59,12 @@
 		</jar>
 	</target>
 
+	<target name="alljar" description="make one big jar" depends="jar">
+		<jar destfile="minxing-java-sdk-6.0.0.jar" >
+			<zipgroupfileset  dir="lib"/>
+		</jar>
+	</target>
+
 	<taskdef name="retrotranslator"
 		classname="net.sf.retrotranslator.transformer.RetrotranslatorTask">
 		<classpath>
