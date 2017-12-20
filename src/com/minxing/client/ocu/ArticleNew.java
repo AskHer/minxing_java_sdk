@@ -1,7 +1,6 @@
 package com.minxing.client.ocu;
 
 
-
 import java.util.List;
 
 
@@ -12,8 +11,8 @@ public class ArticleNew {
     private String description;
     private String author;
     private String expire_time;
-    private List<String> attachments;
-    private List<String> categories;
+    private List<ArticleNew.Attachment> attachments;
+    private List<ArticleNew.Category> categories;
     private String link;
     private boolean hasLink = false;
     private boolean show_home_picture = false;
@@ -76,22 +75,20 @@ public class ArticleNew {
         return this;
     }
 
-    public List<String> getAttachments() {
+    public List<ArticleNew.Attachment> getAttachments() {
         return attachments;
     }
 
-    public ArticleNew setAttachments(List<String> attachments) {
+    public void setAttachments(List<ArticleNew.Attachment> attachments) {
         this.attachments = attachments;
-        return this;
     }
 
-    public List<String> getCategories() {
+    public List<ArticleNew.Category> getCategories() {
         return categories;
     }
 
-    public ArticleNew setCategories(List<String> categories) {
+    public void setCategories(List<ArticleNew.Category> categories) {
         this.categories = categories;
-        return this;
     }
 
     public String getLink() {
@@ -155,5 +152,83 @@ public class ArticleNew {
     public ArticleNew setShow_by_popup(boolean show_by_popup) {
         this.show_by_popup = show_by_popup;
         return this;
+    }
+
+    public static class Attachment {
+        private String origin_url;
+        private String thumb_url;
+        private Long size;
+        private String name;
+        private String type;
+        private String original_name;
+
+        public String getOrigin_url() {
+            return origin_url;
+        }
+
+        public void setOrigin_url(String origin_url) {
+            this.origin_url = origin_url;
+        }
+
+        public String getThumb_url() {
+            return thumb_url;
+        }
+
+        public void setThumb_url(String thumb_url) {
+            this.thumb_url = thumb_url;
+        }
+
+        public Long getSize() {
+            return size;
+        }
+
+        public void setSize(Long size) {
+            this.size = size;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public String getOriginal_name() {
+            return original_name;
+        }
+
+        public void setOriginal_name(String original_name) {
+            this.original_name = original_name;
+        }
+    }
+
+    public static class Category {
+        private Long id;
+        private String name;
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 }
