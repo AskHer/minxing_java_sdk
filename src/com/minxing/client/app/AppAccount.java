@@ -1778,10 +1778,10 @@ public class AppAccount extends Account {
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         cal.setTime(new Date());
         cal.add(Calendar.DATE, 3);
-		for (ArticleNew article : articleMessage.getArticles()){
-            String expire_time = sf.format(cal.getTime());
-		    article.setExpire_time(expire_time);
-        }
+        ArticleNew article = articleMessage.getArticles();
+        String expire_time = sf.format(cal.getTime());
+        article.setExpire_time(expire_time);
+
         String timestamp = articleMessage.getTimestamp();
         articleMessage.setTimestamp(timestamp);
         /*com.xiaoleilu.hutool.json.JSONObject params =
@@ -2302,7 +2302,7 @@ public class AppAccount extends Account {
         deleteUser(u, false);
     }
 
-    public void deleteUserById(long id) throws ApiErrorException{
+    public void deleteUserById(long id) throws ApiErrorException {
         try {
             JSONObject json_result = delete("/api/v1/users/" + id);
             int code = json_result.getInt("code");
@@ -2316,6 +2316,7 @@ public class AppAccount extends Account {
             throw new ApiErrorException("返回JSON错误", 500, e);
         }
     }
+
     private void deleteUser(User user, boolean withDeleteAccount)
             throws ApiErrorException {
 

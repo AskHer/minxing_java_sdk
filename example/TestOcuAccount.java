@@ -83,8 +83,6 @@ public class TestOcuAccount {
         attachment.setOriginal_name("附件1《机动车驾驶证申请表》式样_20160328105816.xls");
         //附件大小，单位：字节
         attachment.setSize((long) (59.5*1024l));
-        //缩略图地址
-        attachment.setThumb_url("");
         //附件类型
         attachment.setType("application/vnd.ms-excel");
 
@@ -96,7 +94,6 @@ public class TestOcuAccount {
         category1.setName("23232");
         category2.setName("分享测试");
 
-        List<ArticleNew> articles = new ArrayList<>();
         List<ArticleNew.Attachment> attList = new ArrayList<>();
         attList.add(attachment);
         List<ArticleNew.Category> catList = new ArrayList<>();
@@ -106,7 +103,7 @@ public class TestOcuAccount {
 //				文章标题
                 .setTitle("备降")
 //				封面的图片地址
-                .setImage("upload/mxpp_1509957004221.jpg")
+                .setImage("http://up.henan.china.cn/2017/0517/1494992198452.jpg")
 //				文章简介
                 .setDescription("11月3日，从纽约飞往广州的南航CZ600航班上，一名女性旅客空中突发病情。")
 //				文章作者
@@ -116,11 +113,10 @@ public class TestOcuAccount {
         article.setAttachments(attList);
         article.setCategories(catList);
 //		可以添加多个文章
-        articles.add(article);
         ArticleMessageNew articleMessage = new ArticleMessageNew()
                 .setOcuId(ocuId)
                 .setOcuSecret(ocuSecret)
-                .setArticles(articles);
+                .setArticles(article);
 
         account.sendOcuMessage(articleMessage, network_id);
     }

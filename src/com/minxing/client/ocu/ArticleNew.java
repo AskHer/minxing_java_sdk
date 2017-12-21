@@ -156,7 +156,7 @@ public class ArticleNew {
 
     public static class Attachment {
         private String origin_url;
-        private String thumb_url;
+        private String thumb_url = "";
         private Long size;
         private String name;
         private String type;
