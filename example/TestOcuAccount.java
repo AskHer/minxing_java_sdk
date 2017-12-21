@@ -1,8 +1,5 @@
 
 import com.minxing.client.app.AppAccount;
-import com.minxing.client.app.OcuMessageSendResult;
-import com.minxing.client.ocu.Article;
-import com.minxing.client.ocu.ArticleMessage;
 import com.minxing.client.ocu.ArticleMessageNew;
 import com.minxing.client.ocu.ArticleNew;
 import org.apache.commons.httpclient.HttpClient;
@@ -30,7 +27,7 @@ public class TestOcuAccount {
 //		clientTest();
     }
 
-    public static void testSendOcuMessageToUsers() {
+/*    public static void testSendOcuMessageToUsers() {
         for (int i = 0; i < 10; i++) {
             // oa.sendMessageToUsersStr(new
             // HtmlMessage("测试<a href='http://www.baidu.com'>百度</a>"),
@@ -60,27 +57,38 @@ public class TestOcuAccount {
                 e.printStackTrace();
             }
         }
-    }
+    }*/
 
+    /**
+     * 发公众号消息测试
+     */
     public static void testSendOcuMessage() {
 
 
+        //创建接入端对象，参数1：敏行地址，参数2：接入端token，在敏行后台中获取这个token，然后加到配置文件或写到代码里
         AppAccount account = AppAccount.loginByAccessToken(
                 "http://dev5.dehuinet.com:8015",
                 "qMjJKypzc4JdijbbPKndty2aWBNG-t9fsu2KmG5F9mD1XXJc");
-//		社区标识
+        //社区ID
         int network_id = 2;
-//		ocuId和ocuSecret这俩参数在公众号平台的管理页面里找
+        //ocuId和ocuSecret这俩参数在公众号平台的管理页面里找
         String ocuId = "domain_17";
         String ocuSecret = "f8aac0ae2cb7e0cb0db779407f5d81a1";
+        //创建附件对象
         ArticleNew.Attachment attachment = new ArticleNew.Attachment();
         attachment.setName("6a702689-9b60-4e2e-b4e9-ed89ccf1fb4c (1) 2_1513765766550.zip");
-        attachment.setOrigin_url("files/attachments/6a702689-9b60-4e2e-b4e9-ed89ccf1fb4c (1) 2_1513765766550.zip");
-        attachment.setOriginal_name("6a702689-9b60-4e2e-b4e9-ed89ccf1fb4c (1) 2.zip");
-        attachment.setSize(32594l);
+        //附件下载地址
+        attachment.setOrigin_url("http://www.kfpolice.com/WEB/Files/Bgxz/%e9%99%84%e4%bb%b61%e3%80%8a%e6%9c%ba%e5%8a%a8%e8%bd%a6%e9%a9%be%e9%a9%b6%e8%af%81%e7%94%b3%e8%af%b7%e8%a1%a8%e3%80%8b%e5%bc%8f%e6%a0%b7_20160328105816.xls");
+        //附件名称
+        attachment.setOriginal_name("附件1《机动车驾驶证申请表》式样_20160328105816.xls");
+        //附件大小，单位：字节
+        attachment.setSize((long) (59.5*1024l));
+        //缩略图地址
         attachment.setThumb_url("");
-        attachment.setType("application/zip");
+        //附件类型
+        attachment.setType("application/vnd.ms-excel");
 
+        //创建分类信息
         ArticleNew.Category category1 = new ArticleNew.Category();
         ArticleNew.Category category2 = new ArticleNew.Category();
         category1.setId(468l);
