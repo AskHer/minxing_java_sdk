@@ -1,4 +1,5 @@
 
+import com.alibaba.fastjson.JSONObject;
 import com.minxing.client.app.AppAccount;
 import com.minxing.client.ocu.ArticleMessageNew;
 import com.minxing.client.ocu.ArticleNew;
@@ -82,7 +83,7 @@ public class TestOcuAccount {
         //附件名称
         attachment.setOriginal_name("附件1《机动车驾驶证申请表》式样_20160328105816.xls");
         //附件大小，单位：字节
-        attachment.setSize((long) (59.5*1024l));
+        attachment.setSize((long) (59.5 * 1024l));
         //附件类型
         attachment.setType("application/vnd.ms-excel");
 
@@ -112,11 +113,15 @@ public class TestOcuAccount {
                 .setBody("<html>这是body<html>");
         article.setAttachments(attList);
         article.setCategories(catList);
+        ArrayList<ArticleNew> articles = new ArrayList<ArticleNew>();
+        articles.add(article);
 //		可以添加多个文章
         ArticleMessageNew articleMessage = new ArticleMessageNew()
                 .setOcuId(ocuId)
                 .setOcuSecret(ocuSecret)
-                .setArticles(article);
+                .setArticles(articles);
+
+        System.out.println(JSONObject.toJSONString(articleMessage));
 
         account.sendOcuMessage(articleMessage, network_id);
     }

@@ -1,7 +1,6 @@
 package com.minxing.client.ocu;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -58,13 +57,12 @@ public class ArticleMessageNew {
         return this;
     }
 
-    public ArticleNew getArticles() {
-        return articles.get(0);
+    public List<ArticleNew> getArticles() {
+        return articles;
     }
 
-    public ArticleMessageNew setArticles(ArticleNew article) {
-        this.articles = new ArrayList<ArticleNew>();
-        this.articles.add(article);
+    public ArticleMessageNew setArticles(List<ArticleNew> article) {
+        this.articles = article;
         return this;
     }
 }

@@ -1778,9 +1778,12 @@ public class AppAccount extends Account {
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         cal.setTime(new Date());
         cal.add(Calendar.DATE, 3);
-        ArticleNew article = articleMessage.getArticles();
-        String expire_time = sf.format(cal.getTime());
-        article.setExpire_time(expire_time);
+        if (articleMessage.getArticles().size() > 1) {
+            for (ArticleNew article : articleMessage.getArticles()) {
+                article.setExpire_time(null);
+                article.setShow_by_popup(false);
+            }
+        }
 
         String timestamp = articleMessage.getTimestamp();
         articleMessage.setTimestamp(timestamp);
