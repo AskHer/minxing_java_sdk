@@ -61,8 +61,8 @@ public class ArticleMessageNew {
         return articles;
     }
 
-    public ArticleMessageNew setArticles(List<ArticleNew> articles) {
-        this.articles = articles;
+    public ArticleMessageNew setArticles(List<ArticleNew> article) {
+        this.articles = article;
         return this;
     }
 }
