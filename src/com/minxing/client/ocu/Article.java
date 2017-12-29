@@ -17,6 +17,8 @@ public class Article {
 		public Article(String title, String description, String picUrl, String url, String app_url){
 			if (description != null)
 				description = description.replaceAll("\\\\", "\\\\\\\\");
+			if (title != null)
+				title = title.replaceAll("\\\\", "\\\\\\\\");
 			this.title = title;
 			this.description = description;
 			this.picUrl = picUrl;
@@ -35,6 +37,8 @@ public class Article {
 		public Article(Resource resource, String title, String picUrl, String description){
 			if (description != null)
 				description = description.replaceAll("\\\\", "\\\\\\\\");
+			if (title != null)
+				title = title.replaceAll("\\\\", "\\\\\\\\");
 			this.title = title;
 			this.picUrl = picUrl;
 			this.type = "resource";

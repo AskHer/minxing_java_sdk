@@ -2492,7 +2492,7 @@ public class AppAccount extends Account {
             String by_ocu_id = o.getString("by_ocu_id");
             String by_app_id = o.getString("by_app_id");
 
-            if (ocu_id != null && !ocu_id.equals(by_ocu_id)) {
+            /*if (ocu_id != null && !ocu_id.equals(by_ocu_id)) {
 
                 if (by_app_id != null) {
                     throw new MxVerifyException("校验Token:" + token
@@ -2504,7 +2504,7 @@ public class AppAccount extends Account {
                             + ",但期望的是ocu_id:" + ocu_id);
                 }
 
-            }
+            }*/
             return getUser(o);
         } catch (JSONException e) {
             throw new MxVerifyException("JSON parse error", e);
