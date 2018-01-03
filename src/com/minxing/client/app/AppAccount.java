@@ -847,7 +847,7 @@ public class AppAccount extends Account {
                 u.setId(o.getLong("id"));
                 u.setName(o.getString("name"));
                 u.setLoginName(o.getString("login_name"));
-
+                u.setDisplay_order(o.getString("display_order"));
                 u.setCellvoice1(o.getString("cell_phone"));
                 u.setCellvoice2(o.getString("cellvoice2"));
                 u.setPreferredMobile(o.getString("preferred_mobile"));
