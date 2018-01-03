@@ -891,6 +891,7 @@ public class AppAccount extends Account {
                 u.setCellvoice2(o.getString("cellvoice2"));
                 u.setPreferredMobile(o.getString("preferred_mobile"));
                 u.setWorkvoice(o.getString("workvoice"));
+                u.setDisplay_order(o.getString("display_order"));
                 u.setPosition(o.getString("position"));
                 u.setEmail(o.getString("email"));
                 u.setEmpCode(o.getString("dept_ref_id"));
