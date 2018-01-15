@@ -2438,7 +2438,7 @@ public class AppAccount extends Account {
             String by_app_id = o.getString("by_app_id");
             String by_ocu_id = o.getString("by_ocu_id");
 
-            if (app_id != null && !app_id.equals(by_app_id)) {
+            /*if (app_id != null && !app_id.equals(by_app_id)) {
                 if (by_ocu_id != null) {
                     throw new MxVerifyException("校验Token:" + token
                             + "错误, token是ocu_id:" + by_ocu_id
@@ -2449,7 +2449,7 @@ public class AppAccount extends Account {
                             + app_id);
                 }
 
-            }
+            }*/
 
             return getUser(o);
         } catch (JSONException e) {
