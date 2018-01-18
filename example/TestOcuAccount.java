@@ -16,14 +16,14 @@ import java.util.List;
 public class TestOcuAccount {
     public static void main(String[] args) {
 //		testSendOcuMessageToUsers();
-        while (true) {
+//        while (true) {
             testSendOcuMessage();
-            try {
-                Thread.sleep(1000 * 20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+//            try {
+//                Thread.sleep(1000 * 20);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
 //		clientTest();
     }
@@ -68,13 +68,13 @@ public class TestOcuAccount {
 
         //创建接入端对象，参数1：敏行地址，参数2：接入端token，在敏行后台中获取这个token，然后加到配置文件或写到代码里
         AppAccount account = AppAccount.loginByAccessToken(
-                "http://dev5.dehuinet.com:8015",
-                "qMjJKypzc4JdijbbPKndty2aWBNG-t9fsu2KmG5F9mD1XXJc");
+                "http://192.168.100.185",
+                "raWOK3A2PdRCNE-9Gn4ivbM3EcXDrjQ7RxmjEAIR3RwuBX7_");
         //社区ID
         int network_id = 2;
         //ocuId和ocuSecret这俩参数在公众号平台的管理页面里找
-        String ocuId = "domain_17";
-        String ocuSecret = "f8aac0ae2cb7e0cb0db779407f5d81a1";
+        String ocuId = "domain_2";
+        String ocuSecret = "4791f3da7d10861d1ec05e1f99870ded";
         //创建附件对象
         ArticleNew.Attachment attachment = new ArticleNew.Attachment();
         attachment.setName("6a702689-9b60-4e2e-b4e9-ed89ccf1fb4c (1) 2_1513765766550.zip");
@@ -120,6 +120,8 @@ public class TestOcuAccount {
                 .setOcuId(ocuId)
                 .setOcuSecret(ocuSecret)
                 .setArticles(articles);
+
+        articleMessage.setTimestamp("1546272000000");
 
         System.out.println(JSONObject.toJSONString(articleMessage));
 
