@@ -10,6 +10,16 @@ public class ArticleMessageNew {
     private boolean secret = false;
     private String ocuSecret;
     private String timestamp = String.valueOf(System.currentTimeMillis() + 1000 * 60);
+    private String created_at = String.valueOf(System.currentTimeMillis() + 1000 * 60);
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
+    }
+
     private List<ArticleNew> articles;
 
     public String getOcuId() {

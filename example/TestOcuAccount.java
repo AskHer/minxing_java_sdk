@@ -16,14 +16,14 @@ import java.util.List;
 public class TestOcuAccount {
     public static void main(String[] args) {
 //		testSendOcuMessageToUsers();
-//        while (true) {
+        while (true) {
             testSendOcuMessage();
-//            try {
-//                Thread.sleep(1000 * 20);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
+            try {
+                Thread.sleep(1000 * 20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
 //		clientTest();
     }
@@ -121,7 +121,7 @@ public class TestOcuAccount {
                 .setOcuSecret(ocuSecret)
                 .setArticles(articles);
 
-        articleMessage.setTimestamp("1546272000000");
+        articleMessage.setCreated_at("1546272000000");
 
         System.out.println(JSONObject.toJSONString(articleMessage));
 
