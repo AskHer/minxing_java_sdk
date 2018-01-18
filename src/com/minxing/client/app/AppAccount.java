@@ -1,5 +1,6 @@
 package com.minxing.client.app;
 
+import com.alibaba.fastjson.JSON;
 import com.minxing.client.http.HttpClient;
 import com.minxing.client.http.Response;
 import com.minxing.client.json.JSONArray;
