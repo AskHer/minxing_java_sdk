@@ -2171,7 +2171,7 @@ public class AppAccount extends Account {
                     + departmentCode, params);
             int code = json_result.getInt("code");
 
-            if (code != 200 && code != 201) {
+            if (code != 200 && code != 201 && code != 204) {
 
                 String msg = json_result.getString("message");
                 throw new ApiErrorException(code, msg);
