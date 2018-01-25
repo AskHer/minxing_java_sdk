@@ -34,7 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static com.lambdaworks.codec.Base16.encode;
+import static com.sun.org.apache.bcel.internal.classfile.Utility.encode;
 
 
 public class AppAccount extends Account {
@@ -580,6 +580,55 @@ public class AppAccount extends Account {
             JSONArray arrs = this
                     .getJSONArray("/api/v1/departments/all_users?dept_code="
                             + departmentCode + "&include_subdivision="
+                            + includeSubDevision + "&include_detail=" + detail);
+            for (int i = 0; i < arrs.length(); i++) {
+                JSONObject o = (JSONObject) arrs.get(i);
+                User u = new User();
+                u.setId(o.getLong("id"));
+                u.setName(o.getString("name"));
+                u.setLoginName(o.getString("login_name"));
+                u.setHidden(o.getBoolean("hidden") ? "true" : "false");
+                u.setSuspended(o.getBoolean("suspended"));
+
+
+                u.setCellvoice1(o.getString("cell_phone"));
+                u.setCellvoice2(o.getString("cellvoice2"));
+                u.setPreferredMobile(o.getString("preferred_mobile"));
+                u.setWorkvoice(o.getString("workvoice"));
+                u.setPosition(o.getString("position"));
+                u.setEmail(o.getString("email"));
+                //u.setEmpCode(o.getString("dept_ref_id"));
+                u.setNetworkId(o.getLong("network_id"));
+                u.setRoleCode(o.getInt("role_code"));
+                u.setSuspended(o.getBoolean("suspended"));
+                //u.setAvatarUrl(o.getString("avatar_url"));
+                u.setDeptCode(o.getString("dept_ref_id"));
+                u.setDeptId(o.getLong("dept_id"));
+                u.setEmpCode(o.getString("emp_code"));
+                u.setTitle(o.getString("title"));
+                users.add(u);
+            }
+        } catch (JSONException e) {
+            throw new MxException("解析Json出错.", e);
+        }
+        return users;
+    }
+
+    /**
+     * 得到某个部门下的全部用户,包括子部门和兼职用户
+     *
+     * @param dataId     部门引用的Id
+     * @param includeSubDevision 是否包含子部门
+     * @param detail             是否包含更详细的信息
+     * @return 用户的列表
+     */
+    public List<User> getAllUsersInDepartmentByDataId(String dataId,
+                                              boolean includeSubDevision, boolean detail) {
+        ArrayList<User> users = new ArrayList<User>();
+        try {
+            JSONArray arrs = this
+                    .getJSONArray("/api/v1/departments/all_users?dept_id="
+                            + dataId + "&include_subdivision="
                             + includeSubDevision + "&include_detail=" + detail);
             for (int i = 0; i < arrs.length(); i++) {
                 JSONObject o = (JSONObject) arrs.get(i);
@@ -2122,7 +2171,7 @@ public class AppAccount extends Account {
                     + departmentCode, params);
             int code = json_result.getInt("code");
 
-            if (code != 200 && code != 201) {
+            if (code != 200 && code != 201 && code != 204) {
 
                 String msg = json_result.getString("message");
                 throw new ApiErrorException(code, msg);
