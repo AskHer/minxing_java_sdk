@@ -34,16 +34,10 @@ public class Test {
 
     public static void main(String[] args) throws Exception {
 
-        AppAccount account = AppAccount.loginByAccessToken(
-                "http://test.dehuinet.com:8030",
-                "45hmk4pjz5h80lk8imNXzhnJWW_haUznfwYDI1cRrKBFUOkG");
 
-        /*String token_ = "IAAAAAtLGKG8kPfnHVTzFNndjUDezh3IvOTsS2fO22jB8gwS";
-        User u = account.verifyOcuSSOToken(token_, null);
-        log.info("u.getLoginName() " + u.getLoginName());*/
-
-		String token = account.getAccessToken("t53", "111111");
-		log.info(token);
+        AppAccount account = AppAccount.loginByAccessToken("http://oatest.bgctv.com.cn",
+                "Y6Y5B9q3WRQu56NXckC0sOUiLYrk4Kf7FN2GLo5csfueYorz");
+        System.out.print(account.verifyPassword("liuliucs", "92d7ddd2a010c59511dc2905b7e14f64", true));
 
     }
 

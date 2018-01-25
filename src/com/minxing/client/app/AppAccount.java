@@ -2599,6 +2599,28 @@ public class AppAccount extends Account {
 
     }
 
+    public boolean verifyPassword(String login_name, String password, boolean use_local_pwd)
+            throws MxVerifyException {
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("login_name", login_name);
+        params.put("password", password);
+        params.put("use_local_pwd", String.valueOf(use_local_pwd));
+        Map<String, String> headers = new HashMap<String, String>();
+        try {
+            Response o = this.post("/api/v1/oauth/verify_password", params,
+                    headers);
+            JSONObject json = o.asJSONObject();
+            System.out.println(o.getResponseAsString());
+            if ("success".equals(json.getString("status"))) {
+                return true;
+            }
+            return false;
+        } catch (JSONException e) {
+            throw new MxVerifyException("Verify password failed!", e);
+        }
+
+    }
+
     private User[] getUsers(JSONArray array) throws JSONException {
         List<User> userList = new ArrayList<User>();
         for (int j = 0; j < array.length(); j++) {
