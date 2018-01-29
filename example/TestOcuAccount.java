@@ -16,14 +16,14 @@ import java.util.List;
 public class TestOcuAccount {
     public static void main(String[] args) {
 //		testSendOcuMessageToUsers();
-        while (true) {
+//        while (true) {
             testSendOcuMessage();
-            try {
-                Thread.sleep(1000 * 20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+//            try {
+//                Thread.sleep(1000 * 1);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
 //		clientTest();
     }
@@ -69,7 +69,7 @@ public class TestOcuAccount {
         //创建接入端对象，参数1：敏行地址，参数2：接入端token，在敏行后台中获取这个token，然后加到配置文件或写到代码里
         AppAccount account = AppAccount.loginByAccessToken(
                 "http://192.168.100.185",
-                "raWOK3A2PdRCNE-9Gn4ivbM3EcXDrjQ7RxmjEAIR3RwuBX7_");
+                "PjzdRZBT2PsijCaWxvrosK_FUz8rJ-Edg1wya8AqPIwLoD-3");
         //社区ID
         int network_id = 2;
         //ocuId和ocuSecret这俩参数在公众号平台的管理页面里找
@@ -90,10 +90,10 @@ public class TestOcuAccount {
         //创建分类信息
         ArticleNew.Category category1 = new ArticleNew.Category();
         ArticleNew.Category category2 = new ArticleNew.Category();
-        category1.setId(468l);
-        category2.setId(467l);
-        category1.setName("23232");
-        category2.setName("分享测试");
+        category1.setId(1l);
+//        category2.setId(467l);
+        category1.setName("头条");
+//        category2.setName("分享测试");
 
         List<ArticleNew.Attachment> attList = new ArrayList<>();
         attList.add(attachment);
@@ -102,7 +102,7 @@ public class TestOcuAccount {
         catList.add(category2);
         ArticleNew article = new ArticleNew()
 //				文章标题
-                .setTitle("备降")
+                .setTitle("备降11111")
 //				封面的图片地址
                 .setImage("http://up.henan.china.cn/2017/0517/1494992198452.jpg")
 //				文章简介
@@ -121,7 +121,7 @@ public class TestOcuAccount {
                 .setOcuSecret(ocuSecret)
                 .setArticles(articles);
 
-        articleMessage.setCreated_at("1546272000000");
+        articleMessage.setCreated_at("1516860000000");
 
         System.out.println(JSONObject.toJSONString(articleMessage));
 
