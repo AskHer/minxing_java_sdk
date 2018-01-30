@@ -20,6 +20,15 @@ public class ArticleNew {
     private boolean isAllowOutsiders = false;
     private boolean isChooseCategory = false;
     private boolean show_by_popup = false;
+    private Boolean enable_readed_status = false;
+
+    public Boolean getEnable_readed_status() {
+        return enable_readed_status;
+    }
+
+    public void setEnable_readed_status(Boolean enable_readed_status) {
+        this.enable_readed_status = enable_readed_status;
+    }
 
     public String getTitle() {
         return title;
