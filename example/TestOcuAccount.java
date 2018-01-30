@@ -16,14 +16,20 @@ import java.util.List;
 public class TestOcuAccount {
     public static void main(String[] args) {
 //		testSendOcuMessageToUsers();
-//        while (true) {
-            testSendOcuMessage();
-//            try {
-//                Thread.sleep(1000 * 1);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        while (true) {
+            testSendOcuMessage(true);
+            try {
+                Thread.sleep(1000 * 20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            testSendOcuMessage(false);
+            try {
+                Thread.sleep(1000 * 20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
 //		clientTest();
     }
@@ -63,7 +69,7 @@ public class TestOcuAccount {
     /**
      * 发公众号消息测试
      */
-    public static void testSendOcuMessage() {
+    public static void testSendOcuMessage(boolean not_send) {
 
 
         //创建接入端对象，参数1：敏行地址，参数2：接入端token，在敏行后台中获取这个token，然后加到配置文件或写到代码里
@@ -102,7 +108,7 @@ public class TestOcuAccount {
         catList.add(category2);
         ArticleNew article = new ArticleNew()
 //				文章标题
-                .setTitle("备降11111")
+                .setTitle("备降" + System.currentTimeMillis())
 //				封面的图片地址
                 .setImage("http://up.henan.china.cn/2017/0517/1494992198452.jpg")
 //				文章简介
@@ -121,8 +127,9 @@ public class TestOcuAccount {
                 .setOcuSecret(ocuSecret)
                 .setArticles(articles);
 
-        articleMessage.setCreated_at("1516860000000");
+//        articleMessage.setCreated_at("1516860000000");
 
+        articleMessage.setNot_send(not_send);
         System.out.println(JSONObject.toJSONString(articleMessage));
 
         account.sendOcuMessage(articleMessage, network_id);
