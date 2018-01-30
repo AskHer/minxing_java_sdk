@@ -74,13 +74,13 @@ public class TestOcuAccount {
 
         //创建接入端对象，参数1：敏行地址，参数2：接入端token，在敏行后台中获取这个token，然后加到配置文件或写到代码里
         AppAccount account = AppAccount.loginByAccessToken(
-                "http://192.168.100.185",
-                "PjzdRZBT2PsijCaWxvrosK_FUz8rJ-Edg1wya8AqPIwLoD-3");
+                "http://dev5.dehuinet.com:8015",
+                "HUu6MXtooVHV_wXQ3ieaeRDT6VuQ0xj0BPY6gkP15G-SFDCS");
         //社区ID
-        int network_id = 2;
+        int network_id = 3;
         //ocuId和ocuSecret这俩参数在公众号平台的管理页面里找
-        String ocuId = "domain_2";
-        String ocuSecret = "4791f3da7d10861d1ec05e1f99870ded";
+        String ocuId = "domain_17";
+        String ocuSecret = "f8aac0ae2cb7e0cb0db779407f5d81a1";
         //创建附件对象
         ArticleNew.Attachment attachment = new ArticleNew.Attachment();
         attachment.setName("6a702689-9b60-4e2e-b4e9-ed89ccf1fb4c (1) 2_1513765766550.zip");
@@ -96,9 +96,9 @@ public class TestOcuAccount {
         //创建分类信息
         ArticleNew.Category category1 = new ArticleNew.Category();
         ArticleNew.Category category2 = new ArticleNew.Category();
-        category1.setId(1l);
+        category1.setId(473l);
 //        category2.setId(467l);
-        category1.setName("头条");
+        category1.setName("测试1111");
 //        category2.setName("分享测试");
 
         List<ArticleNew.Attachment> attList = new ArrayList<>();
