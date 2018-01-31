@@ -1,70 +1,19 @@
 
-import com.alibaba.fastjson.JSONObject;
 import com.minxing.client.app.AppAccount;
 import com.minxing.client.ocu.ArticleMessageNew;
 import com.minxing.client.ocu.ArticleNew;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestOcuAccount {
     public static void main(String[] args) {
-//		testSendOcuMessageToUsers();
-        while (true) {
-            testSendOcuMessage(true);
-            try {
-                Thread.sleep(1000 * 20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            testSendOcuMessage(false);
-            try {
-                Thread.sleep(1000 * 20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
 
-//		clientTest();
+            testSendOcuMessage(true);
+
     }
 
-/*    public static void testSendOcuMessageToUsers() {
-        for (int i = 0; i < 10; i++) {
-            // oa.sendMessageToUsersStr(new
-            // HtmlMessage("测试<a href='http://www.baidu.com'>百度</a>"),
-            // "dev001@dehui220.com.cn");
-            String title = "嘟嘟【待办】OA事务申请" + i;// 提醒标题
-            String content = "嘟嘟运营FATCA\\CRS需求上线申请（RL04994）贾晓梅【jiaxm06】温馨提示：不支持PC端点击!";// 提醒内容
-            ArticleMessage am = new ArticleMessage();
-            Article article = new Article(title, content, "", "http://oawxn.taikang.com/moa//m/s?s=EXKVes0tP93BoyetMuqX8mFzl+FLNFjZKd7WlNrBtokpqSMdB3RI9w==&quot", null);
-            am.addArticle(article);
-            AppAccount account = AppAccount.loginByAccessToken(
-                    "http://dev5.dehuinet.com:8015",
-                    "oCnV5eM3zfVwdqACyiQCa-P8_Kq_ZeoFBEA2vwWohRvZHEuP");
 
-//			String ocuId = "40dbd78cc10e32d7a36f2a518460f7f7";
-//			String ocuSecret = "88cb9f89de14332abc787486a4249b30";
-            String ocuId = "app_notification";
-            String ocuSecret = "4fa6a29b49a273240a0947c4a20178ed";
-
-            OcuMessageSendResult send_to = account.sendOcuMessageToUsers(
-                    new String[]{"69"}, am, ocuId, ocuSecret);
-            System.out.println("发送至:" + send_to.getCount() + "人");
-            System.out.println("发送消息Id:" + send_to.getMessageId());
-            System.out.println("发送用户Id列表:" + send_to.getUserIds());
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
 
     /**
      * 发公众号消息测试
@@ -74,12 +23,13 @@ public class TestOcuAccount {
 
         //创建接入端对象，参数1：敏行地址，参数2：接入端token，在敏行后台中获取这个token，然后加到配置文件或写到代码里
         AppAccount account = AppAccount.loginByAccessToken(
-                "http://dev5.dehuinet.com:8015",
-                "HUu6MXtooVHV_wXQ3ieaeRDT6VuQ0xj0BPY6gkP15G-SFDCS");
+                "http://dev5.dehuinet.com:8015",   //敏行地址
+                "HUu6MXtooVHV_wXQ3ieaeRDT6VuQ0xj0BPY6gkP15G-SFDCS");  //接入端access token
         //社区ID
         int network_id = 3;
         //ocuId和ocuSecret这俩参数在公众号平台的管理页面里找
         String ocuId = "domain_17";
+        //公众号Secret
         String ocuSecret = "f8aac0ae2cb7e0cb0db779407f5d81a1";
         //创建附件对象
         ArticleNew.Attachment attachment = new ArticleNew.Attachment();
@@ -127,32 +77,14 @@ public class TestOcuAccount {
                 .setOcuSecret(ocuSecret)
                 .setArticles(articles);
 
-//        articleMessage.setCreated_at("1516860000000");
-
+        //发布时间
+        articleMessage.setCreated_at("1516860000000");
+       //是否发送
         articleMessage.setNot_send(not_send);
-        System.out.println(JSONObject.toJSONString(articleMessage));
 
+        //发送消息
         account.sendOcuMessage(articleMessage, network_id);
     }
 
-    public static void clientTest() {
-		/*System.setProperty("http.proxySet", "true");
-		System.setProperty("http.proxyHost", "192.168.40.244");
-		System.setProperty("http.proxyPort", "8888");*/
-
-        String url = "https://www.baidu.com";
-        String params = "";
-        HttpClient client = new HttpClient();
-        PostMethod postMethod = new PostMethod(url);
-        RequestEntity entity = new InputStreamRequestEntity(new ByteArrayInputStream(params.getBytes()), "application/json");
-        postMethod.setRequestEntity(entity);
-        try {
-            client.executeMethod(postMethod);
-            String res = postMethod.getResponseBodyAsString();
-            System.out.println(res);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 }

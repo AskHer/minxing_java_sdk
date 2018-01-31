@@ -98,7 +98,8 @@ public class ArticleMessage implements Message {
                     sb.append("\"description\":\"").append(pt.getDescription())
                             .append("\"");
                 }
-
+                sb.append(",");
+                sb.append("\"enable_readed_status\":").append(pt.getEnable_readed_status());
             } else {
                 sb.append("\"title\":").append("\"").append(pt.getTitle())
                         .append("\"").append(",");
@@ -124,11 +125,15 @@ public class ArticleMessage implements Message {
                     sb.append("\"action_label\":").append("\"")
                             .append(pt.getAction_label()).append("\"");
                 }
+                sb.append(",");
+                sb.append("\"enable_readed_status\":").append(pt.getEnable_readed_status());
             }
 
             sb.append("}");
         }
         sb.append("]");
+        sb.append(",");
+        sb.append("\"not_send\":").append(not_send);
         sb.append("}");
         return sb.toString();
     }
