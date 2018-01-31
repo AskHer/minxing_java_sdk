@@ -16,6 +16,10 @@ public class Article {
     private Boolean enable_readed_status = false;
 
     public Article(String title, String description, String picUrl, String url, String app_url) {
+        this(title, description, picUrl, url, app_url, false);
+    }
+
+    public Article(String title, String description, String picUrl, String url, String app_url, Boolean enable_readed_status) {
         if (description != null)
             description = description.replaceAll("\\\\", "\\\\\\\\");
         if (title != null)
@@ -25,6 +29,7 @@ public class Article {
         this.picUrl = picUrl;
         this.url = url;
         this.app_url = app_url;
+        this.enable_readed_status = enable_readed_status;
     }
 
     public Article(Resource resource) {
