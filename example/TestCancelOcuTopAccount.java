@@ -40,7 +40,7 @@ public class TestCancelOcuTopAccount {
         //社区ID
         int network_id = 3;
         CancelOcuTop cancelOcuTop = new CancelOcuTop();
-        cancelOcuTop.getMsgIds().add(33941l);
+        cancelOcuTop.getMsgIds().add(33951l);
         account.cancelOcuTop(cancelOcuTop, network_id);
     }
 

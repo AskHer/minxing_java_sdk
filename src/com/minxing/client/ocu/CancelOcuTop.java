@@ -7,7 +7,7 @@ public class CancelOcuTop {
     private List<Long> msgIds;
 
     public CancelOcuTop() {
-        this.msgIds = new ArrayList<>();
+        this.msgIds = new ArrayList<Long>();
     }
 
     public List<Long> getMsgIds() {
