@@ -617,13 +617,13 @@ public class AppAccount extends Account {
     /**
      * 得到某个部门下的全部用户,包括子部门和兼职用户
      *
-     * @param dataId     部门引用的Id
+     * @param dataId             部门引用的Id
      * @param includeSubDevision 是否包含子部门
      * @param detail             是否包含更详细的信息
      * @return 用户的列表
      */
     public List<User> getAllUsersInDepartmentByDataId(String dataId,
-                                              boolean includeSubDevision, boolean detail) {
+                                                      boolean includeSubDevision, boolean detail) {
         ArrayList<User> users = new ArrayList<User>();
         try {
             JSONArray arrs = this
@@ -1819,6 +1819,31 @@ public class AppAccount extends Account {
     // ///////////////////////////////////////////////////////////////////////////////////////////////
     //
     //
+
+
+    /**
+     * 公众号取消置顶
+     *
+     * @param msgIds
+     */
+    public void cancelOcuTop(HashMap<String, List<Long>> msgIds, int network_id) {
+        String params = JSON.toJSONString(msgIds);
+        String url = _serverURL + "/mxpp/cancel_top_msg";
+        PostParameter[] headers = new PostParameter[]{
+                new PostParameter("Content-Type", "application/json"),
+//                new PostParameter("timestamp", timestamp),
+                new PostParameter("User-Agent", "MinxingMessenger public_platform"),
+                new PostParameter("mx_network_id", String.valueOf(network_id))
+        };
+        try {
+            String res = client.post(url, params, headers, true);
+            System.out.println(res);
+            log.info(res);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
 
     public void sendOcuMessage(ArticleMessageNew articleMessage, int network_id) {
