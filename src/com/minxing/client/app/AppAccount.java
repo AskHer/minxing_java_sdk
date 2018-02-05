@@ -1826,7 +1826,7 @@ public class AppAccount extends Account {
      *
      * @param msgIds
      */
-    public void cancelOcuTop(HashMap<String, List<Long>> msgIds, int network_id) {
+    public void cancelOcuTop(CancelOcuTop msgIds, int network_id) {
         String params = JSON.toJSONString(msgIds);
         String url = _serverURL + "/mxpp/cancel_top_msg";
         PostParameter[] headers = new PostParameter[]{

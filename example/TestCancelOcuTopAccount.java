@@ -1,16 +1,29 @@
 import com.minxing.client.app.AppAccount;
+import com.minxing.client.ocu.CancelOcuTop;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class TestCancelOcuTopAccount {
-
+    public static class Task implements Callable<Integer> {
+        @Override
+        public Integer call() throws Exception {
+            while (true) {
+                System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                testCancelOcuTop();
+                Thread.sleep(1000 * 20);
+            }
+        }
+    }
 
     public static void main(String[] args) throws IOException {
+        ExecutorService executor = Executors.newCachedThreadPool();
+        executor.submit(new TestCancelOcuTopAccount.Task());
 
-        testCancelOcuTop();
+
+        System.in.read();
     }
 
 
@@ -26,11 +39,9 @@ public class TestCancelOcuTopAccount {
                 "xZ10A9ooK-oKLeS5EnzfIrIK8kSBxDh_F8uuj_lkxWLJySNL");  //接入端access token
         //社区ID
         int network_id = 3;
-        List<Long> msgIds = new ArrayList<>();
-        msgIds.add(33941l);
-        HashMap<String, List<Long>> msg = new HashMap<>();
-        msg.put("msgIds", msgIds);
-        account.cancelOcuTop(msg, network_id);
+        CancelOcuTop cancelOcuTop = new CancelOcuTop();
+        cancelOcuTop.getMsgIds().add(33941l);
+        account.cancelOcuTop(cancelOcuTop, network_id);
     }
 
 }
