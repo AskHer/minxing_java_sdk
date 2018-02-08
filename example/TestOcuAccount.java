@@ -23,7 +23,7 @@ public class TestOcuAccount {
             while (true) {
                 System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + this.name);
                 testSendOcuMessage(true);
-                Thread.sleep(1000 * 20);
+//                Thread.sleep(1000 * 60);
             }
         }
     }
@@ -31,11 +31,11 @@ public class TestOcuAccount {
     public static void main(String[] args) throws IOException {
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(new Task("t1"));
-/*        executor.submit(new Task("t2"));
+        executor.submit(new Task("t2"));
         executor.submit(new Task("t3"));
         executor.submit(new Task("t4"));
         executor.submit(new Task("t5"));
-        executor.submit(new Task("t6"));*/
+        executor.submit(new Task("t6"));
 
         System.in.read();
 
@@ -48,16 +48,44 @@ public class TestOcuAccount {
     public static void testSendOcuMessage(boolean not_send) {
 
 
-        //创建接入端对象，参数1：敏行地址，参数2：接入端token，在敏行后台中获取这个token，然后加到配置文件或写到代码里
+/*        //创建接入端对象，参数1：敏行地址，参数2：接入端token，在敏行后台中获取这个token，然后加到配置文件或写到代码里
         AppAccount account = AppAccount.loginByAccessToken(
-                "http://dev5.dehuinet.com:8015",   //敏行地址
-                "xZ10A9ooK-oKLeS5EnzfIrIK8kSBxDh_F8uuj_lkxWLJySNL");  //接入端access token
+                "http://test.dehuinet.com:8030",   //敏行地址
+                "9EDVVkLuI3dXAiRU5XPtVREQxRg5g7E3pCxaH_BD9RygfTfJ");  //接入端access token
         //社区ID
         int network_id = 3;
         //ocuId和ocuSecret这俩参数在公众号平台的管理页面里找
         String ocuId = "domain_17";
         //公众号Secret
         String ocuSecret = "f8aac0ae2cb7e0cb0db779407f5d81a1";
+
+        //创建分类信息
+        ArticleNew.Category category1 = new ArticleNew.Category();
+        category1.setId(492l);
+        category1.setName("互联网科技");
+        ArticleNew.Category category2 = new ArticleNew.Category();
+        category2.setId(493l);
+        category2.setName("研发中心");*/
+
+        //创建接入端对象，参数1：敏行地址，参数2：接入端token，在敏行后台中获取这个token，然后加到配置文件或写到代码里
+        AppAccount account = AppAccount.loginByAccessToken(
+                "http://dev8.dehuinet.com:8018",   //敏行地址
+                "OWWlmXHXpdzAV0D9qRZFdfI1SYagknGKCyj2haDnMjmjAq-F");  //接入端access token
+        //社区ID
+        int network_id = 3;
+        //ocuId和ocuSecret这俩参数在公众号平台的管理页面里找
+        String ocuId = "domain_2";
+        //公众号Secret
+        String ocuSecret = "b4a7cad1afd313be5d2804218b09e243";
+
+        //创建分类信息
+        ArticleNew.Category category1 = new ArticleNew.Category();
+        category1.setId(1l);
+        category1.setName("国内");
+        ArticleNew.Category category2 = new ArticleNew.Category();
+        category2.setId(8l);
+        category2.setName("少儿不宜");
+
         //创建附件对象
         ArticleNew.Attachment attachment = new ArticleNew.Attachment();
         attachment.setName("6a702689-9b60-4e2e-b4e9-ed89ccf1fb4c (1) 2_1513765766550.zip");
@@ -70,15 +98,13 @@ public class TestOcuAccount {
         //附件类型
         attachment.setType("application/vnd.ms-excel");
 
-        //创建分类信息
-        ArticleNew.Category category1 = new ArticleNew.Category();
-        category1.setId(7l);
-        category1.setName("头条");
+
 
         List<ArticleNew.Attachment> attList = new ArrayList<>();
         attList.add(attachment);
         List<ArticleNew.Category> catList = new ArrayList<>();
         catList.add(category1);
+        catList.add(category2);
         ArticleNew article = new ArticleNew()
 //				文章标题
                 .setTitle("备降" + System.currentTimeMillis())
@@ -92,6 +118,7 @@ public class TestOcuAccount {
                 .setBody("<html>这是body<html>");
         article.setAttachments(attList);
         article.setCategories(catList);
+        article.setChooseCategory(true);
         ArrayList<ArticleNew> articles = new ArrayList<ArticleNew>();
         articles.add(article);
 //		可以添加多个文章
@@ -100,12 +127,13 @@ public class TestOcuAccount {
                 .setOcuSecret(ocuSecret)
                 .setArticles(articles);
 
+
         //发布时间
-//        articleMessage.setCreated_at("1516860000000");
+//        articleMessage.setCreated_at("1515326852000");
         //是否发送
 //        articleMessage.setNot_send(not_send);
-        articleMessage.setDisplay_top(true);
-        articleMessage.setDisplay_order(999);
+//        articleMessage.setDisplay_top(true);
+//        articleMessage.setDisplay_order(999);
 
         //发送消息
         account.sendOcuMessage(articleMessage, network_id);
