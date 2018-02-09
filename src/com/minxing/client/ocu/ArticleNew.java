@@ -1,6 +1,8 @@
 package com.minxing.client.ocu;
 
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.util.List;
 
 
@@ -16,8 +18,11 @@ public class ArticleNew {
     private String link;
     private boolean hasLink = false;
     private boolean show_home_picture = false;
+    @JSONField(name = "isAllowComment")
     private boolean isAllowComment = false;
+    @JSONField(name = "isAllowOutsiders")
     private boolean isAllowOutsiders = false;
+    @JSONField(name = "isChooseCategory")
     private boolean isChooseCategory = false;
     private boolean show_by_popup = false;
     private Boolean enable_readed_status = false;

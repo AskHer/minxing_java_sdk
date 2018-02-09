@@ -23,7 +23,7 @@ public class TestOcuAccount {
             while (true) {
                 System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + this.name);
                 testSendOcuMessage(true);
-//                Thread.sleep(1000 * 60);
+                Thread.sleep(1000 * 20);
             }
         }
     }
@@ -31,14 +31,14 @@ public class TestOcuAccount {
     public static void main(String[] args) throws IOException {
         ExecutorService executor = Executors.newCachedThreadPool();
         executor.submit(new Task("t1"));
-        executor.submit(new Task("t2"));
+/*        executor.submit(new Task("t2"));
         executor.submit(new Task("t3"));
         executor.submit(new Task("t4"));
         executor.submit(new Task("t5"));
-        executor.submit(new Task("t6"));
+        executor.submit(new Task("t6"));*/
 
         System.in.read();
-
+//        testSendOcuMessage(true);
     }
 
 
@@ -67,7 +67,7 @@ public class TestOcuAccount {
         category2.setId(493l);
         category2.setName("研发中心");*/
 
-        //创建接入端对象，参数1：敏行地址，参数2：接入端token，在敏行后台中获取这个token，然后加到配置文件或写到代码里
+/*        //创建接入端对象，参数1：敏行地址，参数2：接入端token，在敏行后台中获取这个token，然后加到配置文件或写到代码里
         AppAccount account = AppAccount.loginByAccessToken(
                 "http://dev8.dehuinet.com:8018",   //敏行地址
                 "OWWlmXHXpdzAV0D9qRZFdfI1SYagknGKCyj2haDnMjmjAq-F");  //接入端access token
@@ -84,7 +84,27 @@ public class TestOcuAccount {
         category1.setName("国内");
         ArticleNew.Category category2 = new ArticleNew.Category();
         category2.setId(8l);
-        category2.setName("少儿不宜");
+        category2.setName("少儿不宜");*/
+
+
+        //创建接入端对象，参数1：敏行地址，参数2：接入端token，在敏行后台中获取这个token，然后加到配置文件或写到代码里
+        AppAccount account = AppAccount.loginByAccessToken(
+                "http://192.168.100.185",   //敏行地址
+                "2d0z_YwXFCwZDJ_T9boP4vwPGrMkhZurG4SrpfuMjoGs4ots");  //接入端access token
+        //社区ID
+        int network_id = 7;
+        //ocuId和ocuSecret这俩参数在公众号平台的管理页面里找
+        String ocuId = "domain_3";
+        //公众号Secret
+        String ocuSecret = "7cbd23d27339d6583688e5e3e1d07f5d";
+
+        //创建分类信息
+        ArticleNew.Category category1 = new ArticleNew.Category();
+        category1.setId(28l);
+        category1.setName("娱乐");
+        ArticleNew.Category category2 = new ArticleNew.Category();
+        category2.setId(26l);
+        category2.setName("国内");
 
         //创建附件对象
         ArticleNew.Attachment attachment = new ArticleNew.Attachment();
@@ -103,8 +123,8 @@ public class TestOcuAccount {
         List<ArticleNew.Attachment> attList = new ArrayList<>();
         attList.add(attachment);
         List<ArticleNew.Category> catList = new ArrayList<>();
-        catList.add(category1);
-        catList.add(category2);
+//        catList.add(category1);
+//        catList.add(category2);
         ArticleNew article = new ArticleNew()
 //				文章标题
                 .setTitle("备降" + System.currentTimeMillis())
@@ -118,7 +138,8 @@ public class TestOcuAccount {
                 .setBody("<html>这是body<html>");
         article.setAttachments(attList);
         article.setCategories(catList);
-        article.setChooseCategory(true);
+//        article.setChooseCategory(true);
+        article.setAllowComment(true);
         ArrayList<ArticleNew> articles = new ArrayList<ArticleNew>();
         articles.add(article);
 //		可以添加多个文章

@@ -11,16 +11,16 @@ public class ArticleMessageNew {
     private String ocuSecret;
     private String timestamp = String.valueOf(System.currentTimeMillis() + 1000 * 60);
     private String created_at = String.valueOf(System.currentTimeMillis() + 1000 * 60);
-    private Boolean not_send = false;
+    private Integer send_type = 0;  //0-存素材并发；1-存素材不发送 ；2-不存库只发送
     private Boolean display_top = false;
     private Integer display_order = 0;
 
-    public Boolean getNot_send() {
-        return not_send;
+    public Integer getSend_type() {
+        return send_type;
     }
 
-    public ArticleMessageNew setNot_send(Boolean not_send) {
-        this.not_send = not_send;
+    public ArticleMessageNew setSend_type(Integer send_type) {
+        this.send_type = send_type;
         return this;
     }
 
