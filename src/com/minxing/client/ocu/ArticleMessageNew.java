@@ -9,8 +9,8 @@ public class ArticleMessageNew {
     private String type = "single";
     private boolean secret = false;
     private String ocuSecret;
-    private String timestamp = String.valueOf(System.currentTimeMillis() + 1000 * 60);
-    private String created_at = String.valueOf(System.currentTimeMillis() + 1000 * 60);
+    private String timestamp = String.valueOf(System.currentTimeMillis());
+    private String created_at = String.valueOf(System.currentTimeMillis());
     private Integer send_type = 0;  //0-存素材并发；1-存素材不发送 ；2-不存库只发送
     private Boolean display_top = false;
     private Integer display_order = 0;
