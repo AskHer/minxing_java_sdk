@@ -30,3 +30,8 @@ System.out.println(message);
 =
 增加新接口 kick2 - 将在线的人踢下线
 
+
+# 2018年2月27日
+```text
+1、sdk增加生日字段的更新功能
+```
