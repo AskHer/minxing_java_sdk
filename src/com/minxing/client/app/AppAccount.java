@@ -57,7 +57,7 @@ public class AppAccount extends Account {
     protected long _currentUserId = 0;
     protected String client_id;
     protected String secret;
-    private String user_agent = "MinxingMessenger/5.3.0 (JavaSDK)";
+    private String user_agent = "MinxingMessenger/6.0.0 (JavaSDK)";
 
     protected AppAccount(String serverURL, String token) {
         this._serverURL = serverURL;
@@ -206,7 +206,7 @@ public class AppAccount extends Account {
             headersList.add(as_user);
         }
 
-        String ua = "Minxing-SDK-5.3.0";
+        String ua = "Minxing-SDK-6.0.0";
         if (user_agent != null) {
             ua = user_agent;
         }
@@ -397,7 +397,7 @@ public class AppAccount extends Account {
 
         Map<String, String> params = new HashMap<String, String>();
         PostParameter[] pps = createParams(params);
-        String ua = "Minxing-SDK-5.3.0";
+        String ua = "Minxing-SDK-6.0.0";
         if (user_agent != null) {
             ua = user_agent;
         }
@@ -427,7 +427,7 @@ public class AppAccount extends Account {
                                        File f) {
         Map<String, String> params = new HashMap<String, String>();
         PostParameter[] pps = createParams(params);
-        String ua = "Minxing-SDK-5.3.0";
+        String ua = "Minxing-SDK-6.0.0";
         if (user_agent != null) {
             ua = user_agent;
         }
@@ -458,7 +458,7 @@ public class AppAccount extends Account {
 
         Map<String, String> params = new HashMap<String, String>();
         PostParameter[] pps = createParams(params);
-        String ua = "Minxing-SDK-5.3.0";
+        String ua = "Minxing-SDK-6.0.0";
         if (user_agent != null) {
             ua = user_agent;
         }
