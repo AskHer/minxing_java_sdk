@@ -614,7 +614,7 @@ public class AppAccount extends Account {
                 u.setLoginName(o.getString("login_name"));
                 u.setHidden(o.getBoolean("hidden") ? "true" : "false");
                 u.setSuspended(o.getBoolean("suspended"));
-
+                u.setBirthday(o.getString("birthday"));
 
                 u.setCellvoice1(o.getString("cell_phone"));
                 u.setCellvoice2(o.getString("cellvoice2"));
@@ -663,7 +663,7 @@ public class AppAccount extends Account {
                 u.setLoginName(o.getString("login_name"));
                 u.setHidden(o.getBoolean("hidden") ? "true" : "false");
                 u.setSuspended(o.getBoolean("suspended"));
-
+                u.setBirthday(o.getString("birthday"));
 
                 u.setCellvoice1(o.getString("cell_phone"));
                 u.setCellvoice2(o.getString("cellvoice2"));
@@ -3363,7 +3363,7 @@ public class AppAccount extends Account {
                     User user = new User();
                     user.setId(o.getLong("id"));
                     user.setLoginName(o.getString("login_name"));
-
+                    user.setBirthday(o.getString("birthday"));
                     user.setEmail(o.getString("email"));
                     user.setName(o.getString("name"));
                     user.setTitle(o.getString("title"));
