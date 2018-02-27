@@ -66,7 +66,9 @@ public class User extends Organization {
     }
 
     public void setBirthday(String birthday) {
-        this.birthday = new SimpleDateFormat("yyyy-MM-dd").format(new Date(birthday));
+        if (null != birthday) {
+            this.birthday = new SimpleDateFormat("yyyy-MM-dd").format(new Date(birthday));
+        }
     }
 
     public String getNetworkName() {
