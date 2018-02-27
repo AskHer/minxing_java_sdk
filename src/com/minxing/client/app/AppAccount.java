@@ -36,6 +36,18 @@ import java.util.logging.Logger;
 
 import static com.sun.org.apache.bcel.internal.classfile.Utility.encode;
 
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.util.ParameterParser;
+import org.apache.commons.httpclient.util.URIUtil;
+
+import java.io.File;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.security.MessageDigest;
+import java.util.*;
 
 public class AppAccount extends Account {
 
@@ -45,7 +57,7 @@ public class AppAccount extends Account {
     protected long _currentUserId = 0;
     protected String client_id;
     protected String secret;
-    private String user_agent = null;
+    private String user_agent = "MinxingMessenger/5.3.0 (JavaSDK)";
 
     protected AppAccount(String serverURL, String token) {
         this._serverURL = serverURL;
@@ -89,13 +101,17 @@ public class AppAccount extends Account {
             if (return_rsp.getStatusCode() == 200) {
 
                 JSONObject o = return_rsp.asJSONObject();
-                try {
-                    _token = o.getString("access_token");
-                    client.setToken(this._token);
-                    client.setTokenType("Bearer");
+                if (o.getString("redirect_url") == null || o.getString("redirect_url").equals("")) {
+                    try {
+                        _token = o.getString("access_token");
+                        client.setToken(this._token);
+                        client.setTokenType("Bearer");
 
-                } catch (JSONException e) {
-                    throw new MxException("解析返回值出错", e);
+                    } catch (JSONException e) {
+                        throw new MxException("解析返回值出错", e);
+                    }
+                } else {
+                    throw new MxException("需要二次认证才能登录系统");
                 }
             } else {
                 throw new MxException("HTTP " + return_rsp.getStatusCode()
@@ -227,6 +243,15 @@ public class AppAccount extends Account {
         }
 
         return _url;
+    }
+
+    /**
+     * get current access token. if null, app account not signin.
+     *
+     * @return
+     */
+    public String getCurrentToken() {
+        return _token;
     }
 
     // ////////////////////////////////////////////////////////////////////
@@ -691,7 +716,7 @@ public class AppAccount extends Account {
                 user = new User();
                 user.setId(o.getLong("id"));
                 user.setLoginName(o.getString("login_name"));
-
+                user.setBirthday(o.getString("birthday"));
                 user.setEmail(o.getString("email"));
                 user.setName(o.getString("name"));
                 user.setTitle(o.getString("title"));
@@ -700,6 +725,16 @@ public class AppAccount extends Account {
                 user.setWorkvoice(o.getString("workvoice"));
                 user.setEmpCode(o.getString("emp_code"));
                 user.setSuspended(o.getBoolean("suspended"));
+                user.setExt1(o.getString("ext1"));
+                user.setExt2(o.getString("ext2"));
+                user.setExt3(o.getString("ext3"));
+                user.setExt4(o.getString("ext4"));
+                user.setExt5(o.getString("ext5"));
+                user.setExt6(o.getString("ext6"));
+                user.setExt7(o.getString("ext7"));
+                user.setExt8(o.getString("ext8"));
+                user.setExt9(o.getString("ext9"));
+                user.setExt10(o.getString("ext10"));
 
                 JSONArray depts = o.getJSONArray("departs");
                 if (depts != null && depts.length() > 0) {
@@ -1035,7 +1070,7 @@ public class AppAccount extends Account {
                     user = new User();
                     user.setId(u.getLong("id"));
                     user.setLoginName(u.getString("login_name"));
-
+                    user.setBirthday(u.getString("birthday"));
                     user.setEmail(u.getString("email"));
                     user.setName(u.getString("name"));
                     user.setTitle(u.getString("login_name"));
@@ -1097,7 +1132,7 @@ public class AppAccount extends Account {
                     user = new User();
                     user.setId(u.getLong("id"));
                     user.setLoginName(u.getString("login_name"));
-
+                    user.setBirthday(u.getString("birthday"));
                     user.setEmail(u.getString("email"));
                     user.setName(u.getString("name"));
                     user.setTitle(u.getString("login_name"));
@@ -1153,7 +1188,7 @@ public class AppAccount extends Account {
                     user = new User();
                     user.setId(u.getLong("id"));
                     user.setLoginName(u.getString("login_name"));
-
+                    user.setBirthday(u.getString("birthday"));
                     user.setEmail(u.getString("email"));
                     user.setName(u.getString("name"));
                     user.setTitle(u.getString("login_name"));
@@ -1264,7 +1299,7 @@ public class AppAccount extends Account {
                     user = new User();
                     user.setId(u.getLong("id"));
                     user.setLoginName(u.getString("login_name"));
-
+                    user.setBirthday(u.getString("birthday"));
                     user.setEmail(u.getString("email"));
                     user.setName(u.getString("name"));
                     user.setTitle(u.getString("login_name"));
@@ -2711,7 +2746,7 @@ public class AppAccount extends Account {
 
             user.setEmpCode(o.getString("emp_code"));
             user.setNetworkId(o.getLong("network_id"));
-
+            user.setBirthday(o.getString("birthday"));
             JSONArray depts = o.getJSONArray("departs");
             Department[] allDept = new Department[depts.length()];
             for (int i = 0, n = depts.length(); i < n; i++) {
@@ -2741,26 +2776,36 @@ public class AppAccount extends Account {
         user.setTitle(o.getString("login_name"));
         user.setCellvoice1(o.getString("cell_phone"));
         user.setCellvoice2(o.getString("preferred_mobile"));
+        user.setBirthday(o.getString("birthday"));
 
         user.setEmpCode(o.getString("emp_code"));
         user.setNetworkId(o.getLong("network_id"));
-
+        user.setExt1(o.getString("ext1"));
+        user.setExt2(o.getString("ext2"));
+        user.setExt3(o.getString("ext3"));
+        user.setExt4(o.getString("ext4"));
+        user.setExt5(o.getString("ext5"));
+        user.setExt6(o.getString("ext6"));
+        user.setExt7(o.getString("ext7"));
+        user.setExt8(o.getString("ext8"));
+        user.setExt9(o.getString("ext9"));
+        user.setExt10(o.getString("ext10"));
         JSONArray depts = o.getJSONArray("departs");
         Department[] allDept = new Department[depts.length()];
         for (int i = 0, n = depts.length(); i < n; i++) {
             JSONObject dobj = depts.getJSONObject(i);
 
-            Department udept = new Department();
-            udept.setCode(dobj.getString("dept_ref_id"));
-            udept.setShortName(dobj.getString("dept_short_name"));
-            udept.setFull_name(dobj.getString("dept_full_name"));
-            udept.setPath(dobj.getString("dept_code"));
-            allDept[i] = udept;
-        }
-        user.setAllDepartments(allDept);
+			Department udept = new Department();
+			udept.setCode(dobj.getString("dept_ref_id"));
+			udept.setShortName(dobj.getString("dept_short_name"));
+			udept.setFull_name(dobj.getString("dept_full_name"));
+			udept.setPath(dobj.getString("dept_code"));
+			allDept[i] = udept;
+		}
+		user.setAllDepartments(allDept);
         user.setAvatarUrl(o.getString("avatar_url"));
-        return user;
-    }
+		return user;
+	}
 
     /**
      * 校验一下URL上的签名信息，确认这个请求来自敏行的服务器
@@ -3118,6 +3163,7 @@ public class AppAccount extends Account {
                     user = new User();
                     user.setId(u.getLong("id"));
                     user.setLoginName(u.getString("login_name"));
+                    user.setBirthday(u.getString("birthday"));
 
                     user.setEmail(u.getString("email"));
                     user.setName(u.getString("name"));
@@ -3210,7 +3256,28 @@ public class AppAccount extends Account {
     public boolean kick(String login_name) throws ApiErrorException {
         try {
             JSONObject ret = delete("/api/v1/oauth/kick/" + login_name);
-            if ("200".equals(ret.get("code"))) {
+            if ("200".equals(ret.get("code").toString())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            throw new ApiErrorException("Error return", 500, e);
+        }
+    }
+
+    /**
+     * kick is a new api
+     *
+     * @param login_name
+     * @return
+     * @throws ApiErrorException
+     */
+    public boolean kick2(String login_name) throws ApiErrorException {
+        try {
+            JSONObject ret = delete("/api/v1/oauth/kick?login_name=" + login_name);
+            if ("200".equals(ret.get("code").toString())) {
                 return true;
             } else {
                 return false;

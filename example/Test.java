@@ -9,7 +9,7 @@ import com.minxing.client.organization.User;
 public class Test {
 	
 	/*public static void main(String[] args) throws Exception{
-		
+
 		User u = new User();
 		AppAccount account = AppAccount.loginByAccessToken("http://192.168.100.245","XrhAoAjWyWktkeLvVqAi8lf9z444mYgRxImwOx8K8gphnBbm");
 		u.setLoginName("njhh1");

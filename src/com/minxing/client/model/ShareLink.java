@@ -66,8 +66,7 @@ public class ShareLink {
 		share_link.put("share_link", link);
 
 		try {
-//			String story = new ObjectMapper().writeValueAsString(share_link);
-			String story = JSON.toJSONString(share_link);
+			String story = new ObjectMapper().writeValueAsString(share_link);
 			return story;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

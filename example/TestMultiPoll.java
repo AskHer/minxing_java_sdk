@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.minxing.client.app.AppAccount;
 import com.minxing.client.ocu.UserInfo;
+import com.minxing.client.organization.User;
 
 public class TestMultiPoll {
 	// 线程数
@@ -22,12 +23,15 @@ public class TestMultiPoll {
 
 	// 服务器地址
 	static String http = "http://test.dehuinet.com:8030/";
+//	static String http = "http://localhost:3000/";
 
 	// access_token
 	static String token = "14tcrJ_1ZOyRnXlvXROzP8CTWyemge0TU5dj2fk35XeQzPcf";
-	
+//	static String token = "rPlgq_3-tVGWlRD1CHmENlbHhkpUTOosK9WvJLFaGy1cmYf3";
+
 	//admin login_name
 	static String admin_login_name = "admin@dehuinet";
+//	static String admin_login_name = "admin@local";
 
 	public static void main(String[] ss) {
 
@@ -41,6 +45,7 @@ public class TestMultiPoll {
 
 		acc.setFromUserLoginName(admin_login_name);
 		// 获取指定部门的人员
+//		List<User> users = acc.getAllUsersInDepartment(dept_code, true, false, true);
 		List<UserInfo> users = acc.getAllUsersInDepartment(dept_code, true);
 		System.out.print(users.size());
 		// Map<String, String> params = new HashMap<String, String>();
