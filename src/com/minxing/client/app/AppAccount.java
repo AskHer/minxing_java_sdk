@@ -709,7 +709,7 @@ public class AppAccount extends Account {
                 user = new User();
                 user.setId(o.getLong("id"));
                 user.setLoginName(o.getString("login_name"));
-
+                user.setBirthday(o.getString("birthday"));
                 user.setEmail(o.getString("email"));
                 user.setName(o.getString("name"));
                 user.setTitle(o.getString("title"));
@@ -1028,7 +1028,7 @@ public class AppAccount extends Account {
                     user = new User();
                     user.setId(u.getLong("id"));
                     user.setLoginName(u.getString("login_name"));
-
+                    user.setBirthday(u.getString("birthday"));
                     user.setEmail(u.getString("email"));
                     user.setName(u.getString("name"));
                     user.setTitle(u.getString("login_name"));
@@ -1090,7 +1090,7 @@ public class AppAccount extends Account {
                     user = new User();
                     user.setId(u.getLong("id"));
                     user.setLoginName(u.getString("login_name"));
-
+                    user.setBirthday(u.getString("birthday"));
                     user.setEmail(u.getString("email"));
                     user.setName(u.getString("name"));
                     user.setTitle(u.getString("login_name"));
@@ -1146,7 +1146,7 @@ public class AppAccount extends Account {
                     user = new User();
                     user.setId(u.getLong("id"));
                     user.setLoginName(u.getString("login_name"));
-
+                    user.setBirthday(u.getString("birthday"));
                     user.setEmail(u.getString("email"));
                     user.setName(u.getString("name"));
                     user.setTitle(u.getString("login_name"));
@@ -1257,7 +1257,7 @@ public class AppAccount extends Account {
                     user = new User();
                     user.setId(u.getLong("id"));
                     user.setLoginName(u.getString("login_name"));
-
+                    user.setBirthday(u.getString("birthday"));
                     user.setEmail(u.getString("email"));
                     user.setName(u.getString("name"));
                     user.setTitle(u.getString("login_name"));
@@ -2581,6 +2581,7 @@ public class AppAccount extends Account {
 
             user.setEmpCode(o.getString("emp_code"));
             user.setNetworkId(o.getLong("network_id"));
+            user.setBirthday(o.getString("birthday"));
 
             JSONArray depts = o.getJSONArray("departs");
             Department[] allDept = new Department[depts.length()];
@@ -2611,6 +2612,7 @@ public class AppAccount extends Account {
         user.setTitle(o.getString("login_name"));
         user.setCellvoice1(o.getString("cell_phone"));
         user.setCellvoice2(o.getString("preferred_mobile"));
+        user.setBirthday(o.getString("birthday"));
 
         user.setEmpCode(o.getString("emp_code"));
         user.setNetworkId(o.getLong("network_id"));
@@ -2995,6 +2997,7 @@ public class AppAccount extends Account {
                     user = new User();
                     user.setId(u.getLong("id"));
                     user.setLoginName(u.getString("login_name"));
+                    user.setBirthday(u.getString("birthday"));
 
                     user.setEmail(u.getString("email"));
                     user.setName(u.getString("name"));
