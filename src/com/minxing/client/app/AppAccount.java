@@ -1822,6 +1822,7 @@ public class AppAccount extends Account {
         params.put("direct_to_user_ids", direct_to_user_ids);
         params.put("ocu_id", ocuId);
         params.put("ocu_secret", ocuSecret);
+        params.put("sso_key","user_id");
         Map<String, String> headers = new HashMap<String, String>();
 
         JSONObject result_json = this.post(
