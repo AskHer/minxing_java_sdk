@@ -1822,7 +1822,97 @@ public class AppAccount extends Account {
         params.put("direct_to_user_ids", direct_to_user_ids);
         params.put("ocu_id", ocuId);
         params.put("ocu_secret", ocuSecret);
-        params.put("sso_key","user_id");
+        Map<String, String> headers = new HashMap<String, String>();
+
+        JSONObject result_json = this.post(
+                "/api/v1/conversations/ocu_messages", params, headers)
+                .asJSONObject();
+
+        try {
+            int count = result_json.getInt("count");
+            Long messageId = result_json.getLong("message_id");
+            JSONArray user_ids_json = result_json.getJSONArray("to_user_ids");
+
+            Long[] user_ids = null;
+            if (user_ids_json != null) {
+                user_ids = new Long[user_ids_json.length()];
+
+                for (int i = 0; i < user_ids.length; i++) {
+                    user_ids[i] = user_ids_json.getLong(i);
+                }
+            }
+
+            OcuMessageSendResult result = new OcuMessageSendResult(count,
+                    messageId, user_ids);
+            return result;
+        } catch (JSONException e) {
+            throw new MxException("解析Json出错.", e);
+        }
+
+    }
+
+    /**
+     * 发送公众号消息
+     *
+     * @param toUsers 用户的login_name数组，如果传null,则是给订阅的所有人发消息
+     * @param message   消息对象数据，可以是复杂文本，也可以是简单对象
+     * @param ocuId     公众号的id
+     * @param ocuSecret 公众号的秘钥，校验是否可以发送
+     * @param sso_key   toUsers的类型,可以选择的值为login_name,email,user_id
+     * @return
+     */
+    public OcuMessageSendResult sendOcuMessageToUsers(String[] toUsers,
+                                                      Message message, String ocuId, String ocuSecret, SsoKey ssoKey) {
+        return sendOcuMessageToUsers(null, toUsers, message, ocuId, ocuSecret, ssoKey);
+
+    }
+
+    /**
+     * 发送公众号消息,指定社区id
+     *
+     * @param toUsers    用户的login_name数组，如果传null,则是给订阅的所有人发消息
+     * @param network_id 用户的社区
+     * @param message    消息对象数据，可以是复杂文本，也可以是简单对象
+     * @param ocuId      公众号的id
+     * @param ocuSecret  公众号的秘钥，校验是否可以发送
+     * @param sso_key    toUsers的类型,可以选择的值为login_name,email,user_id
+     * @return
+     */
+    public OcuMessageSendResult sendOcuMessageToUsers(String network_id,
+                                                      String[] toUsers, Message message, String ocuId, String ocuSecret, SsoKey sso_key) {
+        String direct_to_user_ids = "";
+
+        if (message instanceof ArticleMessage) {
+            Resource res = ((ArticleMessage) message).getMessageResource();
+            if (res != null && res.getId() == null) {
+                Long res_id = createOcuResource(res.getTitle(),
+                        res.getSubTitle(), res.getAuthor(),
+                        res.getCreateTime(), res.getPicUrl(), res.getContent(),
+                        ocuId, ocuSecret);
+                res.setId(res_id);
+            }
+        }
+
+        Map<String, String> params = new HashMap<String, String>();
+
+        params.put("body", message.getBody());
+        params.put("content_type", String.valueOf(message.messageType()));
+
+        if (toUsers != null && toUsers.length > 0) {
+            StringBuffer sb = new StringBuffer(toUsers[0]);
+            for (int i = 1; i < toUsers.length; i++) {
+                sb.append(",").append(toUsers[i]);
+
+            }
+            direct_to_user_ids = sb.toString();
+        }
+
+        if (network_id != null)
+            params.put("network_id", network_id);
+        params.put("direct_to_user_ids", direct_to_user_ids);
+        params.put("ocu_id", ocuId);
+        params.put("ocu_secret", ocuSecret);
+        params.put("sso_key", sso_key.getSso_key());
         Map<String, String> headers = new HashMap<String, String>();
 
         JSONObject result_json = this.post(
