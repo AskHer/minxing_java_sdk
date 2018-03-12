@@ -1764,6 +1764,119 @@ public class AppAccount extends Account {
     }
 
     /**
+     * 发送公众号消息给全部订阅用户
+     *
+     * @param message   消息对象数据，可以是复杂文本，也可以是简单对象
+     * @param ocuId     公众号的id
+     * @param ocuSecret 公众号的秘钥，校验是否可以发送
+     * @return
+     */
+    public OcuMessageSendResult sendOcuMessageToAllSubscriber(String network_id, Message message, String ocuId, String ocuSecret) {
+        return sendOcuMessageToUsers(network_id, new String[]{}, message, ocuId, ocuSecret);
+    }
+
+    /**
+     * 发送公众号消息给全部订阅用户
+     *
+     * @param message   消息对象数据，可以是复杂文本，也可以是简单对象
+     * @param ocuId     公众号的id
+     * @param ocuSecret 公众号的秘钥，校验是否可以发送
+     * @return
+     */
+    public OcuMessageSendResult sendOcuMessageToAllSubscriber(Message message, String ocuId, String ocuSecret) {
+        return sendOcuMessageToUsers(null, new String[]{}, message, ocuId, ocuSecret);
+    }
+
+    /**
+     * 发送公众号消息,指定社区id,传递的用户数组不能为空,否则会抛出异常
+     *
+     * @param toUserIds  用户的login_name数组，如果传null,则是给订阅的所有人发消息
+     * @param network_id 用户的社区
+     * @param message    消息对象数据，可以是复杂文本，也可以是简单对象
+     * @param ocuId      公众号的id
+     * @param ocuSecret  公众号的秘钥，校验是否可以发送
+     * @return
+     */
+    public OcuMessageSendResult sendOcuMessageToAssignUsers(String[] toUserIds, Message message, String ocuId, String ocuSecret) {
+        return sendOcuMessageToAssignUsers(null, toUserIds, message, ocuId, ocuSecret);
+    }
+
+        /**
+         * 发送公众号消息,指定社区id,传递的用户数组不能为空,否则会抛出异常
+         *
+         * @param toUserIds  用户的login_name数组，如果传null,则是给订阅的所有人发消息
+         * @param network_id 用户的社区
+         * @param message    消息对象数据，可以是复杂文本，也可以是简单对象
+         * @param ocuId      公众号的id
+         * @param ocuSecret  公众号的秘钥，校验是否可以发送
+         * @return
+         */
+    public OcuMessageSendResult sendOcuMessageToAssignUsers(String network_id, String[] toUserIds, Message message, String ocuId, String ocuSecret) {
+        String direct_to_user_ids = "";
+
+        if (message instanceof ArticleMessage) {
+            Resource res = ((ArticleMessage) message).getMessageResource();
+            if (res != null && res.getId() == null) {
+                Long res_id = createOcuResource(res.getTitle(),
+                        res.getSubTitle(), res.getAuthor(),
+                        res.getCreateTime(), res.getPicUrl(), res.getContent(),
+                        ocuId, ocuSecret);
+                res.setId(res_id);
+            }
+        }
+
+        Map<String, String> params = new HashMap<String, String>();
+
+        params.put("body", message.getBody());
+        params.put("content_type", String.valueOf(message.messageType()));
+
+        if (toUserIds != null && toUserIds.length > 0) {
+            StringBuffer sb = new StringBuffer(toUserIds[0]);
+            for (int i = 1; i < toUserIds.length; i++) {
+                sb.append(",").append(toUserIds[i]);
+
+            }
+            direct_to_user_ids = sb.toString();
+        }
+        if (direct_to_user_ids == null || direct_to_user_ids.equals("")) {
+            throw new MxException("必须指定要发送的用户");
+        }
+
+        if (network_id != null)
+            params.put("network_id", network_id);
+        params.put("direct_to_user_ids", direct_to_user_ids);
+        params.put("ocu_id", ocuId);
+        params.put("ocu_secret", ocuSecret);
+        Map<String, String> headers = new HashMap<String, String>();
+
+        JSONObject result_json = this.post(
+                "/api/v1/conversations/ocu_messages", params, headers)
+                .asJSONObject();
+
+        try {
+            int count = result_json.getInt("count");
+            Long messageId = result_json.getLong("message_id");
+            JSONArray user_ids_json = result_json.getJSONArray("to_user_ids");
+
+            Long[] user_ids = null;
+            if (user_ids_json != null) {
+                user_ids = new Long[user_ids_json.length()];
+
+                for (int i = 0; i < user_ids.length; i++) {
+                    user_ids[i] = user_ids_json.getLong(i);
+                }
+            }
+
+            OcuMessageSendResult result = new OcuMessageSendResult(count,
+                    messageId, user_ids);
+            return result;
+        } catch (JSONException e) {
+            throw new MxException("解析Json出错.", e);
+        }
+
+    }
+
+    /**
      * 发送公众号消息
      *
      * @param toUserIds 用户的login_name数组，如果传null,则是给订阅的所有人发消息
