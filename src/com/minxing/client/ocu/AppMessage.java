@@ -2,48 +2,48 @@ package com.minxing.client.ocu;
 
 public class AppMessage implements Message {
 
-	private String content;
-	private int badge;
-	private String custom;
-	private boolean enable_badge_in_app_store = false;
+    private String content;
+    private int badge;
+    private String custom;
+    private boolean enable_badge_in_app_store = false;
 
-	public AppMessage(int badge, String content, String custom,
-			boolean disable_badge_in_app_store) {
-		this.content = content;
-		this.badge = badge;
-		this.enable_badge_in_app_store = disable_badge_in_app_store;
-		this.custom = custom;
-	}
+    public AppMessage(int badge, String content, String custom,
+                      boolean disable_badge_in_app_store) {
+        this.content = content;
+        this.badge = badge;
+        this.enable_badge_in_app_store = disable_badge_in_app_store;
+        this.custom = custom;
+    }
 
-	public AppMessage(int badge, String content, String custom) {
-		this.content = content;
-		this.badge = badge;
-		this.custom = custom;
-	}
+    public AppMessage(int badge, String content, String custom) {
+        this.content = content;
+        this.badge = badge;
+        this.custom = custom;
+    }
 
-	public String getBody() {
+    public String getBody() {
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("{");
-		sb.append("\"badge\":").append(badge).append(",");
-		
-		if (enable_badge_in_app_store == true) {
-			sb.append("\"enable_badge_in_app_store\":").append(enable_badge_in_app_store).append(",");
-		}
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"badge\":").append(badge).append(",");
 
-		sb.append("\"content\":\"").append(content).append("\"");
+        if (enable_badge_in_app_store == true) {
+            sb.append("\"enable_badge_in_app_store\":").append(enable_badge_in_app_store).append(",");
+        }
 
-		if (custom != null && custom.length() > 0) {
-			sb.append(",");
-			sb.append("\"custom\":").append(custom);
-		}
-		sb.append("}");
-		return sb.toString();
-	}
+        sb.append("\"content\":\"").append(content).append("\"");
 
-	@Override
-	public int messageType() {
+        if (custom != null && custom.length() > 0) {
+            sb.append(",");
+            sb.append("\"custom\":\"").append(custom).append("\"");
+        }
+        sb.append("}");
+        return sb.toString();
+    }
 
-		return APP_MESSAGE;
-	}
+    @Override
+    public int messageType() {
+
+        return APP_MESSAGE;
+    }
 }
