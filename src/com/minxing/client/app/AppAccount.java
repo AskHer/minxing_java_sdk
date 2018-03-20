@@ -2293,6 +2293,44 @@ public class AppAccount extends Account {
     }
 
     /**
+     * 向移动设备推送自定义的消息
+     *
+     * @param user_ids     目标用户的id，文本格式，使用','分割，例如'1,2,3'
+     * @param message      发送的消息，文本格式，可以自定内容的编码，系统会将内容发送到接受的移动设备上。
+     * @param alert        通知栏消息,文本格式,例如'您收到一条新消息'
+     * @param alert_extend iOS apn推送的隐藏字段，放在custom字段,
+     *                     json的字段,例如:"{'a': '1920-10-11 11:20'}"。
+     * @param sound        IOS apn推送声音
+     * @return 实际发送了多少个用户，user_ids中有无效的用户将被剔除。
+     * @throws ApiErrorException 当调用数据出错时抛出。
+     */
+    public int pushMessage(String user_ids, String message, String alert,
+                           String alert_extend, String sound) throws ApiErrorException{
+        try {
+
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("to_user_ids", user_ids);
+            params.put("message", message);
+            params.put("alert", alert);
+            if (alert_extend != null)
+                params.put("alert_extend", alert_extend);
+            if (sound != null)
+                params.put("sound", sound);
+
+            Map<String, String> headers = new HashMap<String, String>();
+
+            JSONObject json_result = post("/api/v1/push/notifications", params, headers)
+                    .asJSONObject();
+            int send_to = json_result.getInt("send_count");
+
+            return send_to;
+
+        } catch (JSONException e) {
+            throw new ApiErrorException("返回JSON错误", 500, e);
+        }
+    }
+
+    /**
      * @param loginName
      * @param message
      * @return 产生的消息id。可以用来追踪消息
