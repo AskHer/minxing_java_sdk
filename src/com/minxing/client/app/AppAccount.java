@@ -1790,7 +1790,7 @@ public class AppAccount extends Account {
     /**
      * 发送公众号消息,指定社区id,传递的用户数组不能为空,否则会抛出异常
      *
-     * @param toUserIds  用户的login_name数组，如果传null,则是给订阅的所有人发消息
+     * @param toUserIds  用户的login_name数组，如果传null,则会抛出异常
      * @param network_id 用户的社区
      * @param message    消息对象数据，可以是复杂文本，也可以是简单对象
      * @param ocuId      公众号的id
@@ -1801,16 +1801,16 @@ public class AppAccount extends Account {
         return sendOcuMessageToAssignUsers(null, toUserIds, message, ocuId, ocuSecret);
     }
 
-        /**
-         * 发送公众号消息,指定社区id,传递的用户数组不能为空,否则会抛出异常
-         *
-         * @param toUserIds  用户的login_name数组，如果传null,则是给订阅的所有人发消息
-         * @param network_id 用户的社区
-         * @param message    消息对象数据，可以是复杂文本，也可以是简单对象
-         * @param ocuId      公众号的id
-         * @param ocuSecret  公众号的秘钥，校验是否可以发送
-         * @return
-         */
+    /**
+     * 发送公众号消息,指定社区id,传递的用户数组不能为空,否则会抛出异常
+     *
+     * @param toUserIds  用户的login_name数组，如果传null,则会抛出异常
+     * @param network_id 用户的社区
+     * @param message    消息对象数据，可以是复杂文本，也可以是简单对象
+     * @param ocuId      公众号的id
+     * @param ocuSecret  公众号的秘钥，校验是否可以发送
+     * @return
+     */
     public OcuMessageSendResult sendOcuMessageToAssignUsers(String network_id, String[] toUserIds, Message message, String ocuId, String ocuSecret) {
         String direct_to_user_ids = "";
 
