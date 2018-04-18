@@ -3717,4 +3717,102 @@ public class AppAccount extends Account {
     }
 
 
+
+    /**
+     * 从外部社区添加人员
+     *
+     * @param network_ids    登陆人所在社区ID，默认为空
+     * @param dept_ids       登陆人所在部门ID，默认为空
+     * @param user_ids       需要导入的用户ID，默认为空
+     * @param dept_id        需要导入用户的部门ID, 不传就是未分配
+     * @param recursive      导入包括子部门的用户，默认值为false
+     * @param create_dept    按照原有组织结构建立部门,默认值为false
+     * @return 返回执行情况的信息
+     * @throws MxException 当调用数据出错时抛出。
+     */
+    public JSONObject fromOutsideCommunityAddPersonal(String[] network_ids,String[] dept_ids,String[] user_ids,
+                                                  int dept_id,boolean recursive,boolean create_dept){
+        try {
+
+            HashMap<String, String> params = new HashMap<String, String>();
+
+            if (network_ids != null && network_ids.length > 0) {
+                StringBuilder sb = new StringBuilder();
+                for (String str : network_ids) {
+                    sb.append(str).append(",");
+                }
+                params.put("network_ids", sb.toString());
+            }
+
+            if (dept_ids != null && dept_ids.length > 0) {
+                StringBuilder sb = new StringBuilder();
+                for (String str : dept_ids) {
+                    sb.append(str).append(",");
+                }
+                params.put("dept_ids", sb.toString());
+            }
+
+            if (user_ids != null && user_ids.length > 0) {
+                StringBuilder sb = new StringBuilder();
+                for (String str : user_ids) {
+                    sb.append(str).append(",");
+                }
+                params.put("user_ids", sb.toString());
+            }
+
+            params.put("dept_id", String.valueOf(dept_id));
+            params.put("recursive", String.valueOf(recursive));
+            params.put("create_dept", String.valueOf(create_dept));
+
+            Map<String, String> headers = new HashMap<String, String>();
+
+            JSONObject json_result = post(
+                    "/api/v1/departments/import/user/external_network", params, headers).asJSONObject();
+//            JSONArray created = json_result.getJSONArray("created");
+//
+//            JSONArray duplicated = json_result.getJSONArray("duplicated");
+//
+//            JSONArray failed = json_result.getJSONArray("failed");
+
+//            String message = "成功"+created.length()+"条,重复"+duplicated.length()+"条,失败"+failed.length()+"条";
+            return json_result;
+
+        }catch (Exception e) {
+                throw new MxException("解析Json出错.", e);
+            }
+    }
+
+
+    /**
+     * 从部门内移除兼职员工
+     *
+     * @param dept_id       登陆人所在部门ID，不能为空
+     * @param user_id       需要移除的用户ID，不能为空
+     * @return 返回执行情况的信息，true为成功，false为失败
+     * @throws MxException 当调用数据出错时抛出。
+     */
+    public boolean removePartTimePersonal(int dept_id,int user_id ){
+        try {
+            if (dept_id == 0) {
+                throw new MxException("找不到对应部门ID。");
+            }
+            if (user_id == 0) {
+                throw new MxException("找不到对应用户ID。");
+            }
+            JSONObject json_result = delete("/api/v1/departments/"+dept_id
+                    + "/secondary_users/"+user_id);
+            //JSONObject json_result = delete("/api/v1/departments?dept_id="+dept_id
+            //                    + "/secondary?user_id="+user_id);
+            String code = json_result.get("code").toString();
+
+            if ("200".equals(code)) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (JSONException e) {
+            throw new MxException("解析Json出错.", e);
+        }
+    }
 }
