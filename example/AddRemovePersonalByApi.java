@@ -9,7 +9,7 @@ public class AddRemovePersonalByApi {
     private static void fromOutsideCommunityAddPersonal(){
         AppAccount account = AppAccount.loginByAccessToken("http://dev5.dehuinet.com:8015", "HUu6MXtooVHV_wXQ3ieaeRDT6VuQ0xj0BPY6gkP15G-SFDCS");
 
-        //测试需要确保兼职人员没有添加到简直部门或已经移除，避免唯一性的冲突，
+        //测试需要确保兼职人员没有添加到兼职部门或已经移除，避免唯一性的冲突，
         //http://dev5.dehuinet.com:8015/hongzhong测试
         account.setFromUserLoginName("admin@hongzhong");//hongzhong管理员身份
         String[] network_ids = new String[]{};//导入用户之前所在社区ID
