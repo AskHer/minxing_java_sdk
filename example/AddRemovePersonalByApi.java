@@ -7,13 +7,15 @@ public class AddRemovePersonalByApi {
 //        removePartTimePersonal();
     }
     private static void fromOutsideCommunityAddPersonal(){
-        AppAccount account = AppAccount.loginByAccessToken("http://dev8.dehuinet.com:8018", "OxQL65s9WUtiKGWl1rmrNcrg4pp-EKpvWcQ5d8UtIMXZ9v1X");
+        AppAccount account = AppAccount.loginByAccessToken("http://dev5.dehuinet.com:8015", "HUu6MXtooVHV_wXQ3ieaeRDT6VuQ0xj0BPY6gkP15G-SFDCS");
 
-        account.setFromUserLoginName("admin");
-        String[] network_ids = new String[]{};//登陆人所在社区ID
-        String[] dept_ids = new String[]{};//登陆人所在部门ID
-        String[] user_ids = new String[]{"2322"};//导入用户ID
-        int dept_id = 25572;//导入用户部门ID
+        //测试需要确保兼职人员没有添加到简直部门或已经移除，避免唯一性的冲突，
+        //http://dev5.dehuinet.com:8015/hongzhong测试
+        account.setFromUserLoginName("admin@hongzhong");//hongzhong管理员身份
+        String[] network_ids = new String[]{};//导入用户之前所在社区ID
+        String[] dept_ids = new String[]{};//导入用户之前所在部门ID
+        String[] user_ids = new String[]{"13843"};//导入用户ID
+        int dept_id = 13752;//导入用户部门ID
         boolean recursive = false;//导入包括子部门的用户
         boolean create_dept = false;//按照原有组织建立部门
         JSONObject message = account.fromOutsideCommunityAddPersonal(network_ids,dept_ids,user_ids,
@@ -21,10 +23,10 @@ public class AddRemovePersonalByApi {
         System.out.println(message);
     }
     private static void removePartTimePersonal(){
-        AppAccount account = AppAccount.loginByAccessToken("http://dev8.dehuinet.com:8018", "OxQL65s9WUtiKGWl1rmrNcrg4pp-EKpvWcQ5d8UtIMXZ9v1X");
+        AppAccount account = AppAccount.loginByAccessToken("http://dev5.dehuinet.com:8015", "HUu6MXtooVHV_wXQ3ieaeRDT6VuQ0xj0BPY6gkP15G-SFDCS");
 
-        int dept_id = 25572;//登陆人所在部门ID
-        int user_id = 2322;//移除的用户ID
+        int dept_id = 13752;//移除人所在兼职部门ID
+        int user_id = 12981;//移除的用户ID
         boolean bool = account.removePartTimePersonal(dept_id,user_id);
 
         System.out.println(bool);

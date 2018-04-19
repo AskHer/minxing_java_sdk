@@ -3721,8 +3721,8 @@ public class AppAccount extends Account {
     /**
      * 从外部社区添加人员
      *
-     * @param network_ids    登陆人所在社区ID，默认为空
-     * @param dept_ids       登陆人所在部门ID，默认为空
+     * @param network_ids    导入用户之前所在社区ID，默认为空
+     * @param dept_ids       导入用户之前所在部门ID，默认为空
      * @param user_ids       需要导入的用户ID，默认为空
      * @param dept_id        需要导入用户的部门ID, 不传就是未分配
      * @param recursive      导入包括子部门的用户，默认值为false
@@ -3741,7 +3741,8 @@ public class AppAccount extends Account {
                 for (String str : network_ids) {
                     sb.append(str).append(",");
                 }
-                params.put("network_ids", sb.toString());
+
+                params.put("network_ids",sb.toString().substring(0,sb.toString().length()-1));
             }
 
             if (dept_ids != null && dept_ids.length > 0) {
@@ -3749,7 +3750,7 @@ public class AppAccount extends Account {
                 for (String str : dept_ids) {
                     sb.append(str).append(",");
                 }
-                params.put("dept_ids", sb.toString());
+                params.put("dept_ids", sb.toString().substring(0,sb.toString().length()-1));
             }
 
             if (user_ids != null && user_ids.length > 0) {
@@ -3757,7 +3758,7 @@ public class AppAccount extends Account {
                 for (String str : user_ids) {
                     sb.append(str).append(",");
                 }
-                params.put("user_ids", sb.toString());
+                params.put("user_ids", sb.toString().substring(0,sb.toString().length()-1));
             }
 
             params.put("dept_id", String.valueOf(dept_id));
@@ -3786,7 +3787,7 @@ public class AppAccount extends Account {
     /**
      * 从部门内移除兼职员工
      *
-     * @param dept_id       登陆人所在部门ID，不能为空
+     * @param dept_id       移除人所在兼职部门ID，不能为空
      * @param user_id       需要移除的用户ID，不能为空
      * @return 返回执行情况的信息，true为成功，false为失败
      * @throws MxException 当调用数据出错时抛出。
