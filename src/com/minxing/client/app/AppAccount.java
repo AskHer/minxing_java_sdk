@@ -1078,6 +1078,7 @@ public class AppAccount extends Account {
                     user.setCellvoice2(u.getString("cellvoice2"));
                     user.setWorkvoice(u.getString("workvoice"));
                     user.setEmpCode(u.getString("emp_code"));
+                    user.setAvatarUrl(u.getString("avatar_url"));
                 }
 
                 if (user != null) {
