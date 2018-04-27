@@ -36,19 +36,6 @@ import java.util.logging.Logger;
 
 import static com.sun.org.apache.bcel.internal.classfile.Utility.encode;
 
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.ParameterParser;
-import org.apache.commons.httpclient.util.URIUtil;
-
-import java.io.File;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.security.MessageDigest;
-import java.util.*;
-
 public class AppAccount extends Account {
 
     protected String _token = null;
@@ -1478,16 +1465,16 @@ public class AppAccount extends Account {
      * 发送用户的账户名字，该账户做为消息的发送人
      *
      * @param user_ids 用户id，”，“分隔
-     * @param message         消息内容
+     * @param message  消息内容
      * @return
      */
     public String sendShareLinkToUserIds(String user_ids,
-                                               Object message) {
+                                         Object message) {
         // 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
 
         Map<String, String> params = new HashMap<String, String>();
         params.put("share_link", com.alibaba.fastjson.JSONObject.toJSONString(message));
-        params.put("direct_to_user_ids",user_ids);
+        params.put("direct_to_user_ids", user_ids);
         Map<String, String> headers = new HashMap<String, String>();
 
         JSONObject return_json = this.post(
@@ -2028,7 +2015,7 @@ public class AppAccount extends Account {
     /**
      * 发送公众号消息
      *
-     * @param toUsers 用户的login_name数组，如果传null,则是给订阅的所有人发消息
+     * @param toUsers   用户的login_name数组，如果传null,则是给订阅的所有人发消息
      * @param message   消息对象数据，可以是复杂文本，也可以是简单对象
      * @param ocuId     公众号的id
      * @param ocuSecret 公众号的秘钥，校验是否可以发送
@@ -2366,7 +2353,7 @@ public class AppAccount extends Account {
      * @throws ApiErrorException 当调用数据出错时抛出。
      */
     public int pushMessage(String user_ids, String message, String alert,
-                           String alert_extend, String sound) throws ApiErrorException{
+                           String alert_extend, String sound) throws ApiErrorException {
         try {
 
             HashMap<String, String> params = new HashMap<String, String>();
@@ -3186,17 +3173,17 @@ public class AppAccount extends Account {
         for (int i = 0, n = depts.length(); i < n; i++) {
             JSONObject dobj = depts.getJSONObject(i);
 
-			Department udept = new Department();
-			udept.setCode(dobj.getString("dept_ref_id"));
-			udept.setShortName(dobj.getString("dept_short_name"));
-			udept.setFull_name(dobj.getString("dept_full_name"));
-			udept.setPath(dobj.getString("dept_code"));
-			allDept[i] = udept;
-		}
-		user.setAllDepartments(allDept);
+            Department udept = new Department();
+            udept.setCode(dobj.getString("dept_ref_id"));
+            udept.setShortName(dobj.getString("dept_short_name"));
+            udept.setFull_name(dobj.getString("dept_full_name"));
+            udept.setPath(dobj.getString("dept_code"));
+            allDept[i] = udept;
+        }
+        user.setAllDepartments(allDept);
         user.setAvatarUrl(o.getString("avatar_url"));
-		return user;
-	}
+        return user;
+    }
 
     /**
      * 校验一下URL上的签名信息，确认这个请求来自敏行的服务器
@@ -3778,21 +3765,20 @@ public class AppAccount extends Account {
     }
 
 
-
     /**
      * 从外部社区添加人员
      *
-     * @param network_ids    导入用户之前所在社区ID，默认为空
-     * @param dept_ids       导入用户之前所在部门ID，默认为空
-     * @param user_ids       需要导入的用户ID，默认为空
-     * @param dept_id        需要导入用户的部门ID, 不传就是未分配
-     * @param recursive      导入包括子部门的用户，默认值为false
-     * @param create_dept    按照原有组织结构建立部门,默认值为false
+     * @param network_ids 导入用户之前所在社区ID，默认为空
+     * @param dept_ids    导入用户之前所在部门ID，默认为空
+     * @param user_ids    需要导入的用户ID，默认为空
+     * @param dept_id     需要导入用户的部门ID, 不传就是未分配
+     * @param recursive   导入包括子部门的用户，默认值为false
+     * @param create_dept 按照原有组织结构建立部门,默认值为false
      * @return 返回执行情况的信息
      * @throws MxException 当调用数据出错时抛出。
      */
-    public JSONObject fromOutsideCommunityAddPersonal(String[] network_ids,String[] dept_ids,String[] user_ids,
-                                                  int dept_id,boolean recursive,boolean create_dept){
+    public JSONObject fromOutsideCommunityAddPersonal(String[] network_ids, String[] dept_ids, String[] user_ids,
+                                                      int dept_id, boolean recursive, boolean create_dept) {
         try {
 
             HashMap<String, String> params = new HashMap<String, String>();
@@ -3803,7 +3789,7 @@ public class AppAccount extends Account {
                     sb.append(str).append(",");
                 }
 
-                params.put("network_ids",sb.toString().substring(0,sb.toString().length()-1));
+                params.put("network_ids", sb.toString().substring(0, sb.toString().length() - 1));
             }
 
             if (dept_ids != null && dept_ids.length > 0) {
@@ -3811,7 +3797,7 @@ public class AppAccount extends Account {
                 for (String str : dept_ids) {
                     sb.append(str).append(",");
                 }
-                params.put("dept_ids", sb.toString().substring(0,sb.toString().length()-1));
+                params.put("dept_ids", sb.toString().substring(0, sb.toString().length() - 1));
             }
 
             if (user_ids != null && user_ids.length > 0) {
@@ -3819,7 +3805,7 @@ public class AppAccount extends Account {
                 for (String str : user_ids) {
                     sb.append(str).append(",");
                 }
-                params.put("user_ids", sb.toString().substring(0,sb.toString().length()-1));
+                params.put("user_ids", sb.toString().substring(0, sb.toString().length() - 1));
             }
 
             params.put("dept_id", String.valueOf(dept_id));
@@ -3839,21 +3825,21 @@ public class AppAccount extends Account {
 //            String message = "成功"+created.length()+"条,重复"+duplicated.length()+"条,失败"+failed.length()+"条";
             return json_result;
 
-        }catch (Exception e) {
-                throw new MxException("解析Json出错.", e);
-            }
+        } catch (Exception e) {
+            throw new MxException("解析Json出错.", e);
+        }
     }
 
 
     /**
      * 从部门内移除兼职员工
      *
-     * @param dept_id       移除人所在兼职部门ID，不能为空
-     * @param user_id       需要移除的用户ID，不能为空
+     * @param dept_id 移除人所在兼职部门ID，不能为空
+     * @param user_id 需要移除的用户ID，不能为空
      * @return 返回执行情况的信息，true为成功，false为失败
      * @throws MxException 当调用数据出错时抛出。
      */
-    public boolean removePartTimePersonal(int dept_id,int user_id ){
+    public boolean removePartTimePersonal(int dept_id, int user_id) {
         try {
             if (dept_id == 0) {
                 throw new MxException("找不到对应部门ID。");
@@ -3861,8 +3847,8 @@ public class AppAccount extends Account {
             if (user_id == 0) {
                 throw new MxException("找不到对应用户ID。");
             }
-            JSONObject json_result = delete("/api/v1/departments/"+dept_id
-                    + "/secondary_users/"+user_id);
+            JSONObject json_result = delete("/api/v1/departments/" + dept_id
+                    + "/secondary_users/" + user_id);
             //JSONObject json_result = delete("/api/v1/departments?dept_id="+dept_id
             //                    + "/secondary?user_id="+user_id);
             String code = json_result.get("code").toString();
@@ -3888,7 +3874,7 @@ public class AppAccount extends Account {
      */
     public int changeMobileByUserId(int userId, String mobile) throws ApiErrorException {
         try {
-            HashMap<String, String> params = new HashMap<>();
+            HashMap<String, String> params = new HashMap<String, String>();
             params.put("user_id", String.valueOf(userId));
             params.put("new_mobile", mobile);
 
