@@ -1470,6 +1470,39 @@ public class AppAccount extends Account {
 
     }
 
+
+    /**
+     * 发送分享到会话中。需要调用setFromUserLoginname()设置发送者身份
+     * <p>
+     * <p>
+     * 发送用户的账户名字，该账户做为消息的发送人
+     *
+     * @param user_ids 用户id，”，“分隔
+     * @param message         消息内容
+     * @return
+     */
+    public String sendShareLinkToUserIds(String user_ids,
+                                               Object message) {
+        // 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("share_link", com.alibaba.fastjson.JSONObject.toJSONString(message));
+        params.put("direct_to_user_ids",user_ids);
+        Map<String, String> headers = new HashMap<String, String>();
+
+        JSONObject return_json = this.post(
+                "/api/v1/conversations",
+                params, headers).asJSONObject();
+
+        try {
+            return return_json.getJSONArray("items")
+                    .getJSONObject(0).toString();
+        } catch (JSONException e) {
+            throw new MxException("解析Json出错.", e);
+        }
+
+    }
+
     /**
      * 发送消息到会话中。需要调用setFromUserLoginname()设置发送者身份
      * <p>
@@ -1701,6 +1734,34 @@ public class AppAccount extends Account {
         // }
         return this.sendMessageToUser(toUserId, message, null);
     }
+
+
+    /**
+     * 发送插件消息到与某人的聊天会话中。需要调用setFromUserLoginname()设置发送者身份
+     *
+     * @param toUserId
+     * @param message
+     * @return
+     */
+    public TextMessage sendPluginMessageToUser(long toUserId, Object message) {
+        // 会话id，web上打开一个会话，从url里获取。比如社区管理员创建个群聊，里面邀请几个维护人员进来
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("body", com.alibaba.fastjson.JSONObject.toJSONString(message));
+        params.put("message_type", "plugin_message");
+        Map<String, String> headers = new HashMap<String, String>();
+
+        JSONObject new_message = this.post(
+                "/api/v1/conversations/to_user/" + toUserId, params, headers)
+                .asJSONObject();
+        try {
+            return TextMessage.fromJSON(new_message.getJSONArray("items")
+                    .getJSONObject(0));
+        } catch (JSONException e) {
+            throw new MxException("解析Json出错.", e);
+        }
+    }
+
 
     /**
      * 发送消息到与某人的聊天会话中。需要调用setFromUserLoginname()设置发送者身份
