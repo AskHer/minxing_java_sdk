@@ -3877,4 +3877,33 @@ public class AppAccount extends Account {
             throw new MxException("解析Json出错.", e);
         }
     }
+
+    /**
+     * 根据用户ID 修改其手机号
+     *
+     * @param userId
+     * @param mobile
+     * @return
+     * @throws ApiErrorException
+     */
+    public int changeMobileByUserId(int userId, String mobile) throws ApiErrorException {
+        try {
+            HashMap<String, String> params = new HashMap<>();
+            params.put("user_id", String.valueOf(userId));
+            params.put("new_mobile", mobile);
+
+            JSONObject json_result = put(
+                    "/api/v1/registers/change_mobile_and_login_name", params);
+
+            int code = json_result.getInt("code");
+
+            if (code > 0 && code != 200 && code != 201) {
+                String msg = json_result.getString("message");
+                throw new ApiErrorException(code, msg);
+            }
+            return code;
+        } catch (JSONException e) {
+            throw new ApiErrorException("返回JSON错误", 500, e);
+        }
+    }
 }
