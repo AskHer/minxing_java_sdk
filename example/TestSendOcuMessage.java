@@ -9,10 +9,10 @@ import com.minxing.client.ocu.TextMessage;
 public class TestSendOcuMessage {
 
     public static void main(String[] args) {
-        AppAccount account = AppAccount.loginByAccessToken("http://dev8.dehuinet.com:8018", "OWgiMPiENmJlefpUaJiXZfKKeFR3Xx4y50P1A1hi5GuoA0Ry");
+        AppAccount account = AppAccount.loginByAccessToken("http://example.com", "bearerToken");
         TextMessage textMessage = new TextMessage("1341341");
-        OcuMessageSendResult attendance_cccb = account.sendOcuMessageExceptUsers(textMessage, "attendance_cccb", "9483cbabb69eac8bc0f08b2fd9d4074f", new String[]{"800052", "800053"}, SsoKey.LOGIN_NAME);
-        System.out.println(attendance_cccb.getCount());
+        OcuMessageSendResult result = account.sendOcuMessageExceptUsers(textMessage, "ocuId", "ocuSecret", new String[]{"t1"}, SsoKey.LOGIN_NAME);
+        OcuMessageSendResult result2 = account.sendOcuMessageExceptUsers(textMessage, "ocuId", "ocuSecret", new String[]{"t1"});
     }
 
 }
