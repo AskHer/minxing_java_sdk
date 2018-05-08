@@ -2107,10 +2107,10 @@ public class AppAccount extends Account {
     /**
      * 发送公众号消息
      *
-     * @param message   消息对象数据，可以是复杂文本，也可以是简单对象
-     * @param ocuId     公众号的id
-     * @param ocuSecret 公众号的秘钥，校验是否可以发送
-     * @param exceptUserIds  排除的用户的login_name数组
+     * @param message       消息对象数据，可以是复杂文本，也可以是简单对象
+     * @param ocuId         公众号的id
+     * @param ocuSecret     公众号的秘钥，校验是否可以发送
+     * @param exceptUserIds 排除的用户的login_name数组
      * @return
      */
     public OcuMessageSendResult sendOcuMessageExceptUsers(Message message, String ocuId, String ocuSecret, String[] exceptUserIds) {
@@ -2121,11 +2121,11 @@ public class AppAccount extends Account {
     /**
      * 发送公众号消息,指定社区id
      *
-     * @param network_id 用户的社区
-     * @param message    消息对象数据，可以是复杂文本，也可以是简单对象
-     * @param ocuId      公众号的id
-     * @param ocuSecret  公众号的秘钥，校验是否可以发送
-     * @param exceptUserIds  排除的用户的login_name数组
+     * @param network_id    用户的社区
+     * @param message       消息对象数据，可以是复杂文本，也可以是简单对象
+     * @param ocuId         公众号的id
+     * @param ocuSecret     公众号的秘钥，校验是否可以发送
+     * @param exceptUserIds 排除的用户的login_name数组
      * @return
      */
     public OcuMessageSendResult sendOcuMessageExceptUsers(String network_id, Message message, String ocuId, String ocuSecret, String[] exceptUserIds) {
@@ -2193,11 +2193,11 @@ public class AppAccount extends Account {
     /**
      * 发送公众号消息
      *
-     * @param message   消息对象数据，可以是复杂文本，也可以是简单对象
-     * @param ocuId     公众号的id
-     * @param ocuSecret 公众号的秘钥，校验是否可以发送
-     * @param exceptUserIds  排除的用户的login_name数组
-     * @param sso_key    toUsers的类型,可以选择的值为login_name,email,user_id
+     * @param message       消息对象数据，可以是复杂文本，也可以是简单对象
+     * @param ocuId         公众号的id
+     * @param ocuSecret     公众号的秘钥，校验是否可以发送
+     * @param exceptUserIds 排除的用户的login_name数组
+     * @param sso_key       toUsers的类型,可以选择的值为login_name,email,user_id
      * @return
      */
     public OcuMessageSendResult sendOcuMessageExceptUsers(Message message, String ocuId, String ocuSecret, String[] exceptUserIds, SsoKey sso_key) {
@@ -2208,12 +2208,12 @@ public class AppAccount extends Account {
     /**
      * 发送公众号消息,指定社区id
      *
-     * @param network_id 用户的社区
-     * @param message    消息对象数据，可以是复杂文本，也可以是简单对象
-     * @param ocuId      公众号的id
-     * @param ocuSecret  公众号的秘钥，校验是否可以发送
-     * @param exceptUserIds  排除的用户的login_name数组
-     * @param sso_key    toUsers的类型,可以选择的值为login_name,email,user_id
+     * @param network_id    用户的社区
+     * @param message       消息对象数据，可以是复杂文本，也可以是简单对象
+     * @param ocuId         公众号的id
+     * @param ocuSecret     公众号的秘钥，校验是否可以发送
+     * @param exceptUserIds 排除的用户的login_name数组
+     * @param sso_key       toUsers的类型,可以选择的值为login_name,email,user_id
      * @return
      */
     public OcuMessageSendResult sendOcuMessageExceptUsers(String network_id, Message message, String ocuId, String ocuSecret, String[] exceptUserIds, SsoKey sso_key) {
@@ -4057,9 +4057,9 @@ public class AppAccount extends Account {
             JSONObject json_result = put(
                     "/api/v1/registers/change_mobile_and_login_name", params);
 
-            int code = json_result.getInt("code");
+            int code = "ok".equalsIgnoreCase(json_result.getString("status")) ? 1 : 0;
 
-            if (code > 0 && code != 200 && code != 201) {
+            if (code != 1) {
                 String msg = json_result.getString("message");
                 throw new ApiErrorException(code, msg);
             }
