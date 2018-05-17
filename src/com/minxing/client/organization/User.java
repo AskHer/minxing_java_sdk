@@ -70,7 +70,7 @@ public class User extends Organization {
             Date date = new SimpleDateFormat("yyyy-MM-dd").parse(birthday);
             this.birthday = new SimpleDateFormat("yyyy-MM-dd").format(date);
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
     }
