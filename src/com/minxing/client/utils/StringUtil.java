@@ -38,26 +38,11 @@ public class StringUtil {
 		    return new String(hexChars);
 		}
 
-	/**
-	 * 字符串是否为空
-	 *
-	 * StringUtils.isBlank(null)      = true
-	 * StringUtils.isBlank("")        = true
-	 * StringUtils.isBlank(" ")       = true
-	 * StringUtils.isBlank("bob")     = false
-	 * StringUtils.isBlank("  bob  ") = false
-	 *
-	 * */
-	public static boolean isBlank(final CharSequence cs) {
-		int strLen;
-		if (cs == null || (strLen = cs.length()) == 0) {
-			return true;
+		public static boolean isEmpty(String str) {
+			return str == null || str.length() == 0;
 		}
-		for (int i = 0; i < strLen; i++) {
-			if (Character.isWhitespace(cs.charAt(i)) == false) {
-				return false;
-			}
+
+		public static boolean isNotEmpty(String str) {
+			return !isEmpty(str);
 		}
-		return true;
-	}
 }
