@@ -4068,4 +4068,62 @@ public class AppAccount extends Account {
             throw new ApiErrorException("返回JSON错误", 500, e);
         }
     }
+
+    /**
+     * 变更标识数量,推送
+     *
+     * @param userId 用户ID
+     * @param appId appId
+     * @param badge 未读数
+     * @param content 推送内容
+     * @param sign 标识,将直接转发给移动端,用于展示标识图片
+     * @return
+     * @throws ApiErrorException
+     */
+    public boolean putBadge(String userId, String appId, String badge, String content, String sign) {
+        HashMap<String, String> params = new HashMap<String, String>();
+        // 所有参数都不能为空
+        if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(appId) || StringUtil.isEmpty(badge) || StringUtil.isEmpty(content) || StringUtil.isEmpty(sign)) {
+            return false;
+        }
+        params.put("userId", userId);
+        params.put("appId", appId);
+        params.put("sign", sign);
+        params.put("content", content);
+        params.put("badge", badge);
+        JSONObject json_result = put(
+                "/api/v2/gtasks/open/badge", params);
+        return json_result.isNull("msg") ? false : true;
+    }
+
+    /**
+     * 获取标识数量
+     *
+     * @param userId 用户ID
+     * @param appId appId
+     * @return
+     * @throws ApiErrorException
+     */
+    public TaskBadge getBadge(String userId, String appId) throws JSONException {
+        HashMap<String, String> params = new HashMap<String, String>();
+        TaskBadge taskBadge = new TaskBadge();
+        // 所有参数都不能为空，如果为空返回空对象
+        if (StringUtil.isEmpty(userId) || StringUtil.isEmpty(appId)) {
+            return taskBadge;
+        }
+        params.put("userId", userId);
+        params.put("appId", appId);
+        JSONObject json_result = get(
+                "/api/v2/gtasks/open/badge", params).asJSONObject();
+        if (!json_result.isNull("data")) {
+            JSONObject tb = json_result.getJSONObject("data");
+            if (!tb.isNull("badge")) {
+                taskBadge.setBadge(Integer.parseInt(tb.get("badge").toString()));
+            }
+            taskBadge.setSign(tb.get("sign").toString());
+        }
+        return taskBadge;
+    }
+
+
 }
