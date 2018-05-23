@@ -4136,7 +4136,9 @@ public class AppAccount extends Account {
         try {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("title", task.getTitle());
-            params.put("remark", task.getRemark());
+            if (StringUtil.isNotEmpty(task.getRemark())){
+                params.put("remark", task.getRemark());
+            }
             params.put("userId", String.valueOf(task.getUserId()));
             params.put("categoryCode", task.getCategoryCode());
             params.put("url", task.getUrl());
@@ -4182,11 +4184,17 @@ public class AppAccount extends Account {
         try {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("title", task.getTitle());
-            params.put("remark", task.getRemark());
+            if (StringUtil.isNotEmpty(task.getRemark())){
+                params.put("remark", task.getRemark());
+            }else{
+                params.put("remark", "");
+            }
             params.put("userId", String.valueOf(task.getUserId()));
             params.put("categoryCode", task.getCategoryCode());
             params.put("url", task.getUrl());
-            params.put("source", task.getSource());
+            if(StringUtil.isNotEmpty(task.getSource())){
+                params.put("source", task.getSource());
+            }
             params.put("startAt", String.valueOf(task.getStartAt().getTime() / 1000));
             if (task.getEndAt() != null){
                 params.put("endAt", String.valueOf(task.getEndAt().getTime() / 1000));
