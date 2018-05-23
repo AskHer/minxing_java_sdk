@@ -4141,6 +4141,10 @@ public class AppAccount extends Account {
             params.put("categoryCode", task.getCategoryCode());
             params.put("url", task.getUrl());
             params.put("source", task.getSource());
+            params.put("startAt", String.valueOf(task.getStartAt().getTime() / 1000));
+            if (task.getEndAt() != null){
+                params.put("endAt", String.valueOf(task.getEndAt().getTime() / 1000));
+            }
             if (task.getRemindTimes() != null && task.getRemindTimes().length != 0) {
                 StringBuilder builder = new StringBuilder();
                 for (Date remindTime : task.getRemindTimes()) {
@@ -4183,6 +4187,10 @@ public class AppAccount extends Account {
             params.put("categoryCode", task.getCategoryCode());
             params.put("url", task.getUrl());
             params.put("source", task.getSource());
+            params.put("startAt", String.valueOf(task.getStartAt().getTime() / 1000));
+            if (task.getEndAt() != null){
+                params.put("endAt", String.valueOf(task.getEndAt().getTime() / 1000));
+            }
             if (task.getRemindTimes() != null && task.getRemindTimes().length != 0) {
                 StringBuilder builder = new StringBuilder();
                 for (Date remindTime : task.getRemindTimes()) {

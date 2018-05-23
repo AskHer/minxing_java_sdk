@@ -13,13 +13,15 @@ public class Task {
      * @param categoryCode     类别编码
      * @param source           来源系统
      * @param url              待办详情地址
+     * @param startAt          开始时间
+     * @param endAt            结束时间
      * @param remindTime       提醒基准时间
      * @param remindTimeOffset 提醒时间偏移量
      * @param ocuId            推送用公众号ID
      * @param ocuSecret        推送用公众号secret
      * @param instantRemind    是否立即提醒
      */
-    public Task(int id, String title, String remark, int userId, String categoryCode, String source, String url, Date remindTime, Integer[] remindTimeOffset, String ocuId, String ocuSecret, boolean instantRemind) {
+    public Task(int id, String title, String remark, int userId, String categoryCode, String source, String url, Date startAt, Date endAt, Date remindTime, Integer[] remindTimeOffset, String ocuId, String ocuSecret, boolean instantRemind) {
         this.id = id;
         this.title = title;
         this.remark = remark;
@@ -27,6 +29,71 @@ public class Task {
         this.categoryCode = categoryCode;
         this.source = source;
         this.url = url;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.remindTime = remindTime;
+        this.remindTimeOffset = remindTimeOffset;
+        this.ocuId = ocuId;
+        this.ocuSecret = ocuSecret;
+        this.instantRemind = instantRemind;
+    }
+
+    /**
+     * @param id               id
+     * @param title            标题内容
+     * @param remark           备注
+     * @param userId           用户ID
+     * @param categoryCode     类别编码
+     * @param source           来源系统
+     * @param url              待办详情地址
+     * @param startAt          开始时间
+     * @param remindTime       提醒基准时间
+     * @param remindTimeOffset 提醒时间偏移量
+     * @param ocuId            推送用公众号ID
+     * @param ocuSecret        推送用公众号secret
+     * @param instantRemind    是否立即提醒
+     */
+    public Task(int id, String title, String remark, int userId, String categoryCode, String source, String url, Date startAt, Date remindTime, Integer[] remindTimeOffset, String ocuId, String ocuSecret, boolean instantRemind) {
+        this.id = id;
+        this.title = title;
+        this.remark = remark;
+        this.userId = userId;
+        this.categoryCode = categoryCode;
+        this.source = source;
+        this.url = url;
+        this.startAt = startAt;
+        this.remindTime = remindTime;
+        this.remindTimeOffset = remindTimeOffset;
+        this.ocuId = ocuId;
+        this.ocuSecret = ocuSecret;
+        this.instantRemind = instantRemind;
+    }
+
+
+    /**
+     * @param title            标题内容
+     * @param remark           备注
+     * @param userId           用户ID
+     * @param categoryCode     类别编码
+     * @param source           来源系统
+     * @param url              待办详情地址
+     * @param startAt          开始时间
+     * @param endAt            结束时间
+     * @param remindTime       提醒基准时间
+     * @param remindTimeOffset 提醒时间偏移量
+     * @param ocuId            推送用公众号ID
+     * @param ocuSecret        推送用公众号secret
+     * @param instantRemind    是否立即提醒
+     */
+    public Task(String title, String remark, int userId, String categoryCode, String source, String url, Date startAt, Date endAt, Date remindTime, Integer[] remindTimeOffset, String ocuId, String ocuSecret, boolean instantRemind) {
+        this.title = title;
+        this.remark = remark;
+        this.userId = userId;
+        this.categoryCode = categoryCode;
+        this.source = source;
+        this.url = url;
+        this.startAt = startAt;
+        this.endAt = endAt;
         this.remindTime = remindTime;
         this.remindTimeOffset = remindTimeOffset;
         this.ocuId = ocuId;
@@ -41,19 +108,21 @@ public class Task {
      * @param categoryCode     类别编码
      * @param source           来源系统
      * @param url              待办详情地址
+     * @param startAt          开始时间
      * @param remindTime       提醒基准时间
      * @param remindTimeOffset 提醒时间偏移量
      * @param ocuId            推送用公众号ID
      * @param ocuSecret        推送用公众号secret
      * @param instantRemind    是否立即提醒
      */
-    public Task(String title, String remark, int userId, String categoryCode, String source, String url, Date remindTime, Integer[] remindTimeOffset, String ocuId, String ocuSecret, boolean instantRemind) {
+    public Task(String title, String remark, int userId, String categoryCode, String source, String url, Date startAt, Date remindTime, Integer[] remindTimeOffset, String ocuId, String ocuSecret, boolean instantRemind) {
         this.title = title;
         this.remark = remark;
         this.userId = userId;
         this.categoryCode = categoryCode;
         this.source = source;
         this.url = url;
+        this.startAt = startAt;
         this.remindTime = remindTime;
         this.remindTimeOffset = remindTimeOffset;
         this.ocuId = ocuId;
@@ -69,12 +138,14 @@ public class Task {
      * @param categoryCode  类别编码
      * @param source        来源系统
      * @param url           待办详情地址
+     * @param startAt       开始时间
+     * @param endAt         结束时间
      * @param ocuId         推送用公众号ID
      * @param ocuSecret     推送用公众号secret
      * @param instantRemind 是否立即提醒
      * @param remindTimes   提醒时间
      */
-    public Task(int id, String title, String remark, int userId, String categoryCode, String source, String url, String ocuId, String ocuSecret, boolean instantRemind, Date[] remindTimes) {
+    public Task(int id, String title, String remark, int userId, String categoryCode, String source, String url, Date startAt, Date endAt, String ocuId, String ocuSecret, boolean instantRemind, Date[] remindTimes) {
         this.id = id;
         this.title = title;
         this.remark = remark;
@@ -82,32 +153,8 @@ public class Task {
         this.categoryCode = categoryCode;
         this.source = source;
         this.url = url;
-        this.ocuId = ocuId;
-        this.ocuSecret = ocuSecret;
-        this.instantRemind = instantRemind;
-        this.remindTimes = remindTimes;
-    }
-
-    /**
-     * @param title         标题内容
-     * @param remark        备注
-     * @param userId        用户ID
-     * @param categoryCode  类别编码
-     * @param source        来源系统
-     * @param url           待办详情地址
-     * @param ocuId         推送用公众号ID
-     * @param ocuSecret     推送用公众号secret
-     * @param instantRemind 是否立即提醒
-     * @param remindTimes   提醒时间
-     */
-    public Task(String title, String remark, int userId, String categoryCode, String source, String url, String ocuId, String ocuSecret, boolean instantRemind, Date[] remindTimes) {
-        this.id = id;
-        this.title = title;
-        this.remark = remark;
-        this.userId = userId;
-        this.categoryCode = categoryCode;
-        this.source = source;
-        this.url = url;
+        this.startAt = startAt;
+        this.endAt = endAt;
         this.ocuId = ocuId;
         this.ocuSecret = ocuSecret;
         this.instantRemind = instantRemind;
@@ -122,11 +169,13 @@ public class Task {
      * @param categoryCode  类别编码
      * @param source        来源系统
      * @param url           待办详情地址
+     * @param startAt       开始时间
      * @param ocuId         推送用公众号ID
      * @param ocuSecret     推送用公众号secret
      * @param instantRemind 是否立即提醒
+     * @param remindTimes   提醒时间
      */
-    public Task(int id, String title, String remark, int userId, String categoryCode, String source, String url, String ocuId, String ocuSecret, boolean instantRemind) {
+    public Task(int id, String title, String remark, int userId, String categoryCode, String source, String url, Date startAt, String ocuId, String ocuSecret, boolean instantRemind, Date[] remindTimes) {
         this.id = id;
         this.title = title;
         this.remark = remark;
@@ -134,6 +183,147 @@ public class Task {
         this.categoryCode = categoryCode;
         this.source = source;
         this.url = url;
+        this.startAt = startAt;
+        this.ocuId = ocuId;
+        this.ocuSecret = ocuSecret;
+        this.instantRemind = instantRemind;
+        this.remindTimes = remindTimes;
+    }
+
+    /**
+     * @param title         标题内容
+     * @param remark        备注
+     * @param userId        用户ID
+     * @param categoryCode  类别编码
+     * @param source        来源系统
+     * @param url           待办详情地址
+     * @param startAt       开始时间
+     * @param endAt         结束时间
+     * @param ocuId         推送用公众号ID
+     * @param ocuSecret     推送用公众号secret
+     * @param instantRemind 是否立即提醒
+     * @param remindTimes   提醒时间
+     */
+    public Task(String title, String remark, int userId, String categoryCode, String source, String url, Date startAt, Date endAt, String ocuId, String ocuSecret, boolean instantRemind, Date[] remindTimes) {
+        this.id = id;
+        this.title = title;
+        this.remark = remark;
+        this.userId = userId;
+        this.categoryCode = categoryCode;
+        this.source = source;
+        this.url = url;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.ocuId = ocuId;
+        this.ocuSecret = ocuSecret;
+        this.instantRemind = instantRemind;
+        this.remindTimes = remindTimes;
+    }
+
+    /**
+     * @param title         标题内容
+     * @param remark        备注
+     * @param userId        用户ID
+     * @param categoryCode  类别编码
+     * @param source        来源系统
+     * @param url           待办详情地址
+     * @param startAt       开始时间
+     * @param ocuId         推送用公众号ID
+     * @param ocuSecret     推送用公众号secret
+     * @param instantRemind 是否立即提醒
+     * @param remindTimes   提醒时间
+     */
+    public Task(String title, String remark, int userId, String categoryCode, String source, String url, Date startAt, String ocuId, String ocuSecret, boolean instantRemind, Date[] remindTimes) {
+        this.id = id;
+        this.title = title;
+        this.remark = remark;
+        this.userId = userId;
+        this.categoryCode = categoryCode;
+        this.source = source;
+        this.url = url;
+        this.startAt = startAt;
+        this.ocuId = ocuId;
+        this.ocuSecret = ocuSecret;
+        this.instantRemind = instantRemind;
+        this.remindTimes = remindTimes;
+    }
+
+    /**
+     * @param id            id
+     * @param title         标题内容
+     * @param remark        备注
+     * @param userId        用户ID
+     * @param categoryCode  类别编码
+     * @param source        来源系统
+     * @param url           待办详情地址
+     * @param startAt       开始时间
+     * @param endAt         结束时间
+     * @param ocuId         推送用公众号ID
+     * @param ocuSecret     推送用公众号secret
+     * @param instantRemind 是否立即提醒
+     */
+    public Task(int id, String title, String remark, int userId, String categoryCode, String source, String url, Date startAt, Date endAt, String ocuId, String ocuSecret, boolean instantRemind) {
+        this.id = id;
+        this.title = title;
+        this.remark = remark;
+        this.userId = userId;
+        this.categoryCode = categoryCode;
+        this.source = source;
+        this.url = url;
+        this.startAt = startAt;
+        this.endAt = endAt;
+        this.instantRemind = instantRemind;
+    }
+
+    /**
+     * @param id            id
+     * @param title         标题内容
+     * @param remark        备注
+     * @param userId        用户ID
+     * @param categoryCode  类别编码
+     * @param source        来源系统
+     * @param url           待办详情地址
+     * @param startAt       开始时间
+     * @param ocuId         推送用公众号ID
+     * @param ocuSecret     推送用公众号secret
+     * @param instantRemind 是否立即提醒
+     */
+    public Task(int id, String title, String remark, int userId, String categoryCode, String source, String url, Date startAt, String ocuId, String ocuSecret, boolean instantRemind) {
+        this.id = id;
+        this.title = title;
+        this.remark = remark;
+        this.userId = userId;
+        this.categoryCode = categoryCode;
+        this.source = source;
+        this.url = url;
+        this.startAt = startAt;
+        this.instantRemind = instantRemind;
+    }
+
+
+    /**
+     * @param title         标题内容
+     * @param remark        备注
+     * @param userId        用户ID
+     * @param categoryCode  类别编码
+     * @param source        来源系统
+     * @param url           待办详情地址
+     * @param startAt       开始时间
+     * @param endAt         结束时间
+     * @param ocuId         推送用公众号ID
+     * @param ocuSecret     推送用公众号secret
+     * @param instantRemind 是否立即提醒
+     */
+    public Task(String title, String remark, int userId, String categoryCode, String source, String url, Date startAt, Date endAt, String ocuId, String ocuSecret, boolean instantRemind) {
+        this.id = id;
+        this.title = title;
+        this.remark = remark;
+        this.userId = userId;
+        this.categoryCode = categoryCode;
+        this.source = source;
+        this.url = url;
+        this.startAt = startAt;
+        this.endAt = endAt;
         this.instantRemind = instantRemind;
     }
 
@@ -144,11 +334,12 @@ public class Task {
      * @param categoryCode  类别编码
      * @param source        来源系统
      * @param url           待办详情地址
+     * @param startAt       开始时间
      * @param ocuId         推送用公众号ID
      * @param ocuSecret     推送用公众号secret
      * @param instantRemind 是否立即提醒
      */
-    public Task(String title, String remark, int userId, String categoryCode, String source, String url, String ocuId, String ocuSecret, boolean instantRemind) {
+    public Task(String title, String remark, int userId, String categoryCode, String source, String url, Date startAt, String ocuId, String ocuSecret, boolean instantRemind) {
         this.id = id;
         this.title = title;
         this.remark = remark;
@@ -156,6 +347,7 @@ public class Task {
         this.categoryCode = categoryCode;
         this.source = source;
         this.url = url;
+        this.startAt = startAt;
         this.instantRemind = instantRemind;
     }
 
@@ -172,6 +364,8 @@ public class Task {
     private String ocuSecret;
     private boolean instantRemind;
     private Date[] remindTimes;
+    private Date startAt;
+    private Date endAt;
 
     public int getId() {
         return id;
@@ -288,5 +482,21 @@ public class Task {
 
     public void setRemindTimes(Date[] remindTimes) {
         this.remindTimes = remindTimes;
+    }
+
+    public Date getStartAt() {
+        return startAt;
+    }
+
+    public void setStartAt(Date startAt) {
+        this.startAt = startAt;
+    }
+
+    public Date getEndAt() {
+        return endAt;
+    }
+
+    public void setEndAt(Date endAt) {
+        this.endAt = endAt;
     }
 }
