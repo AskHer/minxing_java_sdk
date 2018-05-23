@@ -4125,5 +4125,137 @@ public class AppAccount extends Account {
         return taskBadge;
     }
 
+    /**
+     * 创建待办事项
+     *
+     * @param task 待办事项
+     * @return 待办事项id
+     * @throws ApiErrorException
+     */
+    public int createTask(Task task) throws ApiErrorException {
+        try {
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("title", task.getTitle());
+            params.put("remark", task.getRemark());
+            params.put("userId", String.valueOf(task.getUserId()));
+            params.put("categoryCode", task.getCategoryCode());
+            params.put("url", task.getUrl());
+            params.put("source", task.getSource());
+            if (task.getRemindTimes() != null && task.getRemindTimes().length != 0) {
+                StringBuilder builder = new StringBuilder();
+                for (Date remindTime : task.getRemindTimes()) {
+                    builder.append(remindTime.getTime() / 1000).append(",");
+                }
+                if (builder.length() != 0) {
+                    params.put("remindTime", builder.deleteCharAt(builder.length() - 1).toString());
+                }
+                params.put("ocuId", task.getOcuId());
+                params.put("ocuSecret", task.getOcuSecret());
+            }
+            params.put("instantRemind", task.getInstantRemind() ? "1" : "0");
+
+            Map<String, String> headers = new HashMap<String, String>();
+            Response post = post(
+                    "/api/v2/gtasks/open/tasks", params, headers);
+            JSONObject json_result = post.asJSONObject();
+            if (post.getStatusCode() != 200) {
+                JSONObject errors = json_result.getJSONObject("errors");
+                throw new ApiErrorException(Integer.valueOf(errors.getString("status_code")), errors.getString("message"));
+            }
+            return json_result.getInt("id");
+        } catch (JSONException e) {
+            throw new ApiErrorException("返回JSON错误", 500, e);
+        }
+    }
+
+    /**
+     * 更新待办事项
+     *
+     * @param task
+     * @throws ApiErrorException
+     */
+    public void updateTask(Task task) throws ApiErrorException {
+        try {
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("title", task.getTitle());
+            params.put("remark", task.getRemark());
+            params.put("userId", String.valueOf(task.getUserId()));
+            params.put("categoryCode", task.getCategoryCode());
+            params.put("url", task.getUrl());
+            params.put("source", task.getSource());
+            if (task.getRemindTimes() != null && task.getRemindTimes().length != 0) {
+                StringBuilder builder = new StringBuilder();
+                for (Date remindTime : task.getRemindTimes()) {
+                    builder.append(remindTime.getTime()).append(",");
+                }
+                if (builder.length() != 0) {
+                    params.put("remindTime", builder.deleteCharAt(builder.length() - 1).toString());
+                }
+                params.put("ocuId", task.getOcuId());
+                params.put("ocuSecret", task.getOcuSecret());
+            }
+            params.put("instantRemind", task.getInstantRemind() ? "1" : "0");
+
+
+            Map<String, String> headers = new HashMap<String, String>();
+            JSONObject json_result = put(
+                    "/api/v2/gtasks/open/tasks/" + task.getId(), params);
+            int code = "ok".equalsIgnoreCase(json_result.getString("msg")) ? 1 : 0;
+
+            if (code != 1) {
+                JSONObject errors = json_result.getJSONObject("errors");
+                throw new ApiErrorException(0, errors.getString("message"));
+            }
+        } catch (JSONException e) {
+            throw new ApiErrorException("返回JSON错误", 500, e);
+        }
+    }
+
+    /**
+     * 删除待办事项
+     *
+     * @param id
+     * @throws ApiErrorException
+     */
+    public void deleteTask(int id) throws ApiErrorException {
+        try {
+            JSONObject json_result = delete(
+                    "/api/v2/gtasks/open/tasks/" + id);
+            int code = "ok".equalsIgnoreCase(json_result.getString("msg")) ? 1 : 0;
+
+            if (code != 1) {
+                JSONObject errors = json_result.getJSONObject("errors");
+                throw new ApiErrorException(0, errors.getString("message"));
+            }
+        } catch (JSONException e) {
+            throw new ApiErrorException("返回JSON错误", 500, e);
+        }
+    }
+
+    /**
+     * 更改待办事项状态
+     *
+     * @param id     待办事项ID
+     * @param isComplete 状态,是否已完成
+     * @throws ApiErrorException
+     */
+    public void changeTaskStatus(int id, boolean isComplete) throws ApiErrorException {
+        try {
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("id", String.valueOf(id));
+            params.put("status", String.valueOf(isComplete ? 1 : 0));
+            Map<String, String> headers = new HashMap<String, String>();
+            JSONObject json_result = put(
+                    "/api/v2/gtasks/open/tasks/" + id + "/status", params);
+            int code = "ok".equalsIgnoreCase(json_result.getString("msg")) ? 1 : 0;
+
+            if (code != 1) {
+                JSONObject errors = json_result.getJSONObject("errors");
+                throw new ApiErrorException(0, errors.getString("message"));
+            }
+        } catch (JSONException e) {
+            throw new ApiErrorException("返回JSON错误", 500, e);
+        }
+    }
 
 }
