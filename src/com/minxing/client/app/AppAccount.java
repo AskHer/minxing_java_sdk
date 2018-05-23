@@ -4155,10 +4155,14 @@ public class AppAccount extends Account {
                 if (builder.length() != 0) {
                     params.put("remindTime", builder.deleteCharAt(builder.length() - 1).toString());
                 }
-                params.put("ocuId", task.getOcuId());
-                params.put("ocuSecret", task.getOcuSecret());
             }
             params.put("instantRemind", task.getInstantRemind() ? "1" : "0");
+            if (StringUtil.isNotEmpty(task.getOcuId())){
+                params.put("ocuId", task.getOcuId());
+            }
+            if (StringUtil.isNotEmpty(task.getOcuSecret())){
+                params.put("ocuSecret", task.getOcuSecret());
+            }
 
             Map<String, String> headers = new HashMap<String, String>();
             Response post = post(
@@ -4207,11 +4211,15 @@ public class AppAccount extends Account {
                 if (builder.length() != 0) {
                     params.put("remindTime", builder.deleteCharAt(builder.length() - 1).toString());
                 }
-                params.put("ocuId", task.getOcuId());
-                params.put("ocuSecret", task.getOcuSecret());
+
             }
             params.put("instantRemind", task.getInstantRemind() ? "1" : "0");
-
+            if (StringUtil.isNotEmpty(task.getOcuId())){
+                params.put("ocuId", task.getOcuId());
+            }
+            if (StringUtil.isNotEmpty(task.getOcuSecret())){
+                params.put("ocuSecret", task.getOcuSecret());
+            }
 
             Map<String, String> headers = new HashMap<String, String>();
             JSONObject json_result = put(
