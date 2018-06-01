@@ -19,6 +19,7 @@ public class Department extends Organization {
 	private Integer level;
 	private Long parent_dept_id = null;
 	private String path;
+	private String dept_type;
 
 	public String getNetwork_name() {
 		return network_name;
@@ -128,6 +129,7 @@ public class Department extends Organization {
 		params.put("parent_dept_code", this.getParent_dept_code());
 		params.put("root", this.getRoot().toString().toLowerCase());
 		params.put("dept_id", String.valueOf(this.getId()));
+		params.put("dept_type",this.getDept_type());
 		return params;
 	}
 
@@ -164,4 +166,11 @@ public class Department extends Organization {
 		this.path = path;
 	}
 
+	public String getDept_type() {
+		return dept_type;
+	}
+
+	public void setDept_type(String dept_type) {
+		this.dept_type = dept_type;
+	}
 }
