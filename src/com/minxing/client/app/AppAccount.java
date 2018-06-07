@@ -4206,7 +4206,7 @@ public class AppAccount extends Account {
             if (task.getRemindTimes() != null && task.getRemindTimes().length != 0) {
                 StringBuilder builder = new StringBuilder();
                 for (Date remindTime : task.getRemindTimes()) {
-                    builder.append(remindTime.getTime()).append(",");
+                    builder.append(remindTime.getTime() / 1000).append(",");
                 }
                 if (builder.length() != 0) {
                     params.put("remindTime", builder.deleteCharAt(builder.length() - 1).toString());
