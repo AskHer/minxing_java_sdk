@@ -6,6 +6,7 @@ import com.minxing.client.model.PostParameter;
 import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.SimpleHttpConnectionManager;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
@@ -119,7 +120,7 @@ public class HttpClient implements java.io.Serializable {
         HttpClientParams clientParams = new HttpClientParams();
         clientParams.setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
         org.apache.commons.httpclient.HttpClient client = new org.apache.commons.httpclient.HttpClient(
-                clientParams);
+                clientParams, new SimpleHttpConnectionManager(true));
         Protocol myhttps = new Protocol("https", new MySSLSocketFactory(), 443);
         Protocol.registerProtocol("https", myhttps);
         return client;

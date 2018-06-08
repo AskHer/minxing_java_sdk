@@ -821,6 +821,7 @@ public class AppAccount extends Account {
                 dept.setFull_name(o.getString("full_name"));
                 dept.setDisplay_order(o.getString("display_order"));
                 dept.setParent_dept_code(o.getString("parent_dept_code"));
+                dept.setDept_type(o.getString("dept_type"));
             }
             return dept;
         } catch (JSONException e) {
