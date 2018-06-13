@@ -2,6 +2,7 @@
 
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 
 import com.minxing.client.app.AppAccount;
 import com.minxing.client.organization.User;
@@ -31,6 +32,7 @@ public class Test {
 
 		User u = oa.verifyOcuSSOToken(token_, null);
 		log.info("u.getLoginName() " + u.getLoginName());
+
 	}
 }
 

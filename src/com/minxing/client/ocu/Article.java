@@ -2,6 +2,8 @@ package com.minxing.client.ocu;
 
 import com.minxing.client.utils.StringUtil;
 
+import java.util.regex.Matcher;
+
 
 public class Article {
     private String title;
@@ -21,9 +23,12 @@ public class Article {
 
     public Article(String title, String description, String picUrl, String url, String app_url, Boolean enable_readed_status) {
         if (description != null)
-            description = description.replaceAll("\\\\", "\\\\\\\\");
+//            description = description.replaceAll("\\\\", "\\\\\\\\");
+            description = Matcher.quoteReplacement( description);
+
         if (title != null)
-            title = title.replaceAll("\\\\", "\\\\\\\\");
+//            title = title.replaceAll("\\\\", "\\\\\\\\");
+          title=Matcher.quoteReplacement( title );
         this.title = title;
         this.description = description;
         this.picUrl = picUrl;
@@ -46,9 +51,12 @@ public class Article {
 
     public Article(Resource resource, String title, String picUrl, String description, Boolean enable_readed_status) {
         if (description != null)
-            description = description.replaceAll("\\\\", "\\\\\\\\");
+//            description = description.replaceAll("\\\\", "\\\\\\\\");
+            description = Matcher.quoteReplacement( description);
+
         if (title != null)
-            title = title.replaceAll("\\\\", "\\\\\\\\");
+//            title = title.replaceAll("\\\\", "\\\\\\\\");
+            title=Matcher.quoteReplacement( title );
         this.title = title;
         this.picUrl = picUrl;
         this.type = "resource";
