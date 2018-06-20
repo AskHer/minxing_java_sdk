@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 
 import com.minxing.client.app.AppAccount;
 import com.minxing.client.organization.User;
+import com.minxing.client.utils.StringUtil;
 
 public class Test {
 	
@@ -29,9 +30,10 @@ public class Test {
 		String token = "YJ-wkN4UiD_ESq3tXB_Q4E9I872wKqeBd1KqVL5fjYSIAkUV";
 		String token_ = "IAAAAAtLGKG8kPfnHVTzFNndjUDezh3IvOTsS2fO22jB8gwS";
 		AppAccount oa = AppAccount.loginByAccessToken(serverUrl, token);
-
 		User u = oa.verifyOcuSSOToken(token_, null);
 		log.info("u.getLoginName() " + u.getLoginName());
+
+
 
 	}
 }

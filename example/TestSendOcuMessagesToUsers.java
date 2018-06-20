@@ -11,7 +11,7 @@ public class TestSendOcuMessagesToUsers {
         AppAccount appAccount = AppAccount.loginByAppSecret("http://test.dehuinet.com:8030", "survey", "7263b012114906fec050cc8fceacacf0");
         String[] login_names = new String[]{"t65"};
         ArticleMessage m = new ArticleMessage();
-        Article article = new Article("title", "你好\"一11111111\"个", "", "http://oawxn.taikang.com/moa//m/s?s=EXKVes0tP93BoyetMuqX8mFzl+FLNFjZKd7WlNrBtokpqSMdB3RI9w==", null);// http://www.baidu.com
+        Article article = new Article("title", "你好\"一11111111\\\"个", "", "http://oawxn.taikang.com/moa//m/s?s=EXKVes0tP93BoyetMuqX8mFzl+FLNFjZKd7WlNrBtokpqSMdB3RI9w==", null);// http://www.baidu.com
 
         System.out.println( "discription"+article.getDescription() );
         m.addArticle(article);
