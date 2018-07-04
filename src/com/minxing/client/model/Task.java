@@ -272,6 +272,8 @@ public class Task {
         this.url = url;
         this.startAt = startAt;
         this.endAt = endAt;
+        this.ocuId = ocuId;
+        this.ocuSecret = ocuSecret;
         this.instantRemind = instantRemind;
     }
 
@@ -297,6 +299,8 @@ public class Task {
         this.source = source;
         this.url = url;
         this.startAt = startAt;
+        this.ocuId = ocuId;
+        this.ocuSecret = ocuSecret;
         this.instantRemind = instantRemind;
     }
 
@@ -324,6 +328,8 @@ public class Task {
         this.url = url;
         this.startAt = startAt;
         this.endAt = endAt;
+        this.ocuId = ocuId;
+        this.ocuSecret = ocuSecret;
         this.instantRemind = instantRemind;
     }
 
@@ -348,6 +354,8 @@ public class Task {
         this.source = source;
         this.url = url;
         this.startAt = startAt;
+        this.ocuId = ocuId;
+        this.ocuSecret = ocuSecret;
         this.instantRemind = instantRemind;
     }
 
