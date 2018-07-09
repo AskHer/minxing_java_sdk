@@ -1838,10 +1838,9 @@ public class AppAccount extends Account {
     }
 
     /**
-     * 发送公众号消息,指定社区id,传递的用户数组不能为空,否则会抛出异常
+     * 发送公众号消息
      *
-     * @param toUserIds  用户的login_name数组，如果传null,则会抛出异常
-     * @param network_id 用户的社区
+     * @param toUserIds  用户的login_name数组，如果传null,则会发送全员订阅用户
      * @param message    消息对象数据，可以是复杂文本，也可以是简单对象
      * @param ocuId      公众号的id
      * @param ocuSecret  公众号的秘钥，校验是否可以发送
@@ -2021,7 +2020,7 @@ public class AppAccount extends Account {
      * @param message   消息对象数据，可以是复杂文本，也可以是简单对象
      * @param ocuId     公众号的id
      * @param ocuSecret 公众号的秘钥，校验是否可以发送
-     * @param sso_key   toUsers的类型,可以选择的值为login_name,email,user_id
+     * @param ssoKey   toUsers的类型,可以选择的值为login_name,email,user_id
      * @return
      */
     public OcuMessageSendResult sendOcuMessageToUsers(String[] toUsers,
