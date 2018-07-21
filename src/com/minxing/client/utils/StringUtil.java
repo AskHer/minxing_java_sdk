@@ -1,5 +1,7 @@
 package com.minxing.client.utils;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -21,8 +23,9 @@ public class StringUtil {
 		//图文内容里带\n \r \r\n  会造成图文消息结构混乱，导致客户端crash、web显示消息异常
 		public static String convertContent(String content){
 			if(content!=null){
-				content = content.replaceAll("(\n)", "\\\\n");
-				content = content.replaceAll("(\r)", "\\\\r");
+//				content = content.replaceAll("(\n)", "\\\\n");
+//				content = content.replaceAll("(\r)", "\\\\r");
+				StringEscapeUtils.escapeJson(content);
 			}
 			return content;
 		}

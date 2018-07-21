@@ -1,5 +1,7 @@
 package com.minxing.client.ocu;
 
+import com.minxing.client.utils.StringUtil;
+
 public class AppMessage implements Message {
 
     private String content;
@@ -31,11 +33,11 @@ public class AppMessage implements Message {
             sb.append("\"enable_badge_in_app_store\":").append(enable_badge_in_app_store).append(",");
         }
 
-        sb.append("\"content\":\"").append(content).append("\"");
+        sb.append("\"content\":\"").append(StringUtil.convertContent(content)).append("\"");
 
         if (custom != null && custom.length() > 0) {
             sb.append(",");
-            sb.append("\"custom\":\"").append(custom).append("\"");
+            sb.append("\"custom\":\"").append(StringUtil.convertContent(custom)).append("\"");
         }
         sb.append("}");
         return sb.toString();
