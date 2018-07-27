@@ -4336,4 +4336,55 @@ public class AppAccount extends Account {
         return punch(user_id, null, null);
     }
 
+    /**
+     * 更新下班打卡
+     *
+     * @param fingerprint_id    用户指纹ID
+     * @return 当次打卡数据
+     * @throws ApiErrorException
+     */
+    public PunchInfo updateEndPunch(int fingerprint_id) throws ApiErrorException {
+        return updateEndPunch(fingerprint_id, null, null);
+    }
+
+    /**
+     * 更新下班打卡
+     *
+     * @param fingerprint_id    用户指纹ID
+     * @param punch_date 打卡时间,不传递则使用服务器时间(格式为HH:mm:ss)
+     * @param punch_time 打卡日期,不传递则使用服务器时间(格式为yyyy-MM-dd)
+     * @return 当次打卡数据
+     * @throws ApiErrorException
+     */
+    public PunchInfo updateEndPunch(int fingerprint_id, String punch_date, String punch_time) throws ApiErrorException {
+        try {
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("fingerprint_id", String.valueOf(fingerprint_id));
+            if (StringUtil.isNotEmpty(punch_date)) {
+                params.put("punchDate", punch_date);
+            }
+            if (StringUtil.isNotEmpty(punch_time)) {
+                params.put("punchTime", punch_time);
+            }
+            JSONObject json_result = put(
+                    "/api/v2/attendance/open/punch/update/time", params);
+
+            int code = json_result.getInt("code");
+            if (code > 0 && code != 200 && code != 201) {
+                String msg = json_result.getString("message");
+                throw new ApiErrorException(code, msg);
+            }
+            PunchInfo punchInfo = new PunchInfo();
+            punchInfo.setPunchDate(json_result.getString("punchDate"));
+            JSONObject data = json_result.getJSONObject("data");
+            punchInfo.setPunchTime(data.getString("punchTime"));
+            punchInfo.setItemSort(data.getInt("itemSort"));
+            punchInfo.setStatus(data.getInt("status"));
+            punchInfo.setPunchType(data.getInt("punchType"));
+            punchInfo.setCanApproval(data.getInt("canApproval") == 1);
+            return punchInfo;
+        } catch (JSONException e) {
+            throw new ApiErrorException("返回JSON错误", 500, e);
+        }
+    }
 }
