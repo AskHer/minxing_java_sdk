@@ -4286,6 +4286,49 @@ public class AppAccount extends Account {
     /**
      * 打卡
      *
+     * @param ctrl_id    指纹ID
+     * @param punch_date 打卡时间,不传递则使用服务器时间,建议不传递(格式为HH:mm:ss)
+     * @param punch_time 打卡日期,不传递则使用服务器时间,建议不传递(格式为yyyy-MM-dd)
+     * @return 当次打卡数据
+     * @throws ApiErrorException
+     */
+    public PunchInfo punch(String ctrl_id, String punch_date, String punch_time) throws ApiErrorException {
+        try {
+            HashMap<String, String> params = new HashMap<String, String>();
+            params.put("userId", String.valueOf(params));
+            if (StringUtil.isNotEmpty(punch_date)) {
+                params.put("punchDate", punch_date);
+            }
+            if (StringUtil.isNotEmpty(punch_time)) {
+                params.put("punchTime", punch_time);
+            }
+
+            Map<String, String> headers = new HashMap<String, String>();
+            Response post = post(
+                    "/api/v2/attendance/open/punch", params, headers);
+            JSONObject json_result = post.asJSONObject();
+            if (post.getStatusCode() != 200) {
+                JSONObject errors = json_result.getJSONObject("errors");
+                throw new ApiErrorException(Integer.valueOf(errors.getString("status_code")), errors.getString("message"));
+            }
+            PunchInfo punchInfo = new PunchInfo();
+            punchInfo.setPunchDate(json_result.getString("punchDate"));
+            JSONObject data = json_result.getJSONObject("data");
+            punchInfo.setPunchTime(data.getString("punchTime"));
+            punchInfo.setItemSort(data.getInt("itemSort"));
+            punchInfo.setStatus(data.getInt("status"));
+            punchInfo.setPunchType(data.getInt("punchType"));
+            punchInfo.setCanApproval(data.getInt("canApproval") == 1);
+            return punchInfo;
+        } catch (JSONException e) {
+            throw new ApiErrorException("返回JSON错误", 500, e);
+        }
+    }
+
+
+    /**
+     * 打卡
+     *
      * @param user_id    用户ID
      * @param punch_date 打卡时间,不传递则使用服务器时间,建议不传递(格式为HH:mm:ss)
      * @param punch_time 打卡日期,不传递则使用服务器时间,建议不传递(格式为yyyy-MM-dd)
@@ -4356,10 +4399,10 @@ public class AppAccount extends Account {
      * @return 当次打卡数据
      * @throws ApiErrorException
      */
-    public PunchInfo updateEndPunch(int fingerprint_id, String punch_date, String punch_time) throws ApiErrorException {
+    public PunchInfo updateEndPunch(String fingerprint_id, String punch_date, String punch_time) throws ApiErrorException {
         try {
             HashMap<String, String> params = new HashMap<String, String>();
-            params.put("fingerprint_id", String.valueOf(fingerprint_id));
+            params.put("fingerprint_id", fingerprint_id);
             if (StringUtil.isNotEmpty(punch_date)) {
                 params.put("punchDate", punch_date);
             }
