@@ -4284,7 +4284,7 @@ public class AppAccount extends Account {
     }
 
     /**
-     * 打卡
+     * 打卡(中原)
      *
      * @param ctrl_id    指纹ID
      * @param punch_date 打卡时间,不传递则使用服务器时间,建议不传递(格式为HH:mm:ss)
@@ -4295,7 +4295,7 @@ public class AppAccount extends Account {
     public PunchInfo punch(String ctrl_id, String punch_date, String punch_time) throws ApiErrorException {
         try {
             HashMap<String, String> params = new HashMap<String, String>();
-            params.put("userId", String.valueOf(params));
+            params.put("fingerprint_id", ctrl_id);
             if (StringUtil.isNotEmpty(punch_date)) {
                 params.put("punchDate", punch_date);
             }
@@ -4305,7 +4305,7 @@ public class AppAccount extends Account {
 
             Map<String, String> headers = new HashMap<String, String>();
             Response post = post(
-                    "/api/v2/attendance/open/punch", params, headers);
+                    "/api/v2/attendance/open/zy/punch", params, headers);
             JSONObject json_result = post.asJSONObject();
             if (post.getStatusCode() != 200) {
                 JSONObject errors = json_result.getJSONObject("errors");
@@ -4386,9 +4386,9 @@ public class AppAccount extends Account {
      * @return 当次打卡数据
      * @throws ApiErrorException
      */
-    public PunchInfo updateEndPunch(int fingerprint_id) throws ApiErrorException {
-        return updateEndPunch(fingerprint_id, null, null);
-    }
+//    public PunchInfo updateEndPunch(int fingerprint_id) throws ApiErrorException {
+//        return updateEndPunch(fingerprint_id, null, null);
+//    }
 
     /**
      * 更新下班打卡
