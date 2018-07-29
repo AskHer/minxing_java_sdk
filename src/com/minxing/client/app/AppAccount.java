@@ -4292,7 +4292,7 @@ public class AppAccount extends Account {
      * @return 当次打卡数据
      * @throws ApiErrorException
      */
-    public PunchInfo punch(String ctrl_id, String punch_date, String punch_time) throws ApiErrorException {
+    public void punch(String ctrl_id, String punch_date, String punch_time) throws ApiErrorException {
         try {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("fingerprint_id", ctrl_id);
@@ -4311,15 +4311,15 @@ public class AppAccount extends Account {
                 JSONObject errors = json_result.getJSONObject("errors");
                 throw new ApiErrorException(Integer.valueOf(errors.getString("status_code")), errors.getString("message"));
             }
-            PunchInfo punchInfo = new PunchInfo();
-            punchInfo.setPunchDate(json_result.getString("punchDate"));
-            JSONObject data = json_result.getJSONObject("data");
-            punchInfo.setPunchTime(data.getString("punchTime"));
-            punchInfo.setItemSort(data.getInt("itemSort"));
-            punchInfo.setStatus(data.getInt("status"));
-            punchInfo.setPunchType(data.getInt("punchType"));
-            punchInfo.setCanApproval(data.getInt("canApproval") == 1);
-            return punchInfo;
+//            PunchInfo punchInfo = new PunchInfo();
+//            punchInfo.setPunchDate(json_result.getString("punchDate"));
+//            JSONObject data = json_result.getJSONObject("data");
+//            punchInfo.setPunchTime(data.getString("punchTime"));
+//            punchInfo.setItemSort(data.getInt("itemSort"));
+//            punchInfo.setStatus(data.getInt("status"));
+//            punchInfo.setPunchType(data.getInt("punchType"));
+//            punchInfo.setCanApproval(data.getInt("canApproval") == 1);
+//            return punchInfo;
         } catch (JSONException e) {
             throw new ApiErrorException("返回JSON错误", 500, e);
         }
@@ -4399,7 +4399,7 @@ public class AppAccount extends Account {
      * @return 当次打卡数据
      * @throws ApiErrorException
      */
-    public PunchInfo updateEndPunch(String fingerprint_id, String punch_date, String punch_time) throws ApiErrorException {
+    public void updateEndPunch(String fingerprint_id, String punch_date, String punch_time) throws ApiErrorException {
         try {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("fingerprint_id", fingerprint_id);
@@ -4417,15 +4417,15 @@ public class AppAccount extends Account {
                 String msg = json_result.getString("message");
                 throw new ApiErrorException(code, msg);
             }
-            PunchInfo punchInfo = new PunchInfo();
-            punchInfo.setPunchDate(json_result.getString("punchDate"));
-            JSONObject data = json_result.getJSONObject("data");
-            punchInfo.setPunchTime(data.getString("punchTime"));
-            punchInfo.setItemSort(data.getInt("itemSort"));
-            punchInfo.setStatus(data.getInt("status"));
-            punchInfo.setPunchType(data.getInt("punchType"));
-            punchInfo.setCanApproval(data.getInt("canApproval") == 1);
-            return punchInfo;
+//            PunchInfo punchInfo = new PunchInfo();
+//            punchInfo.setPunchDate(json_result.getString("punchDate"));
+//            JSONObject data = json_result.getJSONObject("data");
+//            punchInfo.setPunchTime(data.getString("punchTime"));
+//            punchInfo.setItemSort(data.getInt("itemSort"));
+//            punchInfo.setStatus(data.getInt("status"));
+//            punchInfo.setPunchType(data.getInt("punchType"));
+//            punchInfo.setCanApproval(data.getInt("canApproval") == 1);
+//            return punchInfo;
         } catch (JSONException e) {
             throw new ApiErrorException("返回JSON错误", 500, e);
         }
