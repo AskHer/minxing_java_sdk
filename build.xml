@@ -43,7 +43,7 @@
 
 		<javac srcdir="${src.home}" destdir="${classes.home}"
 			deprecation="on" debug="true" encoding="UTF-8" includeantruntime="false"
-			source="1.8" target="1.8">
+			source="1.6" target="1.6">
 			<classpath refid="base.classpath" />
 		</javac>
 	</target>

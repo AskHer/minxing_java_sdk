@@ -21,7 +21,7 @@ public class TagToUser {
     }
 
     public TagToUser() {
-        this(null, new ArrayList<>());
+        this(null, new ArrayList<Long>());
     }
 
     public String getLoginName() {

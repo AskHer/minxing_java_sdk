@@ -120,9 +120,9 @@ public class TestOcuAccount {
 
 
 
-        List<ArticleNew.Attachment> attList = new ArrayList<>();
+        List<ArticleNew.Attachment> attList = new ArrayList<ArticleNew.Attachment>();
         attList.add(attachment);
-        List<ArticleNew.Category> catList = new ArrayList<>();
+        List<ArticleNew.Category> catList = new ArrayList<ArticleNew.Category>();
         catList.add(category1);
         catList.add(category2);
         ArticleNew article = new ArticleNew()
