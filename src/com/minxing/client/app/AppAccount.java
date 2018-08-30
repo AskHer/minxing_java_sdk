@@ -9,11 +9,10 @@ import com.minxing.client.json.JSONObject;
 import com.minxing.client.model.*;
 import com.minxing.client.ocu.*;
 import com.minxing.client.ocu.Message;
-import com.minxing.client.organization.AppVisibleScope;
-import com.minxing.client.organization.Department;
-import com.minxing.client.organization.Network;
+import com.minxing.client.organization.*;
 import com.minxing.client.organization.User;
 import com.minxing.client.utils.HMACSHA1;
+import com.minxing.client.utils.HttpUtil;
 import com.minxing.client.utils.StringUtil;
 import com.minxing.client.utils.UrlEncoder;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -4073,11 +4072,11 @@ public class AppAccount extends Account {
     /**
      * 变更标识数量,推送
      *
-     * @param userId 用户ID
-     * @param appId appId
-     * @param badge 未读数
+     * @param userId  用户ID
+     * @param appId   appId
+     * @param badge   未读数
      * @param content 推送内容
-     * @param sign 标识,将直接转发给移动端,用于展示标识图片
+     * @param sign    标识,将直接转发给移动端,用于展示标识图片
      * @return
      * @throws ApiErrorException
      */
@@ -4101,7 +4100,7 @@ public class AppAccount extends Account {
      * 获取标识数量
      *
      * @param userId 用户ID
-     * @param appId appId
+     * @param appId  appId
      * @return
      * @throws ApiErrorException
      */
@@ -4137,7 +4136,7 @@ public class AppAccount extends Account {
         try {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("title", task.getTitle());
-            if (StringUtil.isNotEmpty(task.getRemark())){
+            if (StringUtil.isNotEmpty(task.getRemark())) {
                 params.put("remark", task.getRemark());
             }
             params.put("userId", String.valueOf(task.getUserId()));
@@ -4145,7 +4144,7 @@ public class AppAccount extends Account {
             params.put("url", task.getUrl());
             params.put("source", task.getSource());
             params.put("startAt", String.valueOf(task.getStartAt().getTime() / 1000));
-            if (task.getEndAt() != null){
+            if (task.getEndAt() != null) {
                 params.put("endAt", String.valueOf(task.getEndAt().getTime() / 1000));
             }
             if (task.getRemindTimes() != null && task.getRemindTimes().length != 0) {
@@ -4158,10 +4157,10 @@ public class AppAccount extends Account {
                 }
             }
             params.put("instantRemind", task.getInstantRemind() ? "1" : "0");
-            if (StringUtil.isNotEmpty(task.getOcuId())){
+            if (StringUtil.isNotEmpty(task.getOcuId())) {
                 params.put("ocuId", task.getOcuId());
             }
-            if (StringUtil.isNotEmpty(task.getOcuSecret())){
+            if (StringUtil.isNotEmpty(task.getOcuSecret())) {
                 params.put("ocuSecret", task.getOcuSecret());
             }
 
@@ -4189,19 +4188,19 @@ public class AppAccount extends Account {
         try {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("title", task.getTitle());
-            if (StringUtil.isNotEmpty(task.getRemark())){
+            if (StringUtil.isNotEmpty(task.getRemark())) {
                 params.put("remark", task.getRemark());
-            }else{
+            } else {
                 params.put("remark", "");
             }
             params.put("userId", String.valueOf(task.getUserId()));
             params.put("categoryCode", task.getCategoryCode());
             params.put("url", task.getUrl());
-            if(StringUtil.isNotEmpty(task.getSource())){
+            if (StringUtil.isNotEmpty(task.getSource())) {
                 params.put("source", task.getSource());
             }
             params.put("startAt", String.valueOf(task.getStartAt().getTime() / 1000));
-            if (task.getEndAt() != null){
+            if (task.getEndAt() != null) {
                 params.put("endAt", String.valueOf(task.getEndAt().getTime() / 1000));
             }
             if (task.getRemindTimes() != null && task.getRemindTimes().length != 0) {
@@ -4215,10 +4214,10 @@ public class AppAccount extends Account {
 
             }
             params.put("instantRemind", task.getInstantRemind() ? "1" : "0");
-            if (StringUtil.isNotEmpty(task.getOcuId())){
+            if (StringUtil.isNotEmpty(task.getOcuId())) {
                 params.put("ocuId", task.getOcuId());
             }
-            if (StringUtil.isNotEmpty(task.getOcuSecret())){
+            if (StringUtil.isNotEmpty(task.getOcuSecret())) {
                 params.put("ocuSecret", task.getOcuSecret());
             }
 
@@ -4260,7 +4259,7 @@ public class AppAccount extends Account {
     /**
      * 更改待办事项状态
      *
-     * @param id     待办事项ID
+     * @param id         待办事项ID
      * @param isComplete 状态,是否已完成
      * @throws ApiErrorException
      */
@@ -4328,7 +4327,7 @@ public class AppAccount extends Account {
     /**
      * 打卡
      *
-     * @param user_id    用户ID
+     * @param user_id 用户ID
      * @return 当次打卡数据
      * @throws ApiErrorException
      */
@@ -4336,4 +4335,62 @@ public class AppAccount extends Account {
         return punch(user_id, null, null);
     }
 
+
+    /**
+     * 批量打标签
+     *
+     * @param tagToUsers TagToUser对象，每次最多20个
+     * @return
+     */
+    public Boolean batchTagToUsers(List<TagToUser> tagToUsers) throws ApiErrorException {
+        if (tagToUsers.size() > 20) {
+            throw new ApiErrorException(400, "每次不能超过20个用户");
+        }
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("User-Agent", this.user_agent);
+        headers.put("Authorization", "Bearer " + this._token);
+        final String s = HttpUtil.putJson(this._serverURL + "/api/v1/tag/tp/sync/update", headers, com.alibaba.fastjson.JSONObject.toJSONString(tagToUsers));
+        final com.alibaba.fastjson.JSONObject jsonObject = com.alibaba.fastjson.JSONObject.parseObject(s);
+        if (jsonObject.getString("msg").equals("OK")) {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * 查询标签
+     *
+     * @return
+     */
+    public List<Tags.Group> getAllTag() throws ApiErrorException {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("User-Agent", this.user_agent);
+        headers.put("Authorization", "Bearer " + this._token);
+        final String s = HttpUtil.get(this._serverURL + "/api/v1/tag/tp/sync/all_tag", headers);
+        final com.alibaba.fastjson.JSONArray jsonArray = com.alibaba.fastjson.JSONArray.parseArray(s);
+        List<Tags.Group> list = new ArrayList<Tags.Group>();
+        for (Object x : jsonArray) {
+            com.alibaba.fastjson.JSONObject jo = (com.alibaba.fastjson.JSONObject) x;
+            final Tags.Group group = new Tags.Group();
+            group.setId(jo.getLong("id"));
+            group.setDisplayOrder(jo.getLong("display_order"));
+            group.setTitle(jo.getString("title"));
+            final com.alibaba.fastjson.JSONArray tag_infos = jo.getJSONArray("tag_infos");
+            group.setTagInfos(new ArrayList<Tags.TagInfo>());
+            for (Object y : tag_infos) {
+                final com.alibaba.fastjson.JSONObject tag_info = (com.alibaba.fastjson.JSONObject) y;
+                final Tags.TagInfo tagInfo = new Tags.TagInfo();
+                tagInfo.setCreated(tag_info.getLong("created"));
+                tagInfo.setDisplayOrder(tag_info.getLong("display_order"));
+                tagInfo.setGroupId(tag_info.getLong("group_id"));
+                tagInfo.setId(tag_info.getLong("id"));
+                tagInfo.setTitle(tag_info.getString("title"));
+                tagInfo.setUpdated(tag_info.getLong("updated"));
+                group.getTagInfos().add(tagInfo);
+            }
+            list.add(group);
+        }
+        return list;
+    }
 }
