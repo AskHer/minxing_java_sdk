@@ -32,7 +32,7 @@ public class HttpUtil {
             if (httpConn.getResponseCode() != 200 && httpConn.getResponseCode() != 201 && httpConn.getResponseCode() != 202 && httpConn.getResponseCode() != 204) {
                 throw new ApiErrorException(httpConn.getResponseCode(), httpConn.getResponseMessage());
             }
-            final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
+            final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(),"utf-8"));
             String line;
 
             while ((line = bufferedReader.readLine()) != null) {
@@ -70,7 +70,7 @@ public class HttpUtil {
             if (httpConn.getResponseCode() != 200 && httpConn.getResponseCode() != 201 && httpConn.getResponseCode() != 202 && httpConn.getResponseCode() != 204) {
                 throw new ApiErrorException(httpConn.getResponseCode(), httpConn.getResponseMessage());
             }
-            final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
+            final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpConn.getInputStream(),"utf-8"));
             String line;
 
             while ((line = bufferedReader.readLine()) != null) {
