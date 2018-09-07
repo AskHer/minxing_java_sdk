@@ -4292,7 +4292,7 @@ public class AppAccount extends Account {
      * @return 当次打卡数据
      * @throws ApiErrorException
      */
-    public void punch(String ctrl_id, String punch_date, String punch_time) throws ApiErrorException {
+    public void punch(String ctrl_id, String punch_date, String punch_time,String sort,String punchType) throws ApiErrorException {
         try {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("fingerprint_id", ctrl_id);
@@ -4301,6 +4301,12 @@ public class AppAccount extends Account {
             }
             if (StringUtil.isNotEmpty(punch_time)) {
                 params.put("punchTime", punch_time);
+            }
+            if (StringUtil.isNotEmpty(sort)) {
+                params.put("sort", sort);
+            }
+            if (StringUtil.isNotEmpty(punchType)) {
+                params.put("punchType", punchType);
             }
 
             Map<String, String> headers = new HashMap<String, String>();
