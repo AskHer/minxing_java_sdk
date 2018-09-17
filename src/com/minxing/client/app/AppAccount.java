@@ -4393,4 +4393,28 @@ public class AppAccount extends Account {
         }
         return list;
     }
+
+    /**
+     * 接入端禁用用户
+     *
+     * @param login_names 登陆名列表，逗号分隔
+     * @return
+     * @throws ApiErrorException
+     */
+    public JSONObject suspend(String login_names) throws ApiErrorException {
+        try {
+            HashMap<String, String> params = new HashMap<String, String>();
+            if(null == login_names || "".equals(login_names)){
+                return null;
+            }
+            params.put("login_names", String.valueOf(login_names));
+
+            Map<String, String> headers = new HashMap<String, String>();
+            Response post = post("/api/v1/users/suspend", params, headers);
+            JSONObject json_result = post.asJSONObject();
+            return json_result;
+        } catch (Exception e) {
+            throw new ApiErrorException("返回JSON错误", 500, e);
+        }
+    }
 }
