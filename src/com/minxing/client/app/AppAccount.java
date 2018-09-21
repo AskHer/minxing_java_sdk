@@ -4282,13 +4282,19 @@ public class AppAccount extends Account {
         }
     }
 
+    /**
+     * 更新同步状态
+     * @param id
+     * @param synStatus
+     * @throws ApiErrorException
+     */
     public void updateSynStatus(int id, int synStatus) throws ApiErrorException {
         try {
             HashMap<String, String> params = new HashMap<String, String>();
             params.put("id", String.valueOf(id));
             params.put("synStatus", String.valueOf(synStatus));
 //            Map<String, String> headers = new HashMap<String, String>();
-            JSONObject json_result = put("/api/v2/attendance/open/punch/update/" + id + "/synStatus" + synStatus, params);
+            JSONObject json_result = put("/api/v2/attendance/open/punch/update/" + id + "/synStatus/" + synStatus, params);
             int code = "ok".equalsIgnoreCase(json_result.getString("msg")) ? 1 : 0;
 
             if (code != 1) {
@@ -4299,10 +4305,11 @@ public class AppAccount extends Account {
             throw new ApiErrorException("返回JSON错误", 500, e);
         }
     }
+
     /**
      * 打卡
      *
-     * @param user_id    用户ID
+     * @param ctrl_id    用户ID
      * @param punch_date 打卡时间,不传递则使用服务器时间,建议不传递(格式为HH:mm:ss)
      * @param punch_time 打卡日期,不传递则使用服务器时间,建议不传递(格式为yyyy-MM-dd)
      * @return 当次打卡数据
@@ -4386,10 +4393,10 @@ public class AppAccount extends Account {
     }
 
     /**
-     * 更改考勤同步状态
-     *
-     * @param id         punch_info ID
-     * @param synStatus 同步状态
+     * 更新打卡状态
+     * @param fingerprint_id
+     * @param punch_date
+     * @param punch_time
      * @throws ApiErrorException
      */
     public void updateEndPunch(String fingerprint_id, String punch_date, String punch_time) throws ApiErrorException {
